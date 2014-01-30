@@ -58,8 +58,10 @@ Write-Debug "Dot sourcing: $profileScriptsCtags"
 Write-Debug "Dot sourcing complete."
 
 ## Load my dev profile stuff if it exists on this machine.
-[String]$devProfilePath             = $profilePath + "\DevScripts\Profile.ps1"
+[String] $devProfilePath             = $profilePath + "\DevScripts\Profile.ps1"
+[Boolean]$devProfileExists           = $false
 if (Test-Path $devProfilePath) {
+    $devProfileExists = $true
     Write-Debug "Dot sourcing: $devProfilePath"
     . $devProfilePath
     Write-Debug "Dot sourcing complete for: $devProfilePath"
@@ -125,7 +127,9 @@ function prompt {
     Write-Host $prefix -nonewline -foregroundcolor Red
     Write-Host $vsString -nonewline -foregroundcolor Blue
 
-    DevPrompt()
+    if ($devProfileExists) {
+        DevPrompt
+    }
 
     Write-Host $gitstring -nonewline -foregroundcolor DarkYellow
     Write-Host $location -nonewline -foregroundcolor Yellow
