@@ -1,0 +1,387 @@
+* Notation
+** C-x     -- For any x, the character Control-x
+** M-x     -- For any x, the character Meta-x (Alt on Windows)
+** C-M-x   -- For any x, the characetr Control-Meta-x
+** RET     -- Return key (C-m)
+** SPC     -- Space bar
+** ESC     -- The escape key (C-[)
+* Notes
+** M-a & M-A are distinct bindings but to minimize confusion, uppercase metacharacters are equated to corresponding lowercase metacharacters.
+** C-M-x is the same as M-C-x but for consistency's sake, we will always see C-M-x.
+** M-x allows one to execute any other command by typing its long name.
+** I will probably never need this but when talking to Unix Emacs from Windows, Meta doesn't work so prefix everything with Esc for the Meta char. (So M-x becomes Esc x and C-M-x becomes Esc C-x.)
+** Minibuffer is where command inputs happens at the bottom of a window.
+* Prefix Commands
+** C-c     -- Mode specific commands depending on context.
+** C-h     -- Help commands
+** C-x     -- Commands that manipulate files, buffers and windows.
+* Advanced Tips 'N' Tricks
+** C-x C-v RET -- Open an alternate file. By default Emacs suggests the current one. Use this to reopen the current file.
+* Files, Buffers, and Windows
+** A file is never edited. Rather it's read into a buffer, the buffer is edited, then that buffer is written out to the file.
+** At any one point in time, one buffer is selected (the buffer the cursor is in).
+** BUffers can be deleted at will, thus losing any work in them but the file on disk will not be affected.
+** Windows are views of buffers. There can be as many of them as I desire, they can be layed out however I wish (splitting horizontally or vertically).
+** A window can be deleted but the underlying buffer will in no way be affected.
+** Windows each have their own mode line but there's still only one minibuffer.
+* Basics
+** C-g     -- "keyboard-quit"
+*** Bail from some unknown function key I might have hit.
+** C-x C-c -- "save-buffers-kill-emacs"
+*** Close emacs and save open buffers prompt.
+** C-_     -- "undo"
+*** If the keyboard can't generate '_', use C-x u. Is a timeline. The undo feature can itself be undone because the moment you stop traversing the timeline, all those undos become part of the normal set of undoable actions so something as innocuous as C-f will drop us out of traversing backwards along this undo timeline.
+** C-/     -- "undo"
+*** Same as above.
+** C-q     -- "quoted-insert"
+*** Inserts the next keybind pressed instead of executing it as a command.
+** C-s     -- "isearch-forward"
+*** Incremental search. When used in the sequence "C-s RET C-w word word word RET," it does a word search where each word can be separated by any number/combination of newlines & white space.
+** C-M-s   -- "isearch-forward-regexp"
+** C-r     -- "isearch-backward"
+*** Reverse incremental search.
+** C-M-r   -- "isearch-backward-regexp"
+** M-%     -- "query-replace"
+*** Interactive search & replace.
+*** C-q C-j inserts a new line for either searching or replacing.
+** C-M-%   -- "query-replace-regexp"
+*** C-q C-j inserts a new line for either searching or replacing.
+**         -- "replace-string"
+*** Takes two args. First is string to be replaced, second is what to replace it with.
+** C-]     -- "abort-recursive-edit"
+*** Cancels any minibuffer input.
+**         -- "top-level"
+*** Return to the top level of emacs from recursive edit session (indicated by [...] or [[...]] in the mode line).
+** C-h l   -- "view-lossage"
+*** History of last 300 key presses.
+* Help
+** C-h a   -- "command-apropos"
+*** Search for a keyword in help.
+** C-h k   -- "describe-key"
+*** Asks for a command then describes what's bound to it.
+** C-h c   -- "describe-key-briefly"
+*** Same as above but much terser.
+** C-h i   -- "info"
+*** Opens the info document.
+** C-h m   -- "describe-mode"
+*** Describes the current major mode (key bindings).
+** C-h p   -- "finder-by-keyword"
+*** Runs a subject-oriented browser of Emacs pkgs.
+** C-h t   -- "help-with-tutorial"
+*** Runs the beginners Emacs tutorial.
+** C-h f   -- "describe-function"
+** C-h v   -- "describe-variable"
+*** Variable documentation display.
+** C-h r   -- "info-emacs-manual"
+*** Runs the Info manual.
+* Files
+** C-x C-f -- "find-file"
+*** This reads a file into a buffer. Note that if the file is already open in a buffer, that buffer is simply switched to and the file isn't actually read from again. Otherwise as expected, the file is read into a new buffer, that buffer is named after the file. In either case, the current window's view is switched to that buffer.
+** C-x 4 f -- "find-file-other-window"
+*** Prompts for a file then opens in new window.
+** C-x C-s -- "save-buffer"
+*** Writes a copy of the current buffer out to disk, over writing the buffer's file and handling backups.
+** C-x s   -- "save-some-buffers"
+*** Saves all buffers with prompting per buffer.
+** C-x C-w -- "write-file"
+*** Saves the current buffer with a specified file name (Save As).
+** C-x C-r -- "find-file-read-only"
+*** Visit a file as read only.
+** C-x C-v -- "find-alternate-file"
+*** Kills the current buffer (with save prompt) and opens a new one.
+**         -- "recover-file"
+*** Recovers an auto-saved file after it's been visited.
+**         -- "set-visited-file-name"
+*** Changes the filen ame under which the current buffer will be saved.
+* Buffers
+** C-x b   -- "switch-to-buffer"
+*** Takes a buffer name and switches the current window to look at said buffer. Also makes it the selected buffer. If the specified buffer is a new name, a new buffer is created w/o any file
+** C-x C-b -- "list-buffers"
+*** Pop-up new window with buffer list.
+** C-x k   -- "kill-buffer"
+*** Takes a buffer name, kills it with save prompt. This in no way removes or deletes the associated file.
+** C-x C-q -- "vc-toggle-read-only"
+*** Toggles read only flag. If file is under VC, then making writable also checks it out.
+**         -- "revert-buffer"
+*** Revert the current buffer. Clears out the undo history!
+**         -- "mark-whole-buffer"
+* Window Manipulation
+** C-v     -- "scroll-up"
+*** Scrolls one screen towards EOF. By default leaves 2 lines of context.
+** M-v     -- "scroll-down"
+*** Scrolls one screen towards beginning of file.
+** C-l     -- "recenter-top-bottom"
+*** Recenters current line.
+** C-x o   -- "other-window"
+*** Switches and activates another window. Left to Right then top to bottom.
+** C-x 1   -- "delete-other-windows"
+*** Deletes all other windows on the screen making the current window the only one.
+** C-x 0   -- "delete-window"
+*** Deletes current window, resizing others as appropriate.
+** C-x 2   -- "split-window-vertically"
+*** Splits windows vertically, same buffer will now be displayed in both windows.
+** C-x 3   -- "split-window-horizontally"
+*** Same as above, just horizontally.
+** C-M-v   -- "scroll-other-window"
+*** Scrolls the other window that C-x 0 would switch to.
+* Frame Manipulation
+**         -- "make-frame"
+*** Adds a new emacs frame.
+**         -- "delete-frame"
+*** Removes the current frame.
+* Basic Manipulation
+** C-u     -- "universal-argument"
+*** Provide a numeric argument for the following command (such as C-u 10 C-d which will delete 10 characters).
+** C-d     -- "delete-char"
+*** Deletes on char to the right of the cursor. If given a number, will delete that many chars.
+** C-f     -- "forward-char"
+*** Moves the cursor to the next character.
+** C-b     -- "backward-char"
+*** Moves the cursor to the previous character.
+** M-f     -- "forward-word"
+*** Moves forward by a word.
+** M-b     -- "backward-word"
+*** Moves backward by a word.
+** C-n     -- "next-line"
+*** Moves down a line.
+** C-p     -- "previous-line"
+*** Moves up a line.
+** C-a     -- "beginning-of-line"
+*** Home (A for beginning of Alphabet)
+** C-e     -- "end-of-line"
+*** End
+** M-a     -- "backward-sentence"
+*** Moves to the beginning of the current sentence.
+** M-e     -- "forward-sentence"
+*** Moves to the end of the current sentence.
+** M-{     -- "backward-paragraph"
+*** Moves to the beginning of the current paragraph.
+** M-}     -- "forward-paragraph"
+*** Moves to the end of the current paragraph.
+** C-x [   -- "backward-page"
+*** Moves to the beginning of the current page.
+** C-x ]   -- "forward-page"
+*** Moves to the end of the current page.
+** M-<     -- "beginning-of-buffer"
+*** Moves to the beginning of the buffer.
+** M->     -- "end-of-buffer"
+*** Moves to the end of the buffer.
+** M-t     -- "transpose-words"
+** M-c     -- "capitalize-word"
+** M-u     -- "upcase-word"
+** M-l     -- "downcase-word"
+* Code Navigation
+** *S-Exp*ressions (Balanced Parens):
+*** C-M-b   -- "backward-sexp"
+**** Moves backward over the next sexp.
+*** C-M-f   -- "forward-sexp"
+**** Moves forward over the next sexp.
+*** C-M-u   -- "backward-up-list"
+**** Move backward up one level of parens.
+*** C-M-d   -- "down-list"
+**** Move down one level of parens.
+*** C-M-k   -- "kill-sexp"
+**** If provided numeric arg -1, kills the sexp before the point.
+*** C-M-@   -- "mark-sexp"
+** Functions:
+*** C-M-a   -- "beginning-of-defun"
+**** Move to the beginning of the current function.
+*** C-M-e   -- "end-of-defun"
+**** Move to the end of the current function.
+*** C-M-h   -- "mark-defun"
+* Mark & Point Manipulation
+** C-Space -- "set-mark-command"
+*** Set the mark where the point is. (Also C-@)
+** M-@     -- "mark-word"
+*** Marks next word, or from point to end of current word.
+** C-x C-p -- "mark-page"
+** C-x h   -- "mark-whole-buffer"
+** C-x C-x -- "exchange-point-and-mark"
+* Region Manipulation
+** C-w     -- "kill-region"
+** M-w     -- "kill-ring-save"
+*** Saves the region without actually killing it. (Copy)
+** C-x C-i -- "indent-rigidly"
+*** Indents region by columns specified by numeric arg.
+** C-x C-l -- "downcase-region"
+*** Lowercase
+** C-x C-u -- "upcase-region"
+*** Uppercase
+**         -- "fill-region"
+*** Justifies with the ragged right margin all paragraphs.
+** C-x r k -- "kill-region-rectangle"
+* Killing & Yanking
+** C-y     -- "yank"
+*** Reinserts the text of the most recent kill. Numeric arguments specify earlier kills to yank.
+** M-y     -- "yank-pop"
+*** Replaces the just-yanked text with the prev kill. Subsequent executions move around the kill ring.
+** M-d     -- "kill-word"
+*** (Analagous to C-d "delete-char")
+** M-DEL   -- "backward-kill-word"
+*** (Analagous to DEL "delete-backward-char")
+** C-k     -- "kill-line"
+*** Kills everything from point to end of line. If provided the numeric argument of 0, kills to the beginning of the line. If provided numeric argument -1, then the preceeding newline is also killed.
+** M-w     -- "kill-ring-save"
+*** Copies the region of text to the kill ring w/o removing it.
+** M-k     -- "kill-sentence"
+*** Also takes newlines within sentence. If provided a numeric argument of -1, kills to the beginning.
+* Ido Bindings
+** General:
+*** C-s     -- "ido-next-match"
+**** Cycles to the next match.
+*** C-r     -- "ido-prev-match"
+**** Cycles to the previous match.
+*** DEL     -- "ido-delete-backward-up-dir"
+**** Delete or go up a level where makes it it makes sense to.
+*** C-SPC   -- "ido-restrict-to-matches"
+**** Restricts
+** Context: Files
+*** //      --
+**** Returns to the root of the current context.
+*** M-d     -- "ido-wide-find-dir-or-delete-dir"
+**** Searches recursively.
+*** C-k     -- "ido-delete-file-at-head"
+**** Deletes the current file.
+*** M-m     -- "ido-make-directory"
+**** Makes a directory.
+*** C-f     -- "ido-magic-forward-char"
+**** Reverts to the old file search functionality if no user input is present.
+** Context: Buffers
+*** C-k     -- "ido-delete-file-at-head"
+**** Kills the current buffer.
+*** C-b     -- "ido-magic-backward-char"
+**** Reverts to the old buffer search functionality if no user input is present.
+* Dired Mode
+** R       -- "dired-do-rename"
+*** Rename
+** D       -- "dired-do-delete"
+*** Delete
+** Z       -- "dired-do-compress"
+*** Compress/Uncompress
+** +       -- "dired-create-directory"
+*** New folder
+** T       -- "dired-do-touch"
+*** Change time stamp
+** M       -- "dired-do-chmod"
+*** Change file/folder mode (permissions)
+** m       -- "dired-mark"
+*** Mark a file or folder to select multiples.
+** U       -- "dired-unmark-all-marks"
+*** Unmark selections
+** % m     -- "dired-mark-files-regexp"
+*** Regexp mark files
+* Lisp Interaction Mode
+** C-j     -- "eval-print-last-sexp"
+*** Evaluate the sexp just before point and print the result in the buffer.
+** C-x C-e -- "eval-last-sexp"
+*** Evaluate line in lisp.
+*** With any argument, prints result in the working buffer.
+* nXML Mode
+** C-c /   -- "nxml-finish-element"
+*** Finishes the current element with end-tag on next line.
+** C-c C-b -- "nxml-balanced-close-start-tag-block"
+*** Finishes current element across 3 lines leaving cursor in middle.
+** C-c C-i -- "nxml-balanced-close-start-tag-inline"
+*** Closes current tag and inserts balancing end-tag.
+* Org Mode
+** *Taken from http://www.linuxjournal.com/article/9116*
+** TAB        -- "org-cycle"
+*** Cycles through outline expansion.
+** S-tab      -- "org-shifttab"
+*** Cycle through outline expansion for the entire doc.
+** M-left     -- "org-metaleft"
+*** Promotes a heading by one level.
+** M-right    -- "org-metaright"
+*** Demotes a heading by one level.
+** M-S-left   -- "org-shiftmetaleft"
+*** Promotes an entire tree.
+** M-S-right  -- "org-shiftmetaright"
+*** Demotes an entire tree.
+** M-return   -- "org-meta-return"
+*** Inserts a list item.
+** C-return   -- "org-insert-heading-respect-content"
+*** Adds another like-item.
+** C-c C-c    -- "org-ctrl-c-ctrl-c"
+*** Many things, can un/check check box list items.
+** C-c C-t    -- "org-todo"
+*** Cycle a headline through TODO, DONE, and nothing.
+** C-c ,      -- "org-priority"
+*** Cycles through priorities of a heading. (A-C)
+** C-c .      -- "org-time-stamp"
+*** Insert a time stamp!
+** C-c \      -- "org-match-sparse-tree"
+** Search tags (+WORK-WITHBOSS will look for items that include :WORK: but not :WITHBOSS:).
+** Notes
+*** Starting a line with '-' or '+' is an entry in an unordered list.
+*** Starting a line with '1.' or any other number begins an ordered list.
+*** Starting a line with '-[ ]' inserts a check box list item that when filled looks like '-[X]'.
+*** Use '|' as a column separator for tables. Tab moves between
+*** :TAG:TAG2: - These are tags, can be added to headlines. Use C-c C-c
+* TAGS Navigation
+** M-.        -- "find-tag"
+*** Finds a tag. Use C-u M-. to cycle through multiples.
+** M-*        -- "pop-tag-mark"
+*** Go back to previous tag.
+**            -- "tags-search"
+*** Regexp search through tags.
+**            -- "tags-query-replace"
+*** Query and replace through source files index by tags file.
+** M-,        -- "tags-loop-continue"
+*** Resume tags-search or tags-query-replace at current place in file.
+**            -- "tags-apropos"
+*** List tags in a source file.
+**            -- "list-tags"
+*** List all tags in a source file.
+* CC Mode
+** C-j        -- "newline-and-indent"
+** C-M-q      -- "c-indent-exp"
+*** Indent balanced expression.
+** C-c C-q    -- "c-indent-defun"
+*** Indents an entire top-level function. Does not work with nested functions.
+** C-M-\      -- "indent-region"
+** C-M-h      -- "c-mark-function"
+** C-c C-c    -- "comment-region"
+** M-;        -- "comment-dwim" or "indent-for-comment"
+*** Inserts a comment at the end of the current line if none there already. Removes any comment at end of the line if a variable is supplied (C-u).
+*** Style values:
+**** c-indent-comment-alist
+**** c-indent-comments-syntactically-p
+** C-M-a      -- "c-beginning-of-defun"
+*** Move to the beginning of the current function.
+** C-M-e      -- "c-end-of-defun"
+*** Move to the end of the current function.
+** M-a        -- "c-beginning-of-statement"
+*** Move to the beginning of the innermost C statement.
+** M-e        -- "c-end-of-statement"
+*** Move to the end of the innermost C statement.
+** C-c C-u    -- "c-up-conditional"
+*** Move back to the containing preprocessor conditional. Prefix arg with negative moves forward.
+**            -- "c-down-conditional"
+*** See above.
+**            -- "c-up-conditional-with-else"
+*** Stops at #else lines unlike c-up-con.
+**            -- "c-down-conditional-with-else"
+*** See above.
+** C-c C-p    -- "c-backward-conditional"
+*** Move backward across a preprocessor cond.
+** C-c C-n    -- "c-forward-conditional"
+*** See above.
+** M-q        -- "c-fill-paragraph"
+*** Fills multiline string literals and comments.
+** M-j        -- "c-indent-new-comment-line"
+*** Breaks current line and inserts it with proper prefixing (macros, comments, etc.) on next line.
+**            -- "c-context-line-break" Consider binding this to RET in CC Mode.
+**            -- "c-context-open-line" Acts like c-context-line-break but leaves points just before inserted line break. (so C-RET)
+** C-c .      -- "c-set-style"
+*** Not case sensitive.
+** C-c :      -- "c-scope-operator"
+*** Inserts scope operator w/o electric behavior.
+** C-c C-\    -- "c-backslash-region"
+*** Adds backslash at end of line in region (used for macros typically).
+* HTML Mode
+** C-c C-o    -- "sgml-tag"
+*** Inserts basic skeleton of a web page.
+** C-c C-t    -- "sgml-tag"
+*** Insert a new tag with attributes if desired.
+** C-c /      -- "sgml-close-tag"
+*** Closes a tag.
