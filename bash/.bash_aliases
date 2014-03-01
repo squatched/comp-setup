@@ -15,3 +15,6 @@ else
     alias la='ls -A'
     alias l='ls -CF'
 fi
+
+# Enable emacsclient while sudoing.
+alias sudoemacsclient="SUDO_EDITOR=\"emacsclient\" sudo -e"
