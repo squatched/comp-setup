@@ -73,8 +73,12 @@ if [ -f ~/.bash_proprietary ]; then
     e ~/.bash_proprietary
 fi
 
-# make rvm scripts available
-#source $HOME/.rvm/scripts/rvm
+# Make rvm scripts available
+# Note that sometimes this shiz will screw up something
+# as simple as cd...  So comment it out when the time
+# comes I guess. (It has hooks into cd that may not
+# return 0 and thus cause cd to fail)
+source $HOME/.rvm/scripts/rvm
 
 # That below was the default values of this file.
 #alias ls='ls --color=auto'
