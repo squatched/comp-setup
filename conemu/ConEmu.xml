@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu" modified="2013-01-11 23:25:33">
-		<key name=".Vanilla" modified="2014-03-14 15:20:54" build="140116">
+		<key name=".Vanilla" modified="2014-05-14 09:25:43" build="140116">
 			<value name="ColorTable00" type="dword" data="00000000"/>
 			<value name="ColorTable01" type="dword" data="00800000"/>
 			<value name="ColorTable02" type="dword" data="00008000"/>
@@ -773,7 +773,7 @@
 			<value name="Key.MaximizeHeight" type="dword" data="00000000"/>
 		</key>
 		<value name="StopWarningConIme" type="dword" data="00000001"/>
-		<key name="windowed" modified="2014-03-05 07:27:35" build="140116">
+		<key name="windowed" modified="2014-04-08 09:16:48" build="140116">
 			<value name="SingleInstance" type="hex" data="00"/>
 			<value name="KeyboardHooks" type="hex" data="01"/>
 			<value name="UseInjects" type="hex" data="01"/>
@@ -907,8 +907,8 @@
 			<value name="ConWnd Width" type="dword" data="00000050"/>
 			<value name="ConWnd Height" type="dword" data="00000019"/>
 			<value name="Cascaded" type="hex" data="01"/>
-			<value name="ConWnd X" type="dword" data="fffffb8c"/>
-			<value name="ConWnd Y" type="dword" data="0000018f"/>
+			<value name="ConWnd X" type="dword" data="000002fd"/>
+			<value name="ConWnd Y" type="dword" data="0000013a"/>
 			<value name="16bit Height" type="dword" data="00000000"/>
 			<value name="AutoSaveSizePos" type="hex" data="00"/>
 			<value name="IntegralSize" type="hex" data="00"/>
@@ -1127,7 +1127,7 @@
 			<value name="Multi.Modifier" type="dword" data="0000005b"/>
 			<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
 			<value name="KeyMacroVersion" type="hex" data="02"/>
-			<value name="MinimizeRestore" type="dword" data="000011c0"/>
+			<value name="MinimizeRestore" type="dword" data="00001100"/>
 			<value name="MinimizeRestore2" type="dword" data="00000000"/>
 			<value name="GlobalRestore" type="dword" data="00000000"/>
 			<value name="ForcedFullScreen" type="dword" data="12115b0d"/>
@@ -1288,9 +1288,9 @@
 			<value name="DndLKey" type="hex" data="00"/>
 			<value name="DndRKey" type="hex" data="a2"/>
 			<value name="WndDragKey" type="dword" data="00121101"/>
-				<key name="Tasks" modified="2014-03-05 07:27:36" build="140116">
-				<value name="Count" type="dword" data="00000004"/>
-						<key name="Task1" modified="2014-03-05 07:27:36" build="140116">
+				<key name="Tasks" modified="2014-04-08 09:16:48" build="140116">
+				<value name="Count" type="dword" data="00000005"/>
+						<key name="Task1" modified="2014-04-08 09:16:48" build="140116">
 					<value name="Name" type="string" data="{Putty - Dev}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1298,7 +1298,24 @@
 					<value name="Active" type="dword" data="00000000"/>
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
-						<key name="Task2" modified="2014-03-05 07:27:36" build="140116">
+						<key name="Task2" modified="2014-04-08 09:16:48" build="140116">
+					<value name="Name" type="string" data="{Putty - Syslog}"/>
+					<value name="Hotkey" type="dword" data="00000000"/>
+					<value name="GuiArgs" type="string" data=""/>
+					<value name="Cmd1" type="string" data="putty.exe -new_console -load &quot;Syslog&quot;"/>
+					<value name="Active" type="dword" data="00000000"/>
+					<value name="Count" type="dword" data="00000001"/>
+					<value name="Cmd2" type="string" data="putty.exe -new_console -load &quot;Patch 02&quot;"/>
+					<value name="Cmd3" type="string" data="putty.exe -new_console -load &quot;Patch 03&quot;"/>
+					<value name="Cmd4" type="string" data="putty.exe -new_console -load &quot;Patch 04&quot;"/>
+					<value name="Cmd5" type="string" data="putty.exe -new_console -load &quot;Patch 05&quot;"/>
+					<value name="Cmd6" type="string" data="putty.exe -new_console -load &quot;Patch 06&quot;"/>
+					<value name="Cmd7" type="string" data="putty.exe -new_console -load &quot;Patch 07&quot;"/>
+					<value name="Cmd8" type="string" data="putty.exe -new_console -load &quot;Patch 08&quot;"/>
+					<value name="Cmd9" type="string" data="putty.exe -new_console -load &quot;Patch 09&quot;"/>
+					<value name="Cmd10" type="string" data="putty.exe -new_console -load &quot;Patch 10&quot;"/>
+				</key>
+						<key name="Task3" modified="2014-04-08 09:16:48" build="140116">
 					<value name="Name" type="string" data="{Putty - Patch}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1315,32 +1332,15 @@
 					<value name="Cmd9" type="string" data="putty.exe -new_console -load &quot;Patch 09&quot;"/>
 					<value name="Cmd10" type="string" data="putty.exe -new_console -load &quot;Patch 10&quot;"/>
 				</key>
-						<key name="Task3" modified="2014-03-05 07:27:36" build="140116">
+						<key name="Task4" modified="2014-04-08 09:16:48" build="140116">
 					<value name="Name" type="string" data="{Putty}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
 					<value name="Cmd1" type="string" data="Putty.exe"/>
 					<value name="Active" type="dword" data="00000000"/>
 					<value name="Count" type="dword" data="00000001"/>
-					<value name="Cmd2" type="string" data="putty.exe -new_console -load &quot;Patch 02&quot;"/>
-					<value name="Cmd3" type="string" data="putty.exe -new_console -load &quot;Patch 03&quot;"/>
-					<value name="Cmd4" type="string" data="putty.exe -new_console -load &quot;Patch 04&quot;"/>
-					<value name="Cmd5" type="string" data="putty.exe -new_console -load &quot;Patch 05&quot;"/>
-					<value name="Cmd6" type="string" data="putty.exe -new_console -load &quot;Patch 06&quot;"/>
-					<value name="Cmd7" type="string" data="putty.exe -new_console -load &quot;Patch 07&quot;"/>
-					<value name="Cmd8" type="string" data="putty.exe -new_console -load &quot;Patch 08&quot;"/>
-					<value name="Cmd9" type="string" data="putty.exe -new_console -load &quot;Patch 09&quot;"/>
-					<value name="Cmd10" type="string" data="putty.exe -new_console -load &quot;Patch 10&quot;"/>
 				</key>
-						<key name="Task4" modified="2014-03-05 07:27:36" build="140116">
-					<value name="Name" type="string" data="{Show ANSI colors}"/>
-					<value name="Hotkey" type="dword" data="00000000"/>
-					<value name="GuiArgs" type="string" data=""/>
-					<value name="Cmd1" type="string" data="cmd /k type &quot;%ConEmuBaseDir%\Addons\AnsiColors16t.ans&quot; -cur_console:n"/>
-					<value name="Active" type="dword" data="00000000"/>
-					<value name="Count" type="dword" data="00000001"/>
-				</key>
-						<key name="Task5" modified="2014-02-12 09:48:51" build="140116">
+						<key name="Task5" modified="2014-04-08 09:16:48" build="140116">
 					<value name="Name" type="string" data="{Show ANSI colors}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1382,10 +1382,10 @@
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
 			</key>
-				<key name="Apps" modified="2014-03-05 07:27:36" build="140116">
+				<key name="Apps" modified="2014-04-08 09:16:48" build="140116">
 				<value name="Count" type="dword" data="00000000"/>
 			</key>
-				<key name="Colors" modified="2014-03-05 07:27:36" build="140116">
+				<key name="Colors" modified="2014-04-08 09:16:49" build="140116">
 				<value name="Count" type="dword" data="00000000"/>
 			</key>
 		</key>
