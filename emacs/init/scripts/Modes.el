@@ -52,3 +52,6 @@
 (autoload 'yaml-mode "yaml-mode" "Major mode for yaml files." t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
+;; Activate haxe mode
+(autoload 'haxe-mode "haxe-mode" "Major mode for haxe files." t)
+(add-to-list 'auto-mode-alist '("\\.hx$" . haxe-mode))

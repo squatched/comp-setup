@@ -235,7 +235,6 @@ function Get-Sha1 {
 
 #=============================================================================
 ## This is a script to give us a "Unixy" touch command within powershell.
-## Found somewhere online... Damned if I remember where.
 ## Unixy Touch command (from http://ss64.com/ps/syntax-touch.html)
 function Set-FileTime{
   param(
@@ -310,6 +309,13 @@ function Set-FileTime{
       }
     }
   }
+}
+
+#=============================================================================
+function Write-Utf8File ([String]$fileName, [String]$data) {
+    $utf8Encoding = New-Object System.Text.Utf8Encoding($False)
+    $fileName = Get-NormalizedPath $fileName
+    [System.IO.File]::WriteAllLines($fileName, $data, $utf8Encoding)
 }
 
 #*****************************************************************************
