@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu" modified="2013-01-11 23:25:33">
-		<key name=".Vanilla" modified="2014-06-06 16:28:46" build="140116">
+		<key name=".Vanilla" modified="2014-06-11 10:30:19" build="140116">
 			<value name="ColorTable00" type="dword" data="00000000"/>
 			<value name="ColorTable01" type="dword" data="00800000"/>
 			<value name="ColorTable02" type="dword" data="00008000"/>
@@ -115,7 +115,7 @@
 			<value name="ConWnd Width" type="dword" data="02000064"/>
 			<value name="ConWnd Height" type="dword" data="0200003c"/>
 			<value name="Cascaded" type="hex" data="00"/>
-			<value name="ConWnd X" type="dword" data="fffffffd"/>
+			<value name="ConWnd X" type="dword" data="00000068"/>
 			<value name="ConWnd Y" type="dword" data="fffffffd"/>
 			<value name="16bit Height" type="dword" data="00000000"/>
 			<value name="AutoSaveSizePos" type="hex" data="01"/>
@@ -773,7 +773,7 @@
 			<value name="Key.MaximizeHeight" type="dword" data="00000000"/>
 		</key>
 		<value name="StopWarningConIme" type="dword" data="00000001"/>
-		<key name="windowed" modified="2014-05-29 13:51:30" build="140116">
+		<key name="windowed" modified="2014-06-24 11:05:00" build="140116">
 			<value name="SingleInstance" type="hex" data="00"/>
 			<value name="KeyboardHooks" type="hex" data="01"/>
 			<value name="UseInjects" type="hex" data="01"/>
@@ -782,7 +782,7 @@
 			<value name="Update.ConfirmDownload" type="hex" data="01"/>
 			<value name="Update.UseBuilds" type="hex" data="02"/>
 			<value name="ColorTable00" type="dword" data="00000000"/>
-			<value name="ColorTable01" type="dword" data="00800000"/>
+			<value name="ColorTable01" type="dword" data="00ff5e5e"/>
 			<value name="ColorTable02" type="dword" data="00008000"/>
 			<value name="ColorTable03" type="dword" data="00808000"/>
 			<value name="ColorTable04" type="dword" data="00000080"/>
@@ -790,7 +790,7 @@
 			<value name="ColorTable06" type="dword" data="00008080"/>
 			<value name="ColorTable07" type="dword" data="00c0c0c0"/>
 			<value name="ColorTable08" type="dword" data="00808080"/>
-			<value name="ColorTable09" type="dword" data="00ff0000"/>
+			<value name="ColorTable09" type="dword" data="00ffcece"/>
 			<value name="ColorTable10" type="dword" data="0000ff00"/>
 			<value name="ColorTable11" type="dword" data="00ffff00"/>
 			<value name="ColorTable12" type="dword" data="000000ff"/>
@@ -896,19 +896,19 @@
 			<value name="bgImageColors" type="dword" data="ffffffff"/>
 			<value name="bgOperation" type="hex" data="00"/>
 			<value name="bgPluginAllowed" type="hex" data="01"/>
-			<value name="AlphaValue" type="hex" data="d1"/>
+			<value name="AlphaValue" type="hex" data="e8"/>
 			<value name="AlphaValueSeparate" type="hex" data="00"/>
 			<value name="AlphaValueInactive" type="hex" data="ff"/>
 			<value name="UserScreenTransparent" type="hex" data="00"/>
-			<value name="ColorKeyTransparent" type="hex" data="00"/>
+			<value name="ColorKeyTransparent" type="hex" data="01"/>
 			<value name="ColorKeyValue" type="dword" data="00010101"/>
 			<value name="UseCurrentSizePos" type="hex" data="01"/>
 			<value name="WindowMode" type="dword" data="00000520"/>
 			<value name="ConWnd Width" type="dword" data="00000050"/>
-			<value name="ConWnd Height" type="dword" data="00000019"/>
+			<value name="ConWnd Height" type="dword" data="00000050"/>
 			<value name="Cascaded" type="hex" data="01"/>
-			<value name="ConWnd X" type="dword" data="000002fd"/>
-			<value name="ConWnd Y" type="dword" data="0000013a"/>
+			<value name="ConWnd X" type="dword" data="fffffbf1"/>
+			<value name="ConWnd Y" type="dword" data="00000000"/>
 			<value name="16bit Height" type="dword" data="00000000"/>
 			<value name="AutoSaveSizePos" type="hex" data="00"/>
 			<value name="IntegralSize" type="hex" data="00"/>
@@ -1288,9 +1288,9 @@
 			<value name="DndLKey" type="hex" data="00"/>
 			<value name="DndRKey" type="hex" data="a2"/>
 			<value name="WndDragKey" type="dword" data="00121101"/>
-				<key name="Tasks" modified="2014-05-29 13:51:31" build="140116">
+				<key name="Tasks" modified="2014-06-24 11:05:01" build="140116">
 				<value name="Count" type="dword" data="00000005"/>
-						<key name="Task1" modified="2014-05-29 13:51:31" build="140116">
+						<key name="Task1" modified="2014-06-24 11:05:01" build="140116">
 					<value name="Name" type="string" data="{Putty - Dev}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1298,7 +1298,7 @@
 					<value name="Active" type="dword" data="00000000"/>
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
-						<key name="Task2" modified="2014-05-29 13:51:31" build="140116">
+						<key name="Task2" modified="2014-06-24 11:05:01" build="140116">
 					<value name="Name" type="string" data="{Putty - Syslog}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1315,7 +1315,7 @@
 					<value name="Cmd9" type="string" data="putty.exe -new_console -load &quot;Patch 09&quot;"/>
 					<value name="Cmd10" type="string" data="putty.exe -new_console -load &quot;Patch 10&quot;"/>
 				</key>
-						<key name="Task3" modified="2014-05-29 13:51:31" build="140116">
+						<key name="Task3" modified="2014-06-24 11:05:01" build="140116">
 					<value name="Name" type="string" data="{Putty - Patch}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1332,7 +1332,7 @@
 					<value name="Cmd9" type="string" data="putty.exe -new_console -load &quot;Patch 09&quot;"/>
 					<value name="Cmd10" type="string" data="putty.exe -new_console -load &quot;Patch 10&quot;"/>
 				</key>
-						<key name="Task4" modified="2014-05-29 13:51:31" build="140116">
+						<key name="Task4" modified="2014-06-24 11:05:01" build="140116">
 					<value name="Name" type="string" data="{Putty}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1340,7 +1340,7 @@
 					<value name="Active" type="dword" data="00000000"/>
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
-						<key name="Task5" modified="2014-05-29 13:51:31" build="140116">
+						<key name="Task5" modified="2014-06-24 11:05:01" build="140116">
 					<value name="Name" type="string" data="{Show ANSI colors}"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
@@ -1382,10 +1382,10 @@
 					<value name="Count" type="dword" data="00000001"/>
 				</key>
 			</key>
-				<key name="Apps" modified="2014-05-29 13:51:31" build="140116">
+				<key name="Apps" modified="2014-06-24 11:05:01" build="140116">
 				<value name="Count" type="dword" data="00000000"/>
 			</key>
-				<key name="Colors" modified="2014-05-29 13:51:31" build="140116">
+				<key name="Colors" modified="2014-06-24 11:05:01" build="140116">
 				<value name="Count" type="dword" data="00000000"/>
 			</key>
 		</key>
