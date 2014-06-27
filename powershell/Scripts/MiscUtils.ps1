@@ -312,10 +312,11 @@ function Set-FileTime{
 }
 
 #=============================================================================
-function Write-Utf8File ([String]$fileName, [String]$data) {
+function Write-Utf8File ([String]$fileName, $data) {
     $utf8Encoding = New-Object System.Text.Utf8Encoding($False)
     $fileName = Get-NormalizedPath $fileName
-    [System.IO.File]::WriteAllLines($fileName, $data, $utf8Encoding)
+    $dataStr = ($data | Out-String)
+    [System.IO.File]::WriteAllLines($fileName, $dataStr, $utf8Encoding)
 }
 
 #*****************************************************************************
