@@ -53,17 +53,12 @@ unset color_prompt
 # add git decoration
 PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
+# Alias definitions from a separate file.
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# Environment exports.
-# You may want to put all your environment variables into a
-# separate file like ~/.bash_env instead of adding them here
-# directly.
+# Environment exports from a separate file.
 if [ -f ~/.bash_environment ]; then
     . ~/.bash_environment
 fi
