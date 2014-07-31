@@ -5,6 +5,9 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+# Turn off history expansion through '!'.
+set +o histexpand
+
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 export HISTCONTROL=ignoredups:ignorespace
