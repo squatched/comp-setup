@@ -54,27 +54,24 @@ unset color_prompt
 PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
 # Alias definitions from a separate file.
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
+[[ -r "$HOME/.bash_aliases" ]] && source "$HOME/.bash_aliases"
 
 # Environment exports from a separate file.
-if [ -f ~/.bash_environment ]; then
-    . ~/.bash_environment
-fi
+[[ -r "$HOME/.bash_environment" ]] && source "$HOME/.bash_environment"
 
 # Proprietary scripts.
-if [ -f ~/.bash_proprietary ]; then
-    e ~/.bash_proprietary
-fi
+[[ -r "$HOME/.bash_proprietary" ]] && source "$HOME/.bash_environment"
 
 # Make rvm scripts available
 # Note that sometimes this shiz will screw up something
 # as simple as cd...  So comment it out when the time
 # comes I guess. (It has hooks into cd that may not
 # return 0 and thus cause cd to fail)
-source $HOME/.rvm/scripts/rvm
+[[ -r $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
 
 # That below was the default values of this file.
 #alias ls='ls --color=auto'
 #PS1='[\u@\h \W]\$ '
+
+# Add RVM to PATH for scripting
+[[ -r $HOME/.rvm/bin ]] && export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
