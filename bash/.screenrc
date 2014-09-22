@@ -1,0 +1,14 @@
+# Turn off startup message
+startup_message off
+
+# Turn off screen flash on tab complete
+vbell off
+
+# Window list at the bottom.
+hardstatus alwayslastline
+
+# Remap escape character to Ctrl + o
+escape ^Oo
+
+# Hostname, centered tabs and redmarked active windows.
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %d/%m %{W}%c %{g}]'
