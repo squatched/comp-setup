@@ -17,4 +17,4 @@ else
 fi
 
 # Enable emacsclient while sudoing.
-alias sudoemacsclient="SUDO_EDITOR=\"emacsclient\" sudo -e"
+alias sudoemacsclient="SUDO_EDITOR=\"emacsclient -nw\" sudo -e"
