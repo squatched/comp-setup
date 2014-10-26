@@ -1,5 +1,6 @@
 ;; Add my load path.
-(add-to-list 'load-path "~/.emacs.d")
+(add-to-list 'load-path "~/.emacs.d/elpa/")
+(add-to-list 'load-path "~/.emacs.d/init/")
 
 ;; Set autosave files (such as #file#) and backup files (such as file~) to
 ;;   save to custom directories instead of wherever the file actually
