@@ -10,5 +10,8 @@ hardstatus alwayslastline
 # Remap escape character to Ctrl + o
 escape ^Oo
 
+# Increase the scrollback size.
+scrollback 5000
+
 # Hostname, centered tabs and redmarked active windows.
 hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %d/%m %{W}%c %{g}]'
