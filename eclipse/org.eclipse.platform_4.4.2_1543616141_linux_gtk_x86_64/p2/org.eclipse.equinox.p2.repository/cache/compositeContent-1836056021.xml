@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?compositeMetadataRepository version='1.0.0'?>
+<repository name='Google Update Site for Eclipse 4.4'
+    type='org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository'
+    version='1.0.0'>
+  <properties size='1'>
+    <property name='p2.timestamp' value='1406609146000'/>
+  </properties>
+  <children size='4'>
+    <child location='https://dl.google.com/eclipse/plugin/core/4.4' />
+    <child location='https://dl.google.com/eclipse/appengine' />
+    <child location='https://dl.google.com/eclipse/gwt' />
+    <child location='https://dl-ssl.google.com/android/eclipse' />
+  </children>
+</repository>

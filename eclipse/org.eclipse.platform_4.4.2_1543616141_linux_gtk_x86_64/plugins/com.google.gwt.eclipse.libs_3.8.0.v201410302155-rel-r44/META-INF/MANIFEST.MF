@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.9.2
+Created-By: 1.7.0_25-b30 (Oracle Corporation)
+Export-Package: com.google.gwt.eclipse.libs
+Bundle-Vendor: %providerName
+Eclipse-BundleShape: dir
+Bundle-Version: 3.8.0.v201410302155-rel-r44
+Bundle-Name: %pluginName
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.google.gwt.eclipse.libs
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+

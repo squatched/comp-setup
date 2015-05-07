@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config transient="false" shared_ur="file:configuration/org.eclipse.update/platform.xml" date="1430256671400" version="3.0">
+	<site enabled="true" updateable="true" policy="USER-EXCLUDE" url="file:/home/cmccombs/.eclipse/org.eclipse.platform_4.4.2_1543616141_linux_gtk_x86_64/">
+		<feature id="com.google.gdt.eclipse.suite.e44.feature" plugin-identifier="com.google.gdt.eclipse.suite" url="features/com.google.gdt.eclipse.suite.e44.feature_3.8.0.v201410302155-rel-r44/" version="3.8.0.v201410302155-rel-r44">
+		</feature>
+	</site>
+</config>
