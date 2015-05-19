@@ -37,7 +37,6 @@ shopt -s checkwinsize
 [ -x /usr/share/git/completion/git-prompt.sh ] && source /usr/share/git/completion/git-prompt.sh
 # For Ubuntu
 [ -x /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
-source /usr/share/git/completion/git-completion.bash
 
 # colorize the font if we're capable of doing so
 if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
