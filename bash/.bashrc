@@ -34,9 +34,9 @@ shopt -s checkwinsize
 
 # source git prompt decoration and tab completion
 # For arch.
-[ -x /usr/share/git/completion/git-prompt.sh ] && source /usr/share/git/completion/git-prompt.sh
+[ -e /usr/share/git/completion/git-prompt.sh ] && source /usr/share/git/completion/git-prompt.sh
 # For Ubuntu
-[ -x /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
+[ -e /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
 
 # colorize the font if we're capable of doing so
 if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
