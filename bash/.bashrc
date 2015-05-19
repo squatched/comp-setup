@@ -33,7 +33,10 @@ shopt -s checkwinsize
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # source git prompt decoration and tab completion
-source /usr/share/git/completion/git-prompt.sh
+# For arch.
+[ -x /usr/share/git/completion/git-prompt.sh ] && source /usr/share/git/completion/git-prompt.sh
+# For Ubuntu
+[ -x /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
 source /usr/share/git/completion/git-completion.bash
 
 # colorize the font if we're capable of doing so
