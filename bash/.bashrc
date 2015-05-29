@@ -35,6 +35,7 @@ shopt -s checkwinsize
 # source git prompt decoration and tab completion
 # For arch.
 [ -e /usr/share/git/completion/git-prompt.sh ] && source /usr/share/git/completion/git-prompt.sh
+[ -e /usr/share/git/completion/git-completion.bash ] && source /usr/share/git/completion/git-completion.bash
 # For Ubuntu
 [ -e /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
 
