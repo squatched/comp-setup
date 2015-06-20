@@ -57,6 +57,7 @@
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "http://melpa.milkbox.net/packages/"))))
+ '(reb-re-syntax (quote string))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(tab-always-indent (quote complete))
