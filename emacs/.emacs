@@ -61,7 +61,7 @@
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
  '(tab-always-indent (quote complete))
- '(tab-width 4)
+ '(tab-width 2)
  '(text-mode-hook (quote (turn-on-auto-fill text-mode-hook-identify)))
  '(tool-bar-mode nil)
  '(uniquify-buffer-name-style (quote forward) nil (uniquify)))
@@ -78,8 +78,8 @@
 ;; Set server mode so we don't get multiple instances of emacs.
 (server-start)
 
-;; Set tab width to 4
-(setq tab-stop-list (number-sequence 4 200 4))
+;; Set tab width to 2
+(setq tab-stop-list (number-sequence 2 200 2))
 
 ;; Set up my init stuff to fire after elpa packages are initialized.
 (add-hook 'after-init-hook (lambda () (load "~/.emacs.d/init/init.el")))
