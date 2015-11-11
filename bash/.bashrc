@@ -39,6 +39,9 @@ shopt -s checkwinsize
 # For Ubuntu
 [ -e /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
 
+# Source fzf auto completion
+[ -e /etc/profile.d/fzf.bash ] && source /etc/profile.d/fzf.bash
+
 # colorize the font if we're capable of doing so
 if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
     # We have color support; assume it's compliant with Ecma-48
