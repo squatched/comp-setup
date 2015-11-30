@@ -8,6 +8,10 @@
 # Turn off history expansion through '!'.
 set +o histexpand
 
+# Disable C-d exiting the shell.
+set -o ignoreeof
+export IGNOREEOF=1000
+
 # don't put duplicate lines in the history. See bash(1) for more options
 # ... or force ignoredups and ignorespace
 export HISTCONTROL=ignoredups:ignorespace
