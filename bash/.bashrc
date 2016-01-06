@@ -66,6 +66,9 @@ unset color_prompt
 # add git decoration
 PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
+# add access to ssh agent (see https://wiki.archlinux.org/index.php/SSH_keys#Start_ssh-agent_with_systemd_user for explanation)
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
+
 # Alias definitions from a separate file.
 [[ -r "$HOME/.bash_aliases" ]] && source "$HOME/.bash_aliases"
 
