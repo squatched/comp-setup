@@ -83,3 +83,6 @@
 
 ;; Set up my init stuff to fire after elpa packages are initialized.
 (add-hook 'after-init-hook (lambda () (load "~/.emacs.d/init/init.el")))
+
+;; Disable the system beep warning bell
+(setq ring-bell-function 'ignore)
