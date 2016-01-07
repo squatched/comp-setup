@@ -1,0 +1,44 @@
+# Maintainer: Jochen Schalanda <jochen+aur@schalanda.name>
+pkgname=intellij-idea-14-ultimate
+pkgver=14.1.6
+_buildver=141.3056.4
+pkgrel=1
+pkgdesc='An intelligent IDE for Java, Groovy and other programming languages with advanced refactoring features intensely focused on developer productivity.'
+arch=('i686' 'x86_64') # not 'any' because of fsnotifier
+url="http://www.jetbrains.com/idea/"
+backup=("usr/share/${pkgname}/bin/idea.vmoptions" "usr/share/${pkgname}/bin/idea64.vmoptions")
+license=('Commercial')
+depends=('java-environment' 'giflib')
+options=(!strip)
+source=("http://download.jetbrains.com/idea/ideaIU-${pkgver}.tar.gz"
+        "${pkgname}.sh"
+        "${pkgname}.desktop")
+sha256sums=('256afe4508fe24fef0699cd4ed44fb250ea703de804ffac381e22bac628f2c6f'
+            '513bc982a73b08768ebbeebb35691174a99be8c32baafe778ae69b0bd743578d'
+            'c5984828b19e4246c2021a6aa20d4f46f9118716366f328bbd556aaa9aa6f7df')
+
+package() {
+  cd "${srcdir}"
+
+  install -d -m755 $pkgdir/usr/{bin,share}
+  cp -a "idea-IU-${_buildver}" "${pkgdir}/usr/share/${pkgname}"
+  chown -R root:root "${pkgdir}/usr/share"
+
+  find $pkgdir/usr/share/${pkgname} -type d -exec chmod 0755 {} ';'
+  find $pkgdir/usr/share/${pkgname} -type f -exec chmod 0644 {} ';'
+
+  # never wait on user input when starting idea; copied from -ce PKGBUILD
+  sed -i '/.*read IGNORE.*/ d' "${pkgdir}/usr/share/${pkgname}/bin/idea.sh"
+
+  chmod +x "${pkgdir}/usr/share/${pkgname}/bin/idea.sh"
+  chmod +x "${pkgdir}/usr/share/${pkgname}/bin/fsnotifier"
+  chmod +x "${pkgdir}/usr/share/${pkgname}/bin/fsnotifier64"
+
+  install -D -m755 "${srcdir}/${pkgname}.sh" "${pkgdir}/usr/bin/${pkgname}"
+  install -D -m644 "${srcdir}/${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+  install -D -m644 "$srcdir/idea-IU-$_buildver/bin/idea.png" "${pkgdir}/usr/share/pixmaps/${pkgname}.png"
+  install -D -m644 "$srcdir/idea-IU-$_buildver/license/IDEA_license.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt"
+
+  # workaround FS#40934
+  sed -i 's|lcd|on|'  "${pkgdir}/usr/share/${pkgname}/bin/"*.vmoptions
+}
