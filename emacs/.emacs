@@ -18,6 +18,8 @@
  '(c-tab-always-indent nil)
  '(column-number-mode t)
  '(custom-enabled-themes (quote (deeper-blue)))
+ '(desktop-path (quote ("~/.emacs.d/")))
+ '(desktop-save t)
  '(desktop-save-mode t)
  '(ecb-compile-window-width (quote edit-window))
  '(ecb-layout-name "left-custom")
