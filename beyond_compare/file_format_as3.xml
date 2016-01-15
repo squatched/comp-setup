@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Produced by Beyond Compare 4 from Scooter Software -->
+<BCFileFormats Version="1">
+	<TTextFormat Value="ActionScript 3.0">
+		<CharPerLine Value="4096"/>
+		<CodePageDetect Value="True"/>
+		<ColBased Value="False"/>
+		<CommentCaseSig Value="True"/>
+		<ConvertKind Value="convertNone"/>
+		<CtrlZIsEOF Value="False"/>
+		<Description>
+			<_0 Value="- Compares AS3 files."/>
+		</Description>
+		<DirectiveCaseSig Value="True"/>
+		<Enabled Value="True"/>
+		<EnvironVarCaseSig Value="True"/>
+		<Grammar>
+			<_0 Value="TListTextGrammarItem">
+				<ElementStr Value="&#2;Keyword"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Items>
+					<_0 Value="break"/>
+					<_1 Value="case"/>
+					<_2 Value="continue"/>
+					<_3 Value="default"/>
+					<_4 Value="do"/>
+					<_5 Value="while"/>
+					<_6 Value="else"/>
+					<_7 Value="for"/>
+					<_8 Value="in"/>
+					<_9 Value="for each"/>
+					<_10 Value="if"/>
+					<_11 Value="label"/>
+					<_12 Value="return"/>
+					<_13 Value="super"/>
+					<_14 Value="switch"/>
+					<_15 Value="throw"/>
+					<_16 Value="try"/>
+					<_17 Value="catch"/>
+					<_18 Value="finally"/>
+					<_19 Value="with"/>
+					<_20 Value="dynamic"/>
+					<_21 Value="final"/>
+					<_22 Value="internal"/>
+					<_23 Value="native"/>
+					<_24 Value="override"/>
+					<_25 Value="private"/>
+					<_26 Value="protected"/>
+					<_27 Value="public"/>
+					<_28 Value="static"/>
+					<_29 Value="\.\.\.(rest)"/>
+					<_30 Value="class"/>
+					<_31 Value="const"/>
+					<_32 Value="extends"/>
+					<_33 Value="function"/>
+					<_34 Value="get"/>
+					<_35 Value="implements"/>
+					<_36 Value="interface"/>
+					<_37 Value="namespace"/>
+					<_38 Value="package"/>
+					<_39 Value="set"/>
+					<_40 Value="var"/>
+					<_41 Value="default xml namespace"/>
+					<_42 Value="import"/>
+					<_43 Value="include"/>
+					<_44 Value="use namespace"/>
+					<_45 Value="false"/>
+					<_46 Value="null"/>
+					<_47 Value="this"/>
+					<_48 Value="true"/>
+					<_49 Value="abstract"/>
+					<_50 Value="boolean"/>
+					<_51 Value="byte"/>
+					<_52 Value="cast"/>
+					<_53 Value="char"/>
+					<_54 Value="debugger"/>
+					<_55 Value="double"/>
+					<_56 Value="enum"/>
+					<_57 Value="export"/>
+					<_58 Value="float"/>
+					<_59 Value="goto"/>
+					<_60 Value="intrinsic"/>
+					<_61 Value="long"/>
+					<_62 Value="prototype"/>
+					<_63 Value="short"/>
+					<_64 Value="synchronized"/>
+					<_65 Value="throws"/>
+					<_66 Value="to"/>
+					<_67 Value="transient"/>
+					<_68 Value="type"/>
+					<_69 Value="virtual"/>
+					<_70 Value="volatile"/>
+				</Items>
+			</_0>
+			<_1 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Identifier"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="[_$a-zA-Z]\w*"/>
+			</_1>
+			<_2 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Number"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="-?(\d+(\.\d+))|(0x[a-f\d]+)"/>
+			</_2>
+			<_3 Value="TDelimitedTextGrammarItem">
+				<ElementStr Value="&#2;String"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="False"/>
+				<Text Value="'"/>
+				<Escape Value="92"/>
+				<StopEOL Value="False"/>
+				<StopText Value="'"/>
+			</_3>
+			<_4 Value="TDelimitedTextGrammarItem">
+				<ElementStr Value="&#2;String"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="False"/>
+				<Text Value="&quot;"/>
+				<Escape Value="92"/>
+				<StopEOL Value="False"/>
+				<StopText Value="&quot;"/>
+			</_4>
+			<_5 Value="TDelimitedTextGrammarItem">
+				<ElementStr Value="&#2;Comment"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="False"/>
+				<Text Value="//"/>
+				<Escape Value="92"/>
+				<StopEOL Value="True"/>
+				<StopText Value=""/>
+			</_5>
+			<_6 Value="TDelimitedTextGrammarItem">
+				<ElementStr Value="&#2;Comment"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="False"/>
+				<Text Value="/*"/>
+				<Escape Value="0"/>
+				<StopEOL Value="False"/>
+				<StopText Value="*/"/>
+			</_6>
+			<_7 Value="TListTextGrammarItem">
+				<ElementStr Value="&#2;Operator"/>
+				<CaseSensitive Value="True"/>
+				<IsRegExp Value="False"/>
+				<Items>
+					<_0 Value="+"/>
+					<_1 Value="--"/>
+					<_2 Value="/"/>
+					<_3 Value="++"/>
+					<_4 Value="%"/>
+					<_5 Value="*"/>
+					<_6 Value="-"/>
+					<_7 Value="+="/>
+					<_8 Value="/="/>
+					<_9 Value="%="/>
+					<_10 Value="*="/>
+					<_11 Value="-="/>
+					<_12 Value="="/>
+					<_13 Value="&amp;"/>
+					<_14 Value="&lt;&lt;"/>
+					<_15 Value="~"/>
+					<_16 Value="|"/>
+					<_17 Value=">>"/>
+					<_18 Value=">>>"/>
+					<_19 Value="^"/>
+					<_20 Value="&amp;="/>
+					<_21 Value="&lt;&lt;="/>
+					<_22 Value="|="/>
+					<_23 Value=">>="/>
+					<_24 Value=">>>="/>
+					<_25 Value="^="/>
+					<_26 Value="=="/>
+					<_27 Value=">"/>
+					<_28 Value=">="/>
+					<_29 Value="!="/>
+					<_30 Value="&lt;"/>
+					<_31 Value="&lt;="/>
+					<_32 Value="==="/>
+					<_33 Value="!=="/>
+					<_34 Value="&amp;&amp;"/>
+					<_35 Value="&amp;&amp;="/>
+					<_36 Value="!"/>
+					<_37 Value="||"/>
+					<_38 Value="||="/>
+					<_39 Value="["/>
+					<_40 Value="]"/>
+					<_41 Value="as"/>
+					<_42 Value=","/>
+					<_43 Value="?:"/>
+					<_44 Value="delete"/>
+					<_45 Value="."/>
+					<_46 Value="in"/>
+					<_47 Value="instanceof"/>
+					<_48 Value="is"/>
+					<_49 Value="::"/>
+					<_50 Value="new"/>
+					<_51 Value="{"/>
+					<_52 Value="}"/>
+					<_53 Value="("/>
+					<_54 Value=")"/>
+					<_55 Value="/"/>
+					<_56 Value=":"/>
+					<_57 Value="typeof"/>
+					<_58 Value="void"/>
+					<_59 Value="@"/>
+					<_60 Value=".."/>
+					<_61 Value=";"/>
+				</Items>
+			</_7>
+		</Grammar>
+		<IdentifierCaseSig Value="True"/>
+		<IndentCaseSig Value="True"/>
+		<KeywordCaseSig Value="False"/>
+		<LabelCaseSig Value="True"/>
+		<LineBased Value="False"/>
+		<LineNumCaseSig Value="True"/>
+		<Mask Value="*.as3;*.as"/>
+		<NumberCaseSig Value="True"/>
+		<OperatorCaseSig Value="True"/>
+		<StringCaseSig Value="True"/>
+		<TabAsSpaces Value="False"/>
+		<TabSize Value="4"/>
+		<TidyLeadingWS Value="False"/>
+		<TrimTrailingWS Value="False"/>
+	</TTextFormat>
+</BCFileFormats>
