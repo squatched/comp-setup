@@ -1,16 +1,12 @@
 [Desktop Entry]
-Categories=Development;IDE;Java;
-Comment=
+Categories=Development;IDE;
 Exec=intellij-idea-14-ultimate %u
 GenericName=Intelligent Java IDE
 Icon=intellij-idea-14-ultimate
 Name=IntelliJ IDEA 14 Ultimate Edition
 NoDisplay=false
-Path[$e]=
 StartupNotify=true
 StartupWMClass=jetbrains-idea
-Terminal=0
-TerminalOptions=
+Terminal=false
 Type=Application
 X-KDE-SubstituteUID=false
-X-KDE-Username=
