@@ -43,7 +43,10 @@ shopt -s checkwinsize
 # For Ubuntu
 [ -e "/etc/bash_completion.d/git" ] && source /etc/bash_completion.d/git
 # For MacOS
-which brew && [ -e "$(brew --prefix git)/etc/bash_completion.d" ] && source $(brew --prefix git)/etc/bash_completion.d
+if $(hash brew 2>/dev/null) && [ -e "$(brew --prefix git)/etc/bash_completion.d" ]; then
+    source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
+    source $(brew --prefix git)/etc/bash_completion.d/git-completion.sh
+fi
 
 # Source fzf auto completion
 [ -e /etc/profile.d/fzf.bash ] && source /etc/profile.d/fzf.bash
