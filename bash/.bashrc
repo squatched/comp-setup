@@ -38,10 +38,12 @@ shopt -s checkwinsize
 
 # source git prompt decoration and tab completion
 # For arch.
-[ -e /usr/share/git/completion/git-prompt.sh ] && source /usr/share/git/completion/git-prompt.sh
-[ -e /usr/share/git/completion/git-completion.bash ] && source /usr/share/git/completion/git-completion.bash
+[ -e "/usr/share/git/completion/git-prompt.sh" ] && source /usr/share/git/completion/git-prompt.sh
+[ -e "/usr/share/git/completion/git-completion.bash" ] && source /usr/share/git/completion/git-completion.bash
 # For Ubuntu
-[ -e /etc/bash_completion.d/git ] && source /etc/bash_completion.d/git
+[ -e "/etc/bash_completion.d/git" ] && source /etc/bash_completion.d/git
+# For MacOS
+which brew && [ -e "$(brew --prefix git)/etc/bash_completion.d" ] && source $(brew --prefix git)/etc/bash_completion.d"
 
 # Source fzf auto completion
 [ -e /etc/profile.d/fzf.bash ] && source /etc/profile.d/fzf.bash
@@ -73,4 +75,4 @@ PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 [[ -r "$HOME/.bash_environment" ]] && source "$HOME/.bash_environment"
 
 # Proprietary scripts.
-[[ -r "$HOME/.bash_proprietary" ]] && source "$HOME/.bash_environment"
+[[ -r "$HOME/.bash_proprietary" ]] && source "$HOME/.bash_proprietary"
