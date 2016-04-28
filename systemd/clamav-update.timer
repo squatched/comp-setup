@@ -1,0 +1,9 @@
+[Unit]
+Description=Update clamav virus definitions weekly
+
+[Timer]
+OnCalendar=Mon, 01:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

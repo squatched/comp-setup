@@ -1,0 +1,6 @@
+[Unit]
+Description=ClamAV virus scan of root system
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/clamscan --recursive=yes --infected --log=/var/log/clamav/scan_results.log --exclude-dir='^/sys|^/proc|^/dev|^/lib|^/bin|^/sbin' --max-filesize=50M /

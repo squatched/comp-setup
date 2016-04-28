@@ -1,0 +1,9 @@
+[Unit]
+Description=Scan root system for viruses using ClamAV every Sunday morning
+
+[Timer]
+OnCalendar=Sun, 00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
