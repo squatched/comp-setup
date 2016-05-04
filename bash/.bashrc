@@ -49,7 +49,7 @@ if $(hash brew 2>/dev/null) && [ -e "$(brew --prefix git)/etc/bash_completion.d"
 fi
 
 # Source fzf auto completion
-[ -e /etc/profile.d/fzf.bash ] && source /etc/profile.d/fzf.bash
+[ -e /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
 
 # colorize the font if we're capable of doing so
 if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -79,3 +79,5 @@ PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
 # Proprietary scripts.
 [[ -r "$HOME/.bash_proprietary" ]] && source "$HOME/.bash_proprietary"
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
