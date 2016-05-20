@@ -34,25 +34,25 @@ export HISTIGNORE="&:[ ]*:exit"
 shopt -s checkwinsize
 
 # make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+[[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # source git prompt decoration and tab completion
 # For arch.
-[ -e "/usr/share/git/completion/git-prompt.sh" ] && source /usr/share/git/completion/git-prompt.sh
-[ -e "/usr/share/git/completion/git-completion.bash" ] && source /usr/share/git/completion/git-completion.bash
+[[ -e "/usr/share/git/completion/git-prompt.sh" ]] && source /usr/share/git/completion/git-prompt.sh
+[[ -e "/usr/share/git/completion/git-completion.bash" ]] && source /usr/share/git/completion/git-completion.bash
 # For Ubuntu
-[ -e "/etc/bash_completion.d/git" ] && source /etc/bash_completion.d/git
+[[ -e "/etc/bash_completion.d/git" ]] && source /etc/bash_completion.d/git
 # For MacOS
-if $(hash brew 2>/dev/null) && [ -e "$(brew --prefix git)/etc/bash_completion.d" ]; then
+if $(hash brew 2>/dev/null) && [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
     source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
     source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
 fi
 
 # Source fzf auto completion
-[ -e /usr/share/fzf/key-bindings.bash ] && source /usr/share/fzf/key-bindings.bash
+[[ -e /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
 
 # colorize the font if we're capable of doing so
-if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
     # We have color support; assume it's compliant with Ecma-48
     # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
     # a case would tend to support setf rather than setaf.)
@@ -61,7 +61,7 @@ else
     color_prompt=
 fi
 
-if [ "$color_prompt" = yes ]; then
+if [[ "$color_prompt" = yes ]]; then
     PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;94m\]\w\[\033[00m\]\$ '
 else
     PS1='\u@\h:\w\$ '
@@ -70,6 +70,9 @@ unset color_prompt
 
 # add git decoration
 PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
+
+# Configure Perforce
+[[ -e "$HOME/.p4config" ]] && export P4CONFIG=$HOME/.p4config
 
 # Alias definitions from a separate file.
 [[ -r "$HOME/.bash_aliases" ]] && source "$HOME/.bash_aliases"
