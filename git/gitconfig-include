@@ -3,6 +3,10 @@
 # [include]
 #   path = /full/path/to/file
 
+# Set emacsclient as the deault editor.
+[core]
+  editor = emacsclient -nw --alternate-editor=\"\"
+
 # Use a newer heuristic that groups changed hunks a little better.
 #
 # See: https://github.com/blog/2188-git-2-9-has-been-released
