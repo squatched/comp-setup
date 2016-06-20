@@ -18,7 +18,9 @@
  '(c-tab-always-indent nil)
  '(column-number-mode t)
  '(custom-enabled-themes (quote (deeper-blue)))
+ '(desktop-load-locked-desktop t)
  '(desktop-path (quote ("~/.emacs.d/")))
+ '(desktop-restore-frames nil)
  '(desktop-save t)
  '(desktop-save-mode t)
  '(ecb-compile-window-width (quote edit-window))
@@ -73,6 +75,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Bitstream Vera Sans Mono" :foundry "bitstream" :slant normal :weight normal :height 91 :width normal)))))
+
+;; Make kill-emacs save desktop and release the lock.
+(add-hook 'kill-emacs-hook
+          `(lambda ()
+             (desktop-save ,(car desktop-path) t)))
 
 ;; create the autosave dir if necessary, since emacs won't
 (make-directory "~/.emacs.autosaves/" t)
