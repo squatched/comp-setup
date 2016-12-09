@@ -87,6 +87,12 @@ function Get-GitStashCount {
 }
 
 #=============================================================================
+## Retrieve the current git repos root
+function Get-GitRepositoryRoot {
+    return Get-NormalizedPath $(Invoke-Expression ("git rev-parse --show-toplevel"))
+}
+
+#=============================================================================
 ## Plugin to all git commands...
 function Invoke-Git {
 

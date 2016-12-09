@@ -88,7 +88,7 @@ function Start-VSEnvSpecialCase_6 {
     Get-Batchfile $BatchFile
 }
 
-function Start-VSEnv ([String]$version = "10") {
+function Start-VSEnv ([String]$version = "14.0") {
     Write-Debug "Setting VSEnv to version <$version>."
     if (-1 -eq $version.IndexOf('.')) {
         $version = "$version.0"

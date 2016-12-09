@@ -15,7 +15,7 @@
 #***
 
 #=============================================================================
-function Execute-P4Command {
+function Invoke-P4Command {
     Param (
         [String]$command
     )
@@ -106,7 +106,7 @@ function Execute-P4Command {
 ##   tree, it should always be a clean sync to perforce.
 function Sync-GitToPerforce ([Switch]$PopStash) {
     # Ensure git is in the proper state.
-    Push-Location (Get-CurrentBranchRoot)
+    Push-Location (Get-GitRepositoryRoot)
     
     [Boolean]$IsInGit = Test-Path ".\.git"
 
@@ -141,7 +141,7 @@ function Sync-GitToPerforce ([Switch]$PopStash) {
     if ($IsInGit) {
         # Extract the latest changelist number as a string.
         Write-Debug "Checking for latest Perforce change..."
-        [String]$lastCLNumber = $(Execute-P4Command "changes -m 1 -s submitted").change
+        [String]$lastCLNumber = $(Invoke-P4Command "changes -m 1 -s submitted").change
         Write-Debug "Latest Perforce Change Result: $lastCLNumber"
 
         # Submit the freshly synced depot to git if necessary.
@@ -152,7 +152,7 @@ function Sync-GitToPerforce ([Switch]$PopStash) {
             Write-Debug "Adding changes to git..."
             git add . -A
             Write-Debug "Commiting git index with message `"P4 - $lastCLNumber`""
-            $p4Client = $Env:P4CLIENT
+            [String]$p4Client = $(Invoke-P4Command "client -o").client
             git commit -m "P4:$p4Client - $lastCLNumber"
         }
 
@@ -183,7 +183,7 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
     }
 
     # Ensure we're browsing in the proper location.
-    Push-Location (Get-CurrentBranchRoot)
+    Push-Location (Get-GitRepositoryRoot)
 
     # Get the current branch's difference to source in a summarized output.
     $diffNameStatus = git diff --name-status $sourceBranch
@@ -202,7 +202,7 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
     Write-Debug "`tGenerated changelist description: $clDescription"
 
     # List pending changelists.
-    $pendingChangelists = Execute-P4Command ("changes -u " + $Env:P4USER + " -c " + $Env:P4CLIENT + " -s pending -List" )
+    $pendingChangelists = Invoke-P4Command ("changes -u " + $Env:P4USER + " -c " + $Env:P4CLIENT + " -s pending -List" )
     $p4PendingFilesInCl = $NULL
 
     if ($pendingChangelists) {
@@ -223,11 +223,11 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
         else {
             # Changelist found, let's grab a list of all the files in it and filter our
             #  list of files down to ones not already in it.
-            $p4OpenedInCl       = Execute-P4Command "opened -c $clNum"
+            $p4OpenedInCl       = Invoke-P4Command "opened -c $clNum"
             $p4PendingFilesInCL = @()
             foreach ($p4OpenedFile in $p4OpenedInCl) {
                 # First, determine the file's depot mapping.
-                $localMapping = @(Execute-P4Command ("where " + $p4OpenedFile.depotFile))
+                $localMapping = @(Invoke-P4Command ("where " + $p4OpenedFile.depotFile))
                 if ($localMapping.Length -gt 1) {
                     # If more than one mapping, the first one is an "unmap" so ignore it.
                     Write-Debug ("`tDropping unmap: " + $localMapping[0])
@@ -301,7 +301,7 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
             $fileName = $fileName.Replace($LocationExceptions[$Index], $Replacements[$Index])
         }
         Write-Debug "`tAltering file name: `"$originalFileName`" -> `"$fileName`""
-        $p4Opened         = Execute-P4Command "opened $fileName"
+        $p4Opened         = Invoke-P4Command "opened $fileName"
         $p4Action         = $p4Opened.action
         Write-Debug "`tHandling File `"$fileName`" with git status '$gitStatus'"
         Write-Debug "`t`tP4 status string: `"$p4Action`""
@@ -404,3 +404,4 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
 #***
 
 Set-Alias Sync-P4ToGit Sync-PerforceChangelistWithGitBranch
+Set-Alias Sync-GitToP4 Sync-GitToPerforce
