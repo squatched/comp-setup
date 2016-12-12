@@ -75,7 +75,7 @@ if (Test-Path $devProfilePath) {
 ###
 
 ## Notepad Alias
-Set-Alias np "C:\emacs\bin\emacsclientw.exe"
+Set-Alias np "C:\Program Files\Emacs\bin\emacsclientw.exe"
 
 #=============================================================================
 ## Alias to edit this profile.
@@ -127,7 +127,7 @@ function prompt {
     Write-Host $prefix -nonewline -foregroundcolor Red
     Write-Host $vsString -nonewline -foregroundcolor Blue
 
-    if ($devProfileExists) {
+    if ($devProfileExists -and (Get-Command -CommandType Function -Name DevPrompt -ErrorAction SilentlyContinue)) {
         DevPrompt
     }
 
