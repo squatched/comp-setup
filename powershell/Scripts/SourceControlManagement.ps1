@@ -104,7 +104,7 @@ function Invoke-P4Command {
 #=============================================================================
 ## Sync perforce and submit to git. Note that this relies on the fact that I don't work in my master
 ##   tree, it should always be a clean sync to perforce.
-function Sync-GitToPerforce ([Switch]$PopStash) {
+function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
     # Ensure git is in the proper state.
     Push-Location (Get-GitRepositoryRoot)
     
@@ -115,19 +115,29 @@ function Sync-GitToPerforce ([Switch]$PopStash) {
         $gitStashResult = ""
         Write-Debug "Original Git Branch: [$originalGitBranch]"
         if ($originalGitBranch -ne "master") {
-                Write-Debug "Stashing git..."
-                $gitStashResult = git stash
-                Write-Debug "Git Stash Result: $gitStashResult"
-                Write-Debug "Checking out master git branch."
-                git checkout master
+            [Boolean]$workingDirectoryClean = [String]::IsNullOrWhiteSpace($(Invoke-Expression "git status --short"))
+            if (!$workingDirectoryClean) {
+                if ($StashIfDirty) {
+                    Write-Debug "Stashing git..."
+                    [String]$gitStashResult = git stash
+                    Write-Debug "Git Stash Result: $gitStashResult"
+                }
+                else {
+                    Write-Error "Working index is dirty. Aborting."
+                    Pop-Location
+                    return
+                }
+            }
+            Write-Debug "Checking out master git branch."
+            git checkout master
         }
 
         Write-Debug "Checking to ensure that we're in master..."
         $newGitBranch = Get-GitBranch
         if ($newGitBranch -ne "master") {
-                Write-Error "Unable to switch to master git branch. Deal with your working tree and try again."
-                Pop-Location
-                return
+            Write-Error "Unable to switch to master git branch. Deal with your working tree and try again."
+            Pop-Location
+            return
         }
     }
     
@@ -202,7 +212,9 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
     Write-Debug "`tGenerated changelist description: $clDescription"
 
     # List pending changelists.
-    $pendingChangelists = Invoke-P4Command ("changes -u " + $Env:P4USER + " -c " + $Env:P4CLIENT + " -s pending -List" )
+    $p4Client = $(Invoke-P4Command "client -o").client
+    $p4User = (Invoke-P4Command "user -o").user
+    $pendingChangelists = Invoke-P4Command ("changes -u " + $p4User + " -c " + $p4Client + " -s pending -List" )
     $p4PendingFilesInCl = $NULL
 
     if ($pendingChangelists) {
@@ -253,10 +265,10 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
         $changeDescription = p4 change -o
 
         # Edit the proper line to include a description of the current branch's name.
-        $changeDescription[24] = (" " + $clDescription)
+        $changeDescription[26] = (" " + $clDescription)
 
         # Remove all files from the changelist.
-        $changeDescription = $changeDescription[0..26]
+        $changeDescription = $changeDescription[0..28]
 
         # Create the changelist
         $changeSubmission = $changeDescription | p4 change -i
@@ -275,14 +287,6 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
         Write-Output "Description: `"$clDescription`""
     }
 
-    [String[]]$LocationExceptions = @((Get-CurrentBranchRoot) + "Art/")
-    [String[]]$Replacements       = @("R:/")
-
-    foreach ($Index in 0..($LocationExceptions.Length - 1)) {
-        $LocationExceptions[$Index] = Get-NormalizedPath $LocationExceptions[$Index]
-        $Replacements[$Index]       = Get-NormalizedPath $Replacements[$Index]
-    }
-
     # Check out each file into the given changelist.
     foreach ($diffStatus in $diffNameStatus) {
 
@@ -293,21 +297,15 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
         Write-Debug "`tHandling status `"$diffStatus`"."
 
         $gitStatus        = $diffStatus[0]
-        $originalFileName = Get-NormalizedPath $diffStatus.Substring(1).Trim()
-        $fileName         = $originalFileName
-
-        # Carve out specific exceptions
-        foreach ($Index in 0..$LocationExceptions.Length) {
-            $fileName = $fileName.Replace($LocationExceptions[$Index], $Replacements[$Index])
-        }
-        Write-Debug "`tAltering file name: `"$originalFileName`" -> `"$fileName`""
+        $fileName         = Get-NormalizedPath $diffStatus.Substring(1).Trim()
         $p4Opened         = Invoke-P4Command "opened $fileName"
         $p4Action         = $p4Opened.action
+
         Write-Debug "`tHandling File `"$fileName`" with git status '$gitStatus'"
         Write-Debug "`t`tP4 status string: `"$p4Action`""
 
-        Write-Debug "`tChecking if our list of pending files includes <$originalFileName>"
-        if ($p4PendingFilesInCl -contains $originalFileName) {
+        Write-Debug "`tChecking if our list of pending files includes <$fileName>"
+        if ($p4PendingFilesInCl -contains $fileName) {
             Write-Output "Skipping file <$fileName>, already in proper perforce changelist."
             continue
         }
