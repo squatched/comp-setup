@@ -123,9 +123,8 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
                     Write-Debug "Git Stash Result: $gitStashResult"
                 }
                 else {
-                    Write-Error "Working index is dirty. Aborting."
                     Pop-Location
-                    return
+                    throw "Working index is dirty. Aborting."
                 }
             }
             Write-Debug "Checking out master git branch."
@@ -135,9 +134,8 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
         Write-Debug "Checking to ensure that we're in master..."
         $newGitBranch = Get-GitBranch
         if ($newGitBranch -ne "master") {
-            Write-Error "Unable to switch to master git branch. Deal with your working tree and try again."
             Pop-Location
-            return
+            throw "Unable to switch to master git branch. Deal with your working tree and try again."
         }
     }
     
@@ -188,8 +186,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
 #=============================================================================
 function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master") {
     if ((Get-GitBranch) -eq $sourceBranch) {
-        Write-Error -Message "Source branch ($sourceBranch) may not be the current branch." -Category InvalidOperation -RecommendedAction "Switch to a different git branch."
-        return
+        throw "Source branch ($sourceBranch) may not be the current branch."
     }
 
     # Ensure we're browsing in the proper location.
@@ -275,9 +272,8 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
 
         # Check for error.
         if (!$changeSubmission) {
-            Write-Error "Creation of changelist failed with message $changeSubmission"
             Pop-Location
-            return
+            throw "Creation of changelist failed with message $changeSubmission"
         }
 
         # Extract the changelist number.
