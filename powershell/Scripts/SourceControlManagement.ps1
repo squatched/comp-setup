@@ -162,7 +162,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
             Invoke-Git "add . --all"
             Write-Debug "Commiting git index with message `"P4 - $lastCLNumber`""
             [String]$p4Client = $(Invoke-P4Command "client -o").client
-            Invoke-Git "commit --message=P4:`"$p4Client - $lastCLNumber`""
+            Invoke-Git "commit --message=`"P4:$p4Client - $lastCLNumber`""
         }
 
         # Pop our working directory and git branch.
