@@ -96,17 +96,18 @@ function Get-GitRepositoryRoot {
 ## Plugin to all git commands...
 function Invoke-Git {
 
-    # Cache off everything as one string.
-    [String]$command = $args
+    # Cache off everything as one string but escape double quotes for passing
+    #   them to the command line.
+    [String]$command = $args.Replace('"', '\"')
 
-    # First, process the command into a sanitary format.
-    [String]$sanitizedCommand = $command.ToLower().Trim()
-
-    # Invoke the git command.
+    # Invoke the git command as a cmd.exe command because git has this habbit of
+    #   using stderr for informational reasons and it makes the output of
+    #   powershell ugly... Note, this is not very portable.
     Write-Debug "Invoking git command: `"$command`""
-    [String[]]$results = Invoke-Expression ("git " + $command)
+    [String[]]$results = Invoke-Expression "cmd.exe /Q /C `"git $command 2>&1`""
 
     # Process post hooks.
+    [String]$sanitizedCommand = $command.ToLower().Trim()
     if ($gitPostHooks.ContainsKey($sanitizedCommand)) {
         Write-Debug "Post hook for command found."
 

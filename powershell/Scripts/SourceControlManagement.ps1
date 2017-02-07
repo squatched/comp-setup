@@ -115,11 +115,11 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
         $gitStashResult = ""
         Write-Debug "Original Git Branch: [$originalGitBranch]"
         if ($originalGitBranch -ne "master") {
-            [Boolean]$workingDirectoryClean = [String]::IsNullOrWhiteSpace($(Invoke-Expression "git status --short"))
+            [Boolean]$workingDirectoryClean = [String]::IsNullOrWhiteSpace($(Invoke-Git "status --short"))
             if (!$workingDirectoryClean) {
                 if ($StashIfDirty) {
                     Write-Debug "Stashing git..."
-                    [String]$gitStashResult = git stash
+                    [String]$gitStashResult = Invoke-Git "stash"
                     Write-Debug "Git Stash Result: $gitStashResult"
                 }
                 else {
@@ -128,7 +128,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
                 }
             }
             Write-Debug "Checking out master git branch."
-            git checkout master
+            Invoke-Git "checkout master"
         }
 
         Write-Debug "Checking to ensure that we're in master..."
@@ -139,12 +139,13 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
         }
     }
     
-    # Sync Perforce
+    # Sync Perforce and output errors to stdout rather than causing the script to error.
     Write-Debug "Syncing Perforce..."
-    p4 sync .\...
+    cmd.exe /Q /C "p4 sync .\... 2>&1"
     
-    # Resolve (safe merge, conflicts skipped)
-    p4 resolve -am
+    # Resolve (safe merge, conflicts skipped) and output errors to stdout rather than
+    #   causing the script to error.
+    cmd.exe /Q /C "p4 resolve -am 2>&1"
     
     if ($IsInGit) {
         # Extract the latest changelist number as a string.
@@ -154,20 +155,20 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
 
         # Submit the freshly synced depot to git if necessary.
         Write-Debug "Checking git status..."
-        $gitShortStatus = git status -s
+        $gitShortStatus = Invoke-Git "status --short"
         Write-Debug "Git Status: $gitShortStatus"
         if ($gitShortStatus) {
             Write-Debug "Adding changes to git..."
-            git add . -A
+            Invoke-Git "add . --all"
             Write-Debug "Commiting git index with message `"P4 - $lastCLNumber`""
             [String]$p4Client = $(Invoke-P4Command "client -o").client
-            git commit -m "P4:$p4Client - $lastCLNumber"
+            Invoke-Git "commit --message=P4:`"$p4Client - $lastCLNumber`""
         }
 
         # Pop our working directory and git branch.
         if ($originalGitBranch -ne "master") {
             Write-Debug "Checking out git branch [$originalGitBranch]..."
-            git checkout $originalGitBranch
+            Invoke-Git "checkout $originalGitBranch"
 
             if ($gitStashResult -ne "No local changes to save") {
                 if (!$PopStash) {
@@ -175,7 +176,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash) {
                 }
                 else {
                     Write-Debug "Popping our stashed changes..."
-                    git stash pop
+                    Invoke-Git "stash pop"
                 }
             }
         }
@@ -193,14 +194,14 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
     Push-Location (Get-GitRepositoryRoot)
 
     # Get the current branch's difference to source in a summarized output.
-    $diffNameStatus = git diff --name-status $sourceBranch
+    $diffNameStatus = Invoke-Git "diff --name-status $sourceBranch"
     if (!$diffNameStatus) {
         Write-Output "No changes in this git branch to sync."
         return
     }
 
     Write-Output "Git status we're syncing perforce to:"
-    git diff --stat $sourceBranch | ? {$_}
+    Invoke-Git "git diff --stat $sourceBranch"
 
     # Determine the proper changelist description.
     $currentGitBranch = Get-GitBranch
@@ -250,7 +251,7 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
                 $p4PendingFilesInCl += Get-NormalizedPath($localMapping.path)
             }
             Write-Debug "`tChangelist Files:"
-            $p4PendingFilesInCl | % { Write-Debug "`t`t<$_>" }
+            $p4PendingFilesInCl | ForEach-Object { Write-Debug "`t`t<$_>" }
         }
     }
 
