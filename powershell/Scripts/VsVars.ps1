@@ -110,6 +110,10 @@ function Start-VSEnv ([String]$version = "14.0") {
     $key = "HKLM:SOFTWARE\Microsoft\VisualStudio\" + $version
     Write-Debug "`tVisual studio key location: <$key>"
     $VsKey = Get-ItemProperty $key
+    if ($VsKey -eq $null) {
+        Write-Debug "`tVisual Studio Registry Entry not Found, looking for Wow64 version."
+        $VsKey = Get-ItemProperty $($key -replace "SOFTWARE\\", "SOFTWARE\WOW6432Node\")
+    }
     $VsInstallPath = [System.IO.Path]::GetDirectoryName($VsKey.InstallDir)
     Write-Debug "`tVSInstallPath: <$VsInstallPath>"
     $VsToolsDir = [System.IO.Path]::GetDirectoryName($VsInstallPath)

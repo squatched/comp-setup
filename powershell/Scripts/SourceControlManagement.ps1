@@ -201,7 +201,7 @@ function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master")
     }
 
     Write-Output "Git status we're syncing perforce to:"
-    Invoke-Git "git diff --stat $sourceBranch"
+    Invoke-Git "diff --stat $sourceBranch"
 
     # Determine the proper changelist description.
     $currentGitBranch = Get-GitBranch
