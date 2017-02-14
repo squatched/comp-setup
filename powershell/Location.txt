@@ -1,2 +1,2 @@
-%USERHOMEDIRECTORY%My Documents/WindowsPowerShell
-e.g. - C:/Users/cmccombs/My Documents/WindowsPowerShell
+%USERHOMEDIRECTORY%Documents/WindowsPowerShell
+e.g. - C:/Users/cmccombs/Documents/WindowsPowerShell
