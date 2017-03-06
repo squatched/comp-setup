@@ -116,6 +116,5 @@ function Invoke-Git {
 
     # Return the results.
     return $results
-
 }
 
