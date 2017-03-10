@@ -104,7 +104,7 @@ function Invoke-P4Command {
 #=============================================================================
 ## Sync perforce and submit to git. Note that this relies on the fact that I don't work in my master
 ##   tree, it should always be a clean sync to perforce.
-function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$PerforceSyncCommand = "p4 sync") {
+function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$PerforceSyncCommand = $null) {
     # Ensure git is in the proper state.
     Push-Location (Get-GitRepositoryRoot)
     
@@ -139,9 +139,16 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
         }
     }
     
+    $p4SyncCommand = "p4 sync"
+    if ( ![String]::IsNullOrWhiteSpace( $PerforceSyncCommand ) ) {
+        $p4SyncCommand = $PerforceSyncCommand
+    } elseif ( ![String]::IsNullOrWhiteSpace( $Env:PS_P4_SYNC_COMMAND ) ) {
+        $p4SyncCommand = $Env:PS_P4_SYNC_COMMAND
+    }
+
     # Sync Perforce and output errors to stdout rather than causing the script to error.
-    Write-Debug "Syncing Perforce..."
-    cmd.exe /Q /C "$PerforceSyncCommand .\... 2>&1"
+    Write-Debug "Syncing Perforce via '$p4SyncCommand'..."
+    cmd.exe /Q /C "$p4SyncCommand .\... 2>&1"
     
     # Resolve (safe merge, conflicts skipped) and output errors to stdout rather than
     #   causing the script to error.
