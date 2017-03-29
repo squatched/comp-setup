@@ -23,4 +23,3 @@
 
 ;; Activate idomenu
 (autoload 'idomenu "idomenu" nil t)
-

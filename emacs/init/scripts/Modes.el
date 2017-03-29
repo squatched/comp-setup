@@ -22,12 +22,8 @@
 
 ;; Activate cc mode
 (autoload 'c++-mode "c++-mode" "Major mode for editing C++ code." t)
-(add-to-list 'auto-mode-alist '("\\.h$"   . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.hpp$" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.c$"   . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.cpp$" . c++-mode))
-(add-to-list 'auto-mode-alist '("\\.inl$" . c++-mode))
-
+;; .h, .hpp, .c, .cpp, .inl
+(add-to-list 'auto-mode-alist '("\\.(h(pp)?|c(pp)?|inl)$" . c++-mode))
 
 ;; Activate actionscript mode
 (autoload 'actionscript-mode "actionscript-mode" "Major mode for actionscript." t)
@@ -35,9 +31,8 @@
 
 ;; Activate powershell mode
 (autoload 'powershell-mode "powershell-mode" "Major mode for powershell." t)
-(add-to-list 'auto-mode-alist '("\\.ps1$" . powershell-mode))
-(add-to-list 'auto-mode-alist '("\\.psm1$" . powershell-mode))
-(add-to-list 'auto-mode-alist '("\\.psd1$" . powershell-mode))
+;; .ps1, .psm1, .psd1
+(add-to-list 'auto-mode-alist '("\\.ps(m|d)?1$" . powershell-mode))
 
 ;; Activate lua mode
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
@@ -55,3 +50,7 @@
 ;; Activate haxe mode
 (autoload 'haxe-mode "haxe-mode" "Major mode for haxe files." t)
 (add-to-list 'auto-mode-alist '("\\.hx$" . haxe-mode))
+
+;; Activate Json mode
+(autoload 'json-mode "json-mode" "Json editing mode." t)
+(add-to-list 'auto-mode-alist '("\\.map$" . json-mode))
