@@ -109,12 +109,13 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
     Push-Location (Get-GitRepositoryRoot)
     
     [Boolean]$IsInGit = Test-Path ".\.git"
+    [String]$trunk = Get-GitTrunkBranch
 
     if ($IsInGit) {
         [String]$originalGitBranch = Get-GitBranch
         $gitStashResult = ""
         Write-Debug "Original Git Branch: [$originalGitBranch]"
-        if ($originalGitBranch -ne "master") {
+        if ($originalGitBranch -ne $trunk) {
             [Boolean]$workingDirectoryClean = [String]::IsNullOrWhiteSpace($(Invoke-Git "status --short"))
             if (!$workingDirectoryClean) {
                 if ($StashIfDirty) {
@@ -127,15 +128,15 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
                     throw "Working index is dirty. Aborting."
                 }
             }
-            Write-Debug "Checking out master git branch."
-            Invoke-Git "checkout master"
+            Write-Debug "Checking out trunk git branch ($trunk)."
+            Invoke-Git "checkout $trunk"
         }
 
-        Write-Debug "Checking to ensure that we're in master..."
+        Write-Debug "Checking to ensure that we're in trunk ($trunk)..."
         $newGitBranch = Get-GitBranch
-        if ($newGitBranch -ne "master") {
+        if ($newGitBranch -ne $trunk) {
             Pop-Location
-            throw "Unable to switch to master git branch. Deal with your working tree and try again."
+            throw "Unable to switch to trunk git branch `"$trunk`". Deal with your working tree and try again."
         }
     }
     
@@ -173,7 +174,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
         }
 
         # Pop our working directory and git branch.
-        if ($originalGitBranch -ne "master") {
+        if ($originalGitBranch -ne $trunk) {
             Write-Debug "Checking out git branch [$originalGitBranch]..."
             Invoke-Git "checkout $originalGitBranch"
 
@@ -192,7 +193,10 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
 }
 
 #=============================================================================
-function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch = "master") {
+function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch) {
+    if ($sourceBranch == $null) {
+        $sourceBranch = Get-GitTrunkBranch
+    }
     if ((Get-GitBranch) -eq $sourceBranch) {
         throw "Source branch ($sourceBranch) may not be the current branch."
     }

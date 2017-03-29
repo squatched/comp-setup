@@ -80,6 +80,17 @@ function Get-GitBranch {
     return
 }
 
+#============================================================================
+## Retrieve the current repo's trunk branch. Defaults to master.
+function Get-GitTrunkBranch {
+    [String]$gitTrunkBranch = (Invoke-Git config trunk.branch)
+    if ([String]::IsNullOrEmpty($gitTrunkBranch)) {
+        Write-Debug "No trunk.branch config setting found. Defaulting to `"master`"."
+        $gitTrunkBranch = "master"
+    }
+    return $gitTrunkBranch
+}
+
 #=============================================================================
 ## Retrieve the number of stashes on the stash.
 function Get-GitStashCount {
