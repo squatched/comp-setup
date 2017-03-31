@@ -194,7 +194,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
 
 #=============================================================================
 function Sync-PerforceChangelistWithGitBranch ([String]$sourceBranch) {
-    if ($sourceBranch == $null) {
+    if ([String]::IsNullOrEmpty($sourceBranch)) {
         $sourceBranch = Get-GitTrunkBranch
     }
     if ((Get-GitBranch) -eq $sourceBranch) {
