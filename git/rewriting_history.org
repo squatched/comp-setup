@@ -1,0 +1,32 @@
+* Overview
+This is my notes on how to clean up git history since my usage of git when working with perforce demands it sometimes as my knowledge of the perforce depot structure grows.
+
+* Removing Directories
+In short, the git command is (from the root of the git repo):
+git filter-branch --index-filter "git rm --cached -r --ignore-unmatch --quiet -- <path/to/folder>" --prune-empty -d <some/folder/on/another/hdd> -- --all
+
+** Filter Branch Command Description
+  - index-filter: This command means we want to work on the index but it won't check out the files, it just operates on gits working knowledge of something. Much falter than "tree-filter"
+  - prune-empty: If a commit is left empty by removal of the given files, it will be purged from history.
+  - d: Provide some directory to perform the work in. Only useful if you have an alternate disk to put this on as that will improve I/O perf. Otherwise, omit and the default of .git-rewrite/ will be used.
+  - all: After the lone double dash '--', if all is specified, means to work on every branch, even remote refs.
+
+** Rm Command Description
+  - cached: Remove files from tracking only, not actually from the disk.
+  - r: If a directory name is given, allows recursive removal.
+  - ignore-unmatch: If this command doesn't match anything, return successful status any ways. Necessary since not all commits may touch the given folder.
+  - quiet: Squelch output (optional).
+
+** Recommendations
+Run the 'git rm' command with '--quiet' omitted and '--dry-run' added at head until you get the paths right, checking the output.
+
+* Post Removal Cleanup
+ONCE YOU HAVE CONFIRMED ALL IS AS DESIRED... (These steps are dangerous and destructive so be absolutely positive you made no mistakes...)
+
+  1) Remove the original refs backed up by git filter-branch.
+     - Bash: git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d
+     - Powershell: git for-each-ref --format="%(refname)" refs/original/ | %{ git update-ref -d ($_.trim() -split '\s+')[0] }
+  2) Expire all of these now orphaned references.
+     - git reflog expire --expire=now --all
+  3) Garbage collect all unrefered objects.
+     - git gc --prune/now
