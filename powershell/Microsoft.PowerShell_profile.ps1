@@ -30,3 +30,7 @@ if ( Internal_Helper_Import_Module( "PSReadLine" ) ) {
 ## Import posh-git - See https://github.com/dahlbyk/posh-git
 if ( Internal_Helper_Import_Module( "posh-git" ) ) {
 }
+
+## Import powershell community extensions - See https://github.com/Pscx/Pscx
+if ( Internal_Helper_Import_Module( "pscx" ) ) {
+}
