@@ -20,38 +20,43 @@ if ($hybridRepositories -eq $null) {
 function Sync-HybridRepositoryWithRemote ([String]$remote = "origin") {
     [String]$repoRoot = Get-GitRepositoryRoot
     if ($repoRoot -eq $null) {
-        Write-Debug "Not in a git repository, bailing."
+        Write-Warning "Not in a git repository."
         return
     }
-    Push-Location $repoRoot
-    [String]$branchCache = Get-GitBranch
 
+    Push-GitRepositoryRoot -Clean
     try {
         [String]$trunk = Get-GitTrunkBranch
-        if ($branchCache -ne $trunk) {
-            Invoke-Git "checkout $trunk"
-        }
         Invoke-Git "fetch $remote"
         Invoke-Git "merge --ff-only $remote/$trunk"
-        Sync-GitToPerforce
+        Sync-GitToPerforce -PerforceSyncCommand "ted p4 sync -v"
         Invoke-Git "push $remote $trunk"
     }
     finally {
-        if ($branchCache -ne $trunk) {
-            Invoke-Git "checkout $branchCache"
-        }
-        Pop-Location
+        Pop-GitRepositoryRoot
     }
 }
 
 #============================================================================
 ## Syncs all hybrid repos linearly.
 function Sync-HybridRepositories {
+    param (
+        [Parameter(Mandatory = $False)]
+        [Switch]$ContinueOnError
+    )
+
     $hybridRepositories | ForEach-Object {
-        Write-Output "========== Syncing $_ =========="
-        Push-Location $_
+        [String]$path = $_
+        Write-Output "========== Syncing $path =========="
+        Push-Location $path
         try {
             Sync-HybridRepositoryWithRemote
+        }
+        catch {
+            Write-Output "ERROR: Syncing repository $path failed with error:`n$(Out-String -InputObject $_)"
+            if (!$ContinueOnError) {
+                throw $_.Exception
+            }
         }
         finally {
             Pop-Location

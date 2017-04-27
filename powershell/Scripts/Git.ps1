@@ -7,11 +7,17 @@
 
 #*****************************************************************************
 #*
-#*  Script Variables
+#*  Global Variables
 #*
 #*****************************************************************************
-$script:gitStashCount = @(git stash list).Length 2> $NULL
-$script:gitRootStash = New-Object System.Collections.Generic.Stack[Object]
+
+# I hate this solution but for now, it's the best I can do since powershell
+# doesn't support local statics.
+$global:gitStashCount = @(git stash list).Length 2> $NULL
+
+# This should be serialized to disk to be shared amongst all powershell
+# instances.
+$global:gitRootStash = New-Object System.Collections.Generic.Stack[Object]
 
 
 #*****************************************************************************
@@ -119,7 +125,7 @@ function Get-GitRepositoryRoot {
     )
 
     if ($Stack) {
-        return $script:gitRootStash.ToArray()
+        return $global:gitRootStash.ToArray()
     }
 
     [String]$root = Invoke-Git rev-parse --show-toplevel
@@ -187,7 +193,7 @@ function Invoke-Git {
 ## Restore from pushing to git repo root.
 function Pop-GitRepositoryRoot {
     [Object]$currentState = GitLocationState
-    [Object]$stashedState = $script:gitRootStash.Peek()
+    [Object]$stashedState = $global:gitRootStash.Peek()
 
     # If we will be dirtying the index and checking out a branch or stash, then bail.
     # I don't want to have to reconcile that...
@@ -237,7 +243,7 @@ function Pop-GitRepositoryRoot {
         throw $_.Exception
     }
     finally {
-        $script:gitRootStash.Pop() >$NULL
+        $global:gitRootStash.Pop() >$NULL
     }
 }
 
@@ -284,5 +290,5 @@ function Push-GitRepositoryRoot {
         Invoke-Git checkout $targetBranch
     }
 
-    $script:gitRootStash.Push($currentState)
+    $global:gitRootStash.Push($currentState)
 }

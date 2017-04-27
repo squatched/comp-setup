@@ -111,6 +111,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
     [Boolean]$IsInGit = Test-Path ".\.git"
     [String]$trunk = Get-GitTrunkBranch
     [String]$lastCLNumber = $null
+    [String]$gitStashResult = $null
 
     if ($IsInGit) {
         [String]$originalGitBranch = Get-GitBranch
@@ -121,7 +122,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
             if (!$workingDirectoryClean) {
                 if ($StashIfDirty) {
                     Write-Debug "Stashing git..."
-                    [String]$gitStashResult = Invoke-Git "stash"
+                    $gitStashResult = Invoke-Git "stash"
                     Write-Debug "Git Stash Result: $gitStashResult"
                 }
                 else {
