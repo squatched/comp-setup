@@ -7,10 +7,11 @@
 
 #*****************************************************************************
 #*
-#*  Global Variables
+#*  Script Variables
 #*
 #*****************************************************************************
-$global:gitStashCount = @(git stash list).Length 2> $NULL
+$script:gitStashCount = @(git stash list).Length 2> $NULL
+$script:gitRootStash = New-Object System.Collections.Generic.Stack[Object]
 
 
 #*****************************************************************************
@@ -30,10 +31,21 @@ $global:gitStashCount = @(git stash list).Length 2> $NULL
 #*****************************************************************************
 
 #=============================================================================
+function FormatObjectKeyValues ([Object]$obj, [String]$preamble = "") {
+    [String]$result = ""
+
+    $obj.Keys | ForEach-Object {
+        $result += "$preamble$_ = $($obj[$_])`n"
+    }
+
+    return $result
+}
+
+#=============================================================================
 function GitHookStash ([String]$result) {
 
     if ($result -and !$result.StartsWith("No local changes to save")) {
-        $global:gitStashCount += 1
+        $script:gitStashCount += 1
     }
 
 }
@@ -42,15 +54,33 @@ function GitHookStash ([String]$result) {
 function GitHookStashPop ([String]$result) {
 
     if ($result -and !$result.StartsWith("No stash found.")) {
-        $global:gitStashCount -= 1
+        $script:gitStashCount -= 1
     }
-
 }
 
 # Add the above methods to the hooks table.
 $gitPostHooks.Add("stash",      $Function:GitHookStash)
 $gitPostHooks.Add("stash save", $Function:GitHookStash)
 $gitPostHooks.Add("stash pop",  $Function:GitHookStashPop)
+
+#=============================================================================
+function GitLocationState () {
+    if ($NULL -eq (Get-GitBranch)) {
+        throw "Not in a git repo"
+    }
+
+    [Object]$state = @{
+        "Path" = $(Get-Location).Path;
+        "Branch" = $(Get-GitBranch);
+        "IndexIsDirty" = ![String]::IsNullOrWhiteSpace((Invoke-Git status --short));
+        "StashHash" = $NULL;
+    }
+
+    Write-Debug "Current git location state:"
+    Write-Debug (FormatObjectKeyValues $state "  ")
+
+    return $state
+}
 
 
 #*****************************************************************************
@@ -83,7 +113,16 @@ function Get-GitBranch {
 #=============================================================================
 ## Retrieve the current git repo's root
 function Get-GitRepositoryRoot {
-    [String]$root = Invoke-Git "rev-parse --show-toplevel"
+    param (
+        [Parameter(Mandatory = $false)]
+        [Switch]$Stack
+    )
+
+    if ($Stack) {
+        return $script:gitRootStash.ToArray()
+    }
+
+    [String]$root = Invoke-Git rev-parse --show-toplevel
 
     if (Test-Path $root) {
         return Get-NormalizedPath $root
@@ -94,7 +133,7 @@ function Get-GitRepositoryRoot {
 #=============================================================================
 ## Retrieve the number of stashes on the stash.
 function Get-GitStashCount {
-    return $global:gitStashCount
+    return $script:gitStashCount
 }
 
 #============================================================================
@@ -142,4 +181,108 @@ function Invoke-Git {
 
     # Return the results.
     return $results
+}
+
+#=============================================================================
+## Restore from pushing to git repo root.
+function Pop-GitRepositoryRoot {
+    [Object]$currentState = GitLocationState
+    [Object]$stashedState = $script:gitRootStash.Peek()
+
+    # If we will be dirtying the index and checking out a branch or stash, then bail.
+    # I don't want to have to reconcile that...
+    if ($currentState.IndexIsDirty -and ($currentState.Branch -ne $stashedState.Branch -or ![String]::IsNullOrWhiteSpace($stashedState.StashHash))) {
+        throw "Working index is dirty."
+    }
+
+    try {
+        Write-Debug "Restoring from stashed state:"
+        $stashedState.Keys | ForEach-Object {
+            Write-Debug "  $_ = $($stashedState[$_])"
+        }
+
+        if ($currentState.Branch -ne $stashedState.Branch) {
+            Write-Debug "Current branch $($currentState.Branch) does not mach stashed branch"
+            Invoke-Git checkout $stashedState.Branch
+        }
+
+        if (![String]::IsNullOrWhitespace($stashedState.StashHash)) {
+            Write-Debug "Stash detected, attempting to pop"
+            # Find the stash in the list of stashes.
+            [String]$stashHash = Invoke-Git stash list | ForEach-Object {
+                $_ -Replace ":.*", ""
+            } | Where-Object {
+                [String]$hash = Invoke-Git rev-parse $_;
+                return $hash -eq $stashedState.StashHash
+            }
+
+            if ([String]::IsNullOrWhiteSpace($stashHash)) {
+                Write-Warning "Stashed hash missing from git stash. Attempting to apply hash $($stashedState.StashHash) manually"
+                Invoke-Git stash apply $stashedState.StashHash
+            }
+            else {
+                Write-Debug "Stash $stashHash matches our given commit id ($($stashedState.StashHash))"
+                Invoke-Git stash pop $stashHash
+            }
+        }
+
+        if ($currentState.Path -ne $stashedState.Path) {
+            Write-Debug "Current location and stashed location ($($stashedState.Path)) do not match, setting location"
+            Set-Location $stashedState.Path
+        }
+    }
+    catch {
+        Write-Warning "Failure detected when restoring stashed git repo root state:"
+        Write-Warning (FormatObjectKeyValues $stashedState "  ")
+        throw $_.Exception
+    }
+    finally {
+        $script:gitRootStash.Pop() >$NULL
+    }
+}
+
+#=============================================================================
+## Get to the git repository root, in a specified branch if desired. If -Clean
+## is specified, then you get to the root, in the trunk branch, with a clean
+## working index (changes stashed using git stash).
+function Push-GitRepositoryRoot {
+    param (
+        [Parameter(Mandatory = $false)]
+        [Switch]$Clean,
+
+        [Parameter(Mandatory = $false)]
+        [String]$Branch
+    )
+
+    [String]$gitRoot = Get-GitRepositoryRoot
+    [Object]$currentState = GitLocationState
+    [String]$targetBranch = $Branch
+
+    # If -Clean, then we need to get the trunk branch, otherwise current branch
+    # is fine if specified.
+    if ($Clean) {
+        $targetBranch = Get-GitTrunkBranch
+        Write-Debug "-Clean specified so setting Branch to $targetBranch"
+    }
+    elseif ([String]::IsNullOrEmpty($Branch)) {
+        $targetBranch = $currentState.Branch
+        Write-Debug "No branch specified so setting it to current: $targetBranch"
+    }
+
+    if ($gitRoot -ne $currentState.Path) {
+        Write-Debug "Current location is not root so setting location to root ($gitRoot)"
+        Set-Location $gitRoot
+    }
+    if ($targetBranch -ne $currentState.Branch) {
+        Write-Debug "Specified branch `"$targetBranch`" is not the current branch ($($currentState.Branch))."
+        if ($currentState.IndexIsDirty) {
+            Write-Debug "Index is dirty. Stashing."
+            Invoke-Git stash save --include-untracked "Auto-generated stash from Push-GitRepositoryRoot (PowerShell)"
+            $currentState.StashHash = Invoke-Git rev-parse "stash@{0}"
+        }
+
+        Invoke-Git checkout $targetBranch
+    }
+
+    $script:gitRootStash.Push($currentState)
 }
