@@ -17,7 +17,7 @@ if ($hybridRepositories -eq $null) {
 ## Syncs a hybrid repo. Special consideration is needed since these are both
 ## P4 and Git. Since these can be done across multiple computers, I like to
 ## keep my master history linear.
-function Sync-HybridRepositoryWithRemote ([String]$remote = "origin") {
+function Sync-HybridRepository ([String]$remote = "origin") {
     [String]$repoRoot = Get-GitRepositoryRoot
     if ($repoRoot -eq $null) {
         Write-Warning "Not in a git repository."
@@ -50,7 +50,7 @@ function Sync-HybridRepositories {
         Write-Output "========== Syncing $path =========="
         Push-Location $path
         try {
-            Sync-HybridRepositoryWithRemote
+            Sync-HybridRepository
         }
         catch {
             Write-Output "ERROR: Syncing repository $path failed with error:`n$(Out-String -InputObject $_)"
