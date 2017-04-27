@@ -19,8 +19,10 @@ git filter-branch --index-filter "git rm --cached -r --ignore-unmatch --quiet --
 
 ** Recommendations
 Run the 'git rm' command with '--quiet' omitted and '--dry-run' added at head until you get the paths right, checking the output.
+Ensure you are tracking all remote branches so all branches get updated.
+Empty your stashes.
 
-* Post Removal Cleanup
+** Post Removal Cleanup
 ONCE YOU HAVE CONFIRMED ALL IS AS DESIRED... (These steps are dangerous and destructive so be absolutely positive you made no mistakes...)
 
   1) Remove the original refs backed up by git filter-branch.
@@ -29,4 +31,18 @@ ONCE YOU HAVE CONFIRMED ALL IS AS DESIRED... (These steps are dangerous and dest
   2) Expire all of these now orphaned references.
      - git reflog expire --expire=now --all
   3) Garbage collect all unrefered objects.
-     - git gc --prune/now
+     - git gc --prune=now
+
+** Distributed Cleanup
+Once you do this, next time everyone pulls from the repo, they should do the following if they want to hang onto the local files that should no longer be tracked:
+git fetch
+git checkout <branch>
+git reset --soft origin/<branch>
+git reset HEAD
+
+If they wish to delete the files:
+git fetch
+git branch -D <branch>
+git checkout -b <branch> origin/<branch>
+
+Your stash may also have some strange message about ''. To fix that: (not sure yet, saw this once, don't remember my solution)
