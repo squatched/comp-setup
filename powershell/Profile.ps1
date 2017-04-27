@@ -43,6 +43,7 @@ function assert (
 [String]$profileScriptsSCMgmt        = $profileScriptsPath + "SourceControlManagement.ps1"       # Routines for handling common source control tasks.
 [String]$profileScriptsGit           = $profileScriptsPath + "Git.ps1"                           # Custom routines that give us interaction with git.
 [String]$profileScriptsCtags         = $profileScriptsPath + "CtagsGeneration.ps1"               # Routines to generate TAGS files in a hierarchy.
+[String]$profileScriptsHybridRepos   = $profileScriptsPath + "HybridRepositories.ps1"            # Routines to manage P4/Git hybrid repos.
 
 ## Dot source personal scripts.
 Write-Debug "Dot sourcing: $profileScriptsMiscUtils"
@@ -55,17 +56,19 @@ Write-Debug "Dot sourcing: $profileScriptsGit"
 . $profileScriptsGit
 Write-Debug "Dot sourcing: $profileScriptsCtags"
 . $profileScriptsCtags
-Write-Debug "Dot sourcing complete."
 
 ## Load my dev profile stuff if it exists on this machine.
 [String] $devProfilePath             = $profilePath + "\DevScripts\Profile.ps1"
-[Boolean]$devProfileExists           = $false
-if (Test-Path $devProfilePath) {
-    $devProfileExists = $true
+[Boolean]$usingDevProfile            = Test-Path $devProfilePath
+if ($usingDevProfile) {
     Write-Debug "Dot sourcing: $devProfilePath"
     . $devProfilePath
     Write-Debug "Dot sourcing complete for: $devProfilePath"
 }
+
+## This requires devProfile to define some things.
+. $profileScriptsHybridRepos
+Write-Debug "Dot sourcing complete."
 
 
 ##############################################################################
@@ -127,7 +130,7 @@ function prompt {
     Write-Host $prefix -nonewline -foregroundcolor Red
     Write-Host $vsString -nonewline -foregroundcolor Blue
 
-    if ($devProfileExists -and (Get-Command -CommandType Function -Name DevPrompt -ErrorAction SilentlyContinue)) {
+    if ($usingDevProfile -and (Get-Command -CommandType Function -Name DevPrompt -ErrorAction SilentlyContinue)) {
         DevPrompt
     }
 

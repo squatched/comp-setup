@@ -80,6 +80,23 @@ function Get-GitBranch {
     return
 }
 
+#=============================================================================
+## Retrieve the current git repo's root
+function Get-GitRepositoryRoot {
+    [String]$root = Invoke-Git "rev-parse --show-toplevel"
+
+    if (Test-Path $root) {
+        return Get-NormalizedPath $root
+    }
+    return $null
+}
+
+#=============================================================================
+## Retrieve the number of stashes on the stash.
+function Get-GitStashCount {
+    return $global:gitStashCount
+}
+
 #============================================================================
 ## Retrieve the current repo's trunk branch. Defaults to master.
 function Get-GitTrunkBranch {
@@ -89,18 +106,6 @@ function Get-GitTrunkBranch {
         $gitTrunkBranch = "master"
     }
     return $gitTrunkBranch
-}
-
-#=============================================================================
-## Retrieve the number of stashes on the stash.
-function Get-GitStashCount {
-    return $global:gitStashCount
-}
-
-#=============================================================================
-## Retrieve the current git repos root
-function Get-GitRepositoryRoot {
-    return Get-NormalizedPath $(Invoke-Expression ("git rev-parse --show-toplevel"))
 }
 
 #=============================================================================
@@ -117,6 +122,16 @@ function Invoke-Git {
     Write-Debug "Invoking git command: $command"
     [String[]]$results = Invoke-Expression "cmd.exe /Q /C `"git $command 2>&1`""
 
+    # Sometimes a git command returns nothing (e.g. - git config non-existent-config)
+    if ($results.Count -eq 0) {
+        return $null
+    }
+
+    # Test for failure and form an exception object based off it.
+    if ($results[0] -like "fatal*" -or $results[0] -like "error*") {
+        throw "Git command `"$command`" failed with error text: $results"
+    }
+
     # Process post hooks.
     [String]$sanitizedCommand = $command.ToLower().Trim()
     if ($gitPostHooks.ContainsKey($sanitizedCommand)) {
@@ -128,4 +143,3 @@ function Invoke-Git {
     # Return the results.
     return $results
 }
-

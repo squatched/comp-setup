@@ -110,6 +110,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
     
     [Boolean]$IsInGit = Test-Path ".\.git"
     [String]$trunk = Get-GitTrunkBranch
+    [String]$lastCLNumber = $null
 
     if ($IsInGit) {
         [String]$originalGitBranch = Get-GitBranch
@@ -139,6 +140,12 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
             throw "Unable to switch to trunk git branch `"$trunk`". Deal with your working tree and try again."
         }
     }
+
+    # Extract the latest changelist number as a string, then sync to that changelist.
+    # This allows our changelist checkins to git to be accurate.
+    Write-Debug "Checking for latest Perforce change..."
+    [String]$lastCLNumber = $(Invoke-P4Command "changes -m 1 -s submitted").change
+    Write-Debug "Latest Perforce Change Result: $lastCLNumber"
     
     $p4SyncCommand = "p4 sync"
     if ( ![String]::IsNullOrWhiteSpace( $PerforceSyncCommand ) ) {
@@ -148,19 +155,14 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
     }
 
     # Sync Perforce and output errors to stdout rather than causing the script to error.
-    Write-Debug "Syncing Perforce via '$p4SyncCommand'..."
-    cmd.exe /Q /C "$p4SyncCommand .\... 2>&1"
+    Write-Debug "Syncing Perforce via '$p4SyncCommand' to revision @$lastCLNumber..."
+    cmd.exe /Q /C "$p4SyncCommand @$lastCLNumber 2>&1"
     
     # Resolve (safe merge, conflicts skipped) and output errors to stdout rather than
     #   causing the script to error.
     cmd.exe /Q /C "p4 resolve -am 2>&1"
     
     if ($IsInGit) {
-        # Extract the latest changelist number as a string.
-        Write-Debug "Checking for latest Perforce change..."
-        [String]$lastCLNumber = $(Invoke-P4Command "changes -m 1 -s submitted").change
-        Write-Debug "Latest Perforce Change Result: $lastCLNumber"
-
         # Submit the freshly synced depot to git if necessary.
         Write-Debug "Checking git status..."
         $gitShortStatus = Invoke-Git "status --short"
