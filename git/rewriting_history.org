@@ -1,5 +1,7 @@
 * Overview
 This is my notes on how to clean up git history since my usage of git when working with perforce demands it sometimes as my knowledge of the perforce depot structure grows.
+As always THIS IS DANGEROUS AND SHOULD ONLY BE DONE AS A LAST RESORT, TRY TO FIX THINGS UP WITHOUT THIS FIRST.
+This isn't always possible sometimes though as when you make git stop tracking files, then sync that on another computer, git will delete those files. This is a problem when I'm trying to have a git repo with code sitting on top of a perforce repo with code & assets and I need everything...
 
 * Removing Directories
 In short, the git command is (from the root of the git repo):
