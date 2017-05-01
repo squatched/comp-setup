@@ -14,8 +14,8 @@ function Internal_Helper_Import_Module ([String]$moduleName) {
                 Write-Debug "Module <$moduleName> is not installed. Skipping import."
                 return $false
         }
-
-        Import-Module PSReadLine
+        Write-Debug "Module <$moduleName> is installed, importing..."
+        Import-Module $moduleName
         return $true
 }
 
