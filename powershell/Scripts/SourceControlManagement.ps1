@@ -157,7 +157,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
 
     # Sync Perforce and output errors to stdout rather than causing the script to error.
     Write-Debug "Syncing Perforce via '$p4SyncCommand' to revision @$lastCLNumber..."
-    cmd.exe /Q /C "$p4SyncCommand @$lastCLNumber 2>&1"
+    cmd.exe /Q /C "$p4SyncCommand .\...@$lastCLNumber 2>&1"
     
     # Resolve (safe merge, conflicts skipped) and output errors to stdout rather than
     #   causing the script to error.
