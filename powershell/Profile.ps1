@@ -80,6 +80,9 @@ Write-Debug "Dot sourcing complete."
 ## Notepad Alias
 Set-Alias np "C:\Program Files\Emacs\bin\emacsclientw.exe"
 
+## Timestamp
+function Get-TimeStamp { Get-Date -UFormat "%Y%m%d%H%M%S" }
+
 #=============================================================================
 ## Alias to edit this profile.
 function Edit-Profile {np $profile}
