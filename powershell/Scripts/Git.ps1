@@ -283,7 +283,8 @@ function Push-GitRepositoryRoot {
         Write-Debug "Specified branch `"$targetBranch`" is not the current branch ($($currentState.Branch))."
         if ($currentState.IndexIsDirty) {
             Write-Debug "Index is dirty. Stashing."
-            Invoke-Git stash save --include-untracked "Auto-generated stash from Push-GitRepositoryRoot (PowerShell)"
+            Invoke-Git add --all
+            Invoke-Git stash save "Auto-generated stash from Push-GitRepositoryRoot (PowerShell)"
             $currentState.StashHash = Invoke-Git rev-parse "stash@{0}"
         }
 
