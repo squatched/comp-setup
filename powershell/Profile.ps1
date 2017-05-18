@@ -102,20 +102,26 @@ function prompt {
 
     [String]$prefix = ""
     [String]$location = Get-Location
-    [String]$gitstring = Get-GitBranch
+    [String]$gitString = ""
     [String]$vsString = $currentVsCmdVer
     [String]$p4CliString = ""
     [String]$p4CliBranchString = ""
     [String]$suffix = ">"
 
-    if ($gitstring) {
+    [String]$gitBranch = Get-GitBranch
+    if ($gitBranch) {
+        $gitString = "[${gitBranch}"
+        $jira = Invoke-Git config branch.${gitBranch}.jira
+        if (![String]::IsNullOrWhiteSpace($jira)) {
+            $gitString += "(${jira})"
+        }
+
         $stashCount = 0#Get-GitStashCount
         if ($stashCount) {
-            $gitstring = "[${gitstring}:$stashCount]"
+            $gitString += ":${stashCount}"
         }
-        else {
-            $gitString = "[$gitString]"
-        }
+
+        $gitString += "]"
     }
 
     if ($vsString) {
