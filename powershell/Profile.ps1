@@ -113,7 +113,7 @@ function prompt {
         $gitString = "[${gitBranch}"
         $jira = Invoke-Git config branch.${gitBranch}.jira
         if (![String]::IsNullOrWhiteSpace($jira)) {
-            $gitString += "(${jira})"
+            $gitString += " (${jira})"
         }
 
         $stashCount = 0#Get-GitStashCount
