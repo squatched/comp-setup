@@ -16,9 +16,9 @@
 
 #=============================================================================
 function Invoke-P4Command {
-    Param (
-        [String]$command
-    )
+
+    # Cache off everything as one string
+    [String]$command = $args
 
     # Method that iterates through a list of strings, looking for the next string to
     #   start with "... ". Returns the size of the array if none found.
@@ -145,7 +145,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
     # Extract the latest changelist number as a string, then sync to that changelist.
     # This allows our changelist checkins to git to be accurate.
     Write-Debug "Checking for latest Perforce change..."
-    [String]$lastCLNumber = $(Invoke-P4Command "changes -m 1 -s submitted").change
+    [String]$lastCLNumber = $(Invoke-P4Command changes -m 1 -s submitted .\...).change
     Write-Debug "Latest Perforce Change Result: $lastCLNumber"
     
     $p4SyncCommand = "p4 sync"
@@ -172,7 +172,7 @@ function Sync-GitToPerforce ([Switch]$StashIfDirty, [Switch]$PopStash, [String]$
             Write-Debug "Adding changes to git..."
             Invoke-Git "add . --all"
             Write-Debug "Commiting git index with message `"P4 - $lastCLNumber`""
-            [String]$p4Client = $(Invoke-P4Command "client -o").client
+            [String]$p4Client = $(Invoke-P4Command client -o).client
             Invoke-Git "commit --message=`"P4:$p4Client - $lastCLNumber`""
         }
 
