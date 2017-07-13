@@ -38,19 +38,24 @@ shopt -s checkwinsize
 
 # source git prompt decoration and tab completion
 # For arch.
-[[ -e "/usr/share/git/completion/git-prompt.sh" ]] && source /usr/share/git/completion/git-prompt.sh
-[[ -e "/usr/share/git/completion/git-completion.bash" ]] && source /usr/share/git/completion/git-completion.bash
+[[ -f "/usr/share/git/completion/git-prompt.sh" ]] && source /usr/share/git/completion/git-prompt.sh
+[[ -f "/usr/share/git/completion/git-completion.bash" ]] && source /usr/share/git/completion/git-completion.bash
 # For Ubuntu
-[[ -e "/etc/bash_completion.d/git" ]] && source /etc/bash_completion.d/git
-[[ -e "/etc/bash_completion.d/git-prompt" ]] && source /etc/bash_completion.d/git-prompt
+[[ -f "/etc/bash_completion.d/git" ]] && source /etc/bash_completion.d/git
+[[ -f "/etc/bash_completion.d/git-prompt" ]] && source /etc/bash_completion.d/git-prompt
 # For MacOS
-if $(hash brew 2>/dev/null) && [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
+if $(hash brew 2>/dev/null) && [[ -f "$(brew --prefix git)/etc/bash_completion.d" ]]; then
     source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
     source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
 fi
+# For MacOS Sierra
+[[ -f /usr/local/etc/bash_completion ]] && source /usr/local/etc/bash_completion
 
 # Source fzf auto completion
-[[ -e /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
+#   Arch
+[[ -f /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
+#   MacOS
+[[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
 
 # colorize the font if we're capable of doing so
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
