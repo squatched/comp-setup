@@ -5,6 +5,9 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+# Source global definitions
+[[ -f /etc/bashrc ]] && source /etc/bashrc
+
 # Turn off history expansion through '!'.
 set +o histexpand
 
@@ -38,24 +41,19 @@ shopt -s checkwinsize
 
 # source git prompt decoration and tab completion
 # For arch.
-[[ -f "/usr/share/git/completion/git-prompt.sh" ]] && source /usr/share/git/completion/git-prompt.sh
-[[ -f "/usr/share/git/completion/git-completion.bash" ]] && source /usr/share/git/completion/git-completion.bash
+[[ -e "/usr/share/git/completion/git-prompt.sh" ]] && source /usr/share/git/completion/git-prompt.sh
+[[ -e "/usr/share/git/completion/git-completion.bash" ]] && source /usr/share/git/completion/git-completion.bash
 # For Ubuntu
-[[ -f "/etc/bash_completion.d/git" ]] && source /etc/bash_completion.d/git
-[[ -f "/etc/bash_completion.d/git-prompt" ]] && source /etc/bash_completion.d/git-prompt
+[[ -e "/etc/bash_completion.d/git" ]] && source /etc/bash_completion.d/git
+[[ -e "/etc/bash_completion.d/git-prompt" ]] && source /etc/bash_completion.d/git-prompt
 # For MacOS
-if $(hash brew 2>/dev/null) && [[ -f "$(brew --prefix git)/etc/bash_completion.d" ]]; then
+if $(hash brew 2>/dev/null) && [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
     source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
     source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
 fi
-# For MacOS Sierra
-[[ -f /usr/local/etc/bash_completion ]] && source /usr/local/etc/bash_completion
 
 # Source fzf auto completion
-#   Arch
-[[ -f /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
-#   MacOS
-[[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
+[[ -e /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
 
 # colorize the font if we're capable of doing so
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
@@ -75,7 +73,7 @@ fi
 unset color_prompt
 
 # add git decoration
-PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
+# PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
 # Configure Perforce
 [[ -e "$HOME/.p4config" ]] && export P4CONFIG=$HOME/.p4config
@@ -90,3 +88,7 @@ PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 [[ -r "$HOME/.bash_proprietary" ]] && source "$HOME/.bash_proprietary"
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+export PATH="$PATH:/usr/local/bin"
+
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
