@@ -2,11 +2,18 @@
 # ~/.bashrc
 #
 
+__source_if_file () {
+    [[ -f "$1" ]] && source "$1"
+}
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
 # Source global definitions
-[[ -f /etc/bashrc ]] && source /etc/bashrc
+__source_if_file /etc/bashrc
+
+# Source pre-proprietary stuff
+__source_if_file ~/.bash_proprietary_pre
 
 # Turn off history expansion through '!'.
 set +o histexpand
@@ -29,8 +36,8 @@ shopt -s cmdhist
 export HISTSIZE=100000
 export HISTFILESIZE=2000000
 
-# ignore the exit command
-export HISTIGNORE="&:[ ]*:exit"
+# ignore the exit command and duplicates
+export HISTIGNORE="&:[ ]*:exit:ignoredups"
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -41,11 +48,11 @@ shopt -s checkwinsize
 
 # source git prompt decoration and tab completion
 # For arch.
-[[ -e "/usr/share/git/completion/git-prompt.sh" ]] && source /usr/share/git/completion/git-prompt.sh
-[[ -e "/usr/share/git/completion/git-completion.bash" ]] && source /usr/share/git/completion/git-completion.bash
+__source_if_file /usr/share/git/completion/git-prompt.sh
+__source_if_file /usr/share/git/completion/git-completion.bash
 # For Ubuntu
-[[ -e "/etc/bash_completion.d/git" ]] && source /etc/bash_completion.d/git
-[[ -e "/etc/bash_completion.d/git-prompt" ]] && source /etc/bash_completion.d/git-prompt
+__source_if_file /etc/bash_completion.d/git
+__source_if_file /etc/bash_completion.d/git-prompt
 # For MacOS
 if $(hash brew 2>/dev/null) && [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
     source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
@@ -53,7 +60,8 @@ if $(hash brew 2>/dev/null) && [[ -e "$(brew --prefix git)/etc/bash_completion.d
 fi
 
 # Source fzf auto completion
-[[ -e /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
+__source_if_file /usr/share/fzf/key-bindings.bash
+__source_if_file ~/.fzf.bash
 
 # colorize the font if we're capable of doing so
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
@@ -73,22 +81,19 @@ fi
 unset color_prompt
 
 # add git decoration
-# PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
+PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
 # Configure Perforce
-[[ -e "$HOME/.p4config" ]] && export P4CONFIG=$HOME/.p4config
+[[ -f $HOME/.p4config ]] && export P4CONFIG=$HOME/.p4config
 
 # Alias definitions from a separate file.
-[[ -r "$HOME/.bash_aliases" ]] && source "$HOME/.bash_aliases"
+__source_if_file $HOME/.bash_aliases
 
 # Environment exports from a separate file.
-[[ -r "$HOME/.bash_environment" ]] && source "$HOME/.bash_environment"
+__source_if_file $HOME/.bash_environment
 
 # Proprietary scripts.
-[[ -r "$HOME/.bash_proprietary" ]] && source "$HOME/.bash_proprietary"
+__source_if_file $HOME/.bash_proprietary_post
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 export PATH="$PATH:/usr/local/bin"
-
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash

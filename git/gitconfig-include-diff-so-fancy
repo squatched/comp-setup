@@ -11,11 +11,11 @@
 [color]
 	ui = always
 [color "diff"]
-	meta = yellow bold
-	commit = green bold
-	frag = magenta bold
-	old = red bold
-	new = green bold
+	meta = 227
+	commit = "227 bold"
+	frag = "magenta bold"
+	old = "red bold"
+	new = "green bold"
 	whitespace = red reverse
 [color "diff-highlight"]
 	oldNormal = "red bold"
