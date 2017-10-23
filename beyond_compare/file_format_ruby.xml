@@ -48,24 +48,30 @@
 				<Text Value=":'(\\'|[^'])*'"/>
 			</_4>
 			<_5 Value="TBasicTextGrammarItem">
-				<ElementStr Value="&#2;Number"/>
+				<ElementStr Value="Symbol"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="-?[1-9](\d{0,2}(_\d{3})|\d*)(\.\d+)?(e-?\d+)?"/>
+				<Text Value="\w[_a-z]*:"/>
 			</_5>
 			<_6 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Number"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="0b[01]+"/>
+				<Text Value="-?[1-9](\d{0,2}(_\d{3})|\d*)(\.\d+)?(e-?\d+)?"/>
 			</_6>
 			<_7 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Number"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="0x[0-9a-f]+"/>
+				<Text Value="0b[01]+"/>
 			</_7>
-			<_8 Value="TDelimitedTextGrammarItem">
+			<_8 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Number"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="0x[0-9a-f]+"/>
+			</_8>
+			<_9 Value="TDelimitedTextGrammarItem">
 				<ElementStr Value="&#2;String"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="False"/>
@@ -73,8 +79,8 @@
 				<Escape Value="92"/>
 				<StopEOL Value="False"/>
 				<StopText Value="'"/>
-			</_8>
-			<_9 Value="TDelimitedTextGrammarItem">
+			</_9>
+			<_10 Value="TDelimitedTextGrammarItem">
 				<ElementStr Value="&#2;String"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="False"/>
@@ -82,8 +88,8 @@
 				<Escape Value="92"/>
 				<StopEOL Value="False"/>
 				<StopText Value="&quot;"/>
-			</_9>
-			<_10 Value="TDelimitedTextGrammarItem">
+			</_10>
+			<_11 Value="TDelimitedTextGrammarItem">
 				<ElementStr Value="&#2;String"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
@@ -91,8 +97,8 @@
 				<Escape Value="0"/>
 				<StopEOL Value="True"/>
 				<StopText Value="^\s*\2\s*$"/>
-			</_10>
-			<_11 Value="TDelimitedTextGrammarItem">
+			</_11>
+			<_12 Value="TDelimitedTextGrammarItem">
 				<ElementStr Value="&#2;Comment"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
@@ -100,14 +106,14 @@
 				<Escape Value="0"/>
 				<StopEOL Value="True"/>
 				<StopText Value=""/>
-			</_11>
-			<_12 Value="TBasicTextGrammarItem">
+			</_12>
+			<_13 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Comment"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="False"/>
 				<Text Value="\s+$"/>
-			</_12>
-			<_13 Value="TListTextGrammarItem">
+			</_13>
+			<_14 Value="TListTextGrammarItem">
 				<ElementStr Value="&#2;Operator"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="False"/>
@@ -159,13 +165,13 @@
 					<_44 Value="&quot;"/>
 					<_45 Value="`"/>
 				</Items>
-			</_13>
-			<_14 Value="TBasicTextGrammarItem">
+			</_14>
+			<_15 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Indent"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
 				<Text Value="^\s+"/>
-			</_14>
+			</_15>
 		</Grammar>
 		<IdentifierCaseSig Value="False"/>
 		<IndentCaseSig Value="True"/>
