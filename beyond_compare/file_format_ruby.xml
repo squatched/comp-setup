@@ -171,59 +171,65 @@
 				</Items>
 			</_6>
 			<_7 Value="TBasicTextGrammarItem">
-				<ElementStr Value="Symbol"/>
+				<ElementStr Value="&#2;Identifier"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="\s:[_a-z]\w*"/>
+				<Text Value="[_a-z]\w*::"/>
 			</_7>
 			<_8 Value="TBasicTextGrammarItem">
 				<ElementStr Value="Symbol"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="\s:&quot;(\\&quot;|[^&quot;])*&quot;"/>
+				<Text Value=":[_a-z]\w*"/>
 			</_8>
 			<_9 Value="TBasicTextGrammarItem">
 				<ElementStr Value="Symbol"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="\s:'(\\'|[^'])*'"/>
+				<Text Value=":&quot;(\\&quot;|[^&quot;])*&quot;"/>
 			</_9>
 			<_10 Value="TBasicTextGrammarItem">
 				<ElementStr Value="Symbol"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="[_a-z]\w*:\s"/>
+				<Text Value=":'(\\'|[^'])*'"/>
 			</_10>
 			<_11 Value="TBasicTextGrammarItem">
-				<ElementStr Value="&#2;Number"/>
+				<ElementStr Value="Symbol"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="-?\d(\d{0,2}(_\d{3})+|\d*)(\.\d+)?(e-?\d+)?"/>
+				<Text Value="[_a-z]\w*:"/>
 			</_11>
 			<_12 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Number"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="0b[01]+"/>
+				<Text Value="-?\d(\d{0,2}(_\d{3})+|\d*)(\.\d+)?(e-?\d+)?"/>
 			</_12>
 			<_13 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Number"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
-				<Text Value="0x[0-9a-f]+"/>
+				<Text Value="0b[01]+"/>
 			</_13>
 			<_14 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Number"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="0x[0-9a-f]+"/>
+			</_14>
+			<_15 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Indent"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
 				<Text Value="^\s+"/>
-			</_14>
-			<_15 Value="TBasicTextGrammarItem">
+			</_15>
+			<_16 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Identifier"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
 				<Text Value="[_a-z]\w*"/>
-			</_15>
+			</_16>
 		</Grammar>
 		<IdentifierCaseSig Value="False"/>
 		<IndentCaseSig Value="True"/>
