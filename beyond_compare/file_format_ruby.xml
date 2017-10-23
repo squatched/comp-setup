@@ -8,6 +8,12 @@
 		<CommentCaseSig Value="True"/>
 		<ConvertKind Value="convertNone"/>
 		<CtrlZIsEOF Value="False"/>
+		<CustomElementCaseSigs>
+			<Item>
+				<ElementStr Value="Symbol"/>
+				<ValueBool Value="False"/>
+			</Item>
+		</CustomElementCaseSigs>
 		<Description>
 			<_0 Value="A dynamic, reflective, object-oriented, general purpose programming language. It was developed in the mid 1990s by Yukihiro &quot;Matz&quot; Matsumoto. It supports multiple programming paradigms including functional, object-oriented, and imperative. It has a dynamic type system and automatic memory management."/>
 		</Description>
@@ -15,90 +21,7 @@
 		<Enabled Value="True"/>
 		<EnvironVarCaseSig Value="True"/>
 		<Grammar>
-			<_0 Value="TListTextGrammarItem">
-				<ElementStr Value="&#2;Keyword"/>
-				<CaseSensitive Value="True"/>
-				<IsRegExp Value="False"/>
-				<Items>
-					<_0 Value="BEGIN END __ENCODING__ __END__ __FILE__ __LINE__ alias and begin break case class def defined? do else elsif end ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield"/>
-				</Items>
-			</_0>
-			<_1 Value="TBasicTextGrammarItem">
-				<ElementStr Value="&#2;Identifier"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value="[_a-z]\w*"/>
-			</_1>
-			<_2 Value="TBasicTextGrammarItem">
-				<ElementStr Value="Symbol"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="False"/>
-				<Text Value=":[_a-z]\w*"/>
-			</_2>
-			<_3 Value="TBasicTextGrammarItem">
-				<ElementStr Value="Symbol"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value=":&quot;(\\&quot;|[^&quot;])*&quot;"/>
-			</_3>
-			<_4 Value="TBasicTextGrammarItem">
-				<ElementStr Value="Symbol"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value=":'(\\'|[^'])*'"/>
-			</_4>
-			<_5 Value="TBasicTextGrammarItem">
-				<ElementStr Value="Symbol"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value="\w[_a-z]*:"/>
-			</_5>
-			<_6 Value="TBasicTextGrammarItem">
-				<ElementStr Value="&#2;Number"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value="-?[1-9](\d{0,2}(_\d{3})|\d*)(\.\d+)?(e-?\d+)?"/>
-			</_6>
-			<_7 Value="TBasicTextGrammarItem">
-				<ElementStr Value="&#2;Number"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value="0b[01]+"/>
-			</_7>
-			<_8 Value="TBasicTextGrammarItem">
-				<ElementStr Value="&#2;Number"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value="0x[0-9a-f]+"/>
-			</_8>
-			<_9 Value="TDelimitedTextGrammarItem">
-				<ElementStr Value="&#2;String"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="False"/>
-				<Text Value="'"/>
-				<Escape Value="92"/>
-				<StopEOL Value="False"/>
-				<StopText Value="'"/>
-			</_9>
-			<_10 Value="TDelimitedTextGrammarItem">
-				<ElementStr Value="&#2;String"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="False"/>
-				<Text Value="&quot;"/>
-				<Escape Value="92"/>
-				<StopEOL Value="False"/>
-				<StopText Value="&quot;"/>
-			</_10>
-			<_11 Value="TDelimitedTextGrammarItem">
-				<ElementStr Value="&#2;String"/>
-				<CaseSensitive Value="False"/>
-				<IsRegExp Value="True"/>
-				<Text Value="&lt;&lt;-?([`'&quot;]?)(EOF)\1"/>
-				<Escape Value="0"/>
-				<StopEOL Value="True"/>
-				<StopText Value="^\s*\2\s*$"/>
-			</_11>
-			<_12 Value="TDelimitedTextGrammarItem">
+			<_0 Value="TDelimitedTextGrammarItem">
 				<ElementStr Value="&#2;Comment"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
@@ -106,14 +29,95 @@
 				<Escape Value="0"/>
 				<StopEOL Value="True"/>
 				<StopText Value=""/>
-			</_12>
-			<_13 Value="TBasicTextGrammarItem">
+			</_0>
+			<_1 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Comment"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="False"/>
 				<Text Value="\s+$"/>
-			</_13>
-			<_14 Value="TListTextGrammarItem">
+			</_1>
+			<_2 Value="TDelimitedTextGrammarItem">
+				<ElementStr Value="&#2;String"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="False"/>
+				<Text Value="'"/>
+				<Escape Value="92"/>
+				<StopEOL Value="False"/>
+				<StopText Value="'"/>
+			</_2>
+			<_3 Value="TDelimitedTextGrammarItem">
+				<ElementStr Value="&#2;String"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="False"/>
+				<Text Value="&quot;"/>
+				<Escape Value="92"/>
+				<StopEOL Value="False"/>
+				<StopText Value="&quot;"/>
+			</_3>
+			<_4 Value="TDelimitedTextGrammarItem">
+				<ElementStr Value="&#2;String"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="&lt;&lt;-?([`'&quot;]?)(EOF)\1"/>
+				<Escape Value="0"/>
+				<StopEOL Value="True"/>
+				<StopText Value="^\s*\2\s*$"/>
+			</_4>
+			<_5 Value="TListTextGrammarItem">
+				<ElementStr Value="&#2;Keyword"/>
+				<CaseSensitive Value="True"/>
+				<IsRegExp Value="False"/>
+				<Items>
+					<_0 Value="BEGIN"/>
+					<_1 Value="END"/>
+					<_2 Value="__ENCODING__"/>
+					<_3 Value="__END__"/>
+					<_4 Value="__FILE__"/>
+					<_5 Value="__LINE__"/>
+					<_6 Value="alias"/>
+					<_7 Value="and"/>
+					<_8 Value="begin"/>
+					<_9 Value="break"/>
+					<_10 Value="case"/>
+					<_11 Value="class"/>
+					<_12 Value="def"/>
+					<_13 Value="defined?"/>
+					<_14 Value="do"/>
+					<_15 Value="else"/>
+					<_16 Value="elsif"/>
+					<_17 Value="end"/>
+					<_18 Value="ensure"/>
+					<_19 Value="false"/>
+					<_20 Value="for"/>
+					<_21 Value="if"/>
+					<_22 Value="in"/>
+					<_23 Value="module"/>
+					<_24 Value="next"/>
+					<_25 Value="nil"/>
+					<_26 Value="not"/>
+					<_27 Value="or"/>
+					<_28 Value="redo"/>
+					<_29 Value="rescue"/>
+					<_30 Value="retry"/>
+					<_31 Value="return"/>
+					<_32 Value="self"/>
+					<_33 Value="super"/>
+					<_34 Value="then"/>
+					<_35 Value="true"/>
+					<_36 Value="undef"/>
+					<_37 Value="unless"/>
+					<_38 Value="until"/>
+					<_39 Value="when"/>
+					<_40 Value="while"/>
+					<_41 Value="yield"/>
+					<_42 Value="require"/>
+					<_43 Value="YAML"/>
+					<_44 Value="File"/>
+					<_45 Value="include"/>
+					<_46 Value="raise"/>
+				</Items>
+			</_5>
+			<_6 Value="TListTextGrammarItem">
 				<ElementStr Value="&#2;Operator"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="False"/>
@@ -165,12 +169,60 @@
 					<_44 Value="&quot;"/>
 					<_45 Value="`"/>
 				</Items>
-			</_14>
-			<_15 Value="TBasicTextGrammarItem">
+			</_6>
+			<_7 Value="TBasicTextGrammarItem">
+				<ElementStr Value="Symbol"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="\s:[_a-z]\w*"/>
+			</_7>
+			<_8 Value="TBasicTextGrammarItem">
+				<ElementStr Value="Symbol"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="\s:&quot;(\\&quot;|[^&quot;])*&quot;"/>
+			</_8>
+			<_9 Value="TBasicTextGrammarItem">
+				<ElementStr Value="Symbol"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="\s:'(\\'|[^'])*'"/>
+			</_9>
+			<_10 Value="TBasicTextGrammarItem">
+				<ElementStr Value="Symbol"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="[_a-z]\w*:\s"/>
+			</_10>
+			<_11 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Number"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="-?\d(\d{0,2}(_\d{3})+|\d*)(\.\d+)?(e-?\d+)?"/>
+			</_11>
+			<_12 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Number"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="0b[01]+"/>
+			</_12>
+			<_13 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Number"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="0x[0-9a-f]+"/>
+			</_13>
+			<_14 Value="TBasicTextGrammarItem">
 				<ElementStr Value="&#2;Indent"/>
 				<CaseSensitive Value="False"/>
 				<IsRegExp Value="True"/>
 				<Text Value="^\s+"/>
+			</_14>
+			<_15 Value="TBasicTextGrammarItem">
+				<ElementStr Value="&#2;Identifier"/>
+				<CaseSensitive Value="False"/>
+				<IsRegExp Value="True"/>
+				<Text Value="[_a-z]\w*"/>
 			</_15>
 		</Grammar>
 		<IdentifierCaseSig Value="False"/>
@@ -183,7 +235,7 @@
 		<NumberCaseSig Value="True"/>
 		<OperatorCaseSig Value="True"/>
 		<StringCaseSig Value="True"/>
-		<TabAsSpaces Value="False"/>
+		<TabAsSpaces Value="True"/>
 		<TabSize Value="2"/>
 		<TidyLeadingWS Value="False"/>
 		<TrimTrailingWS Value="False"/>
