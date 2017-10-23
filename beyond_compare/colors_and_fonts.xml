@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Produced by Beyond Compare 4 from Scooter Software -->
+<BCColors Version="1" MinVersion="1">
+	<TDirColors>
+		<BGColor Value="$222827"/>
+		<CenterGradient Value="True"/>
+		<ColoredFolders Value="True"/>
+		<ConflictBGColor Value="$0000CA"/>
+		<ConflictFGColor Value="-"/>
+		<DiffBGColor Value="-"/>
+		<DiffFGColor Value="$4040AF"/>
+		<DisjointFGColor Value="$00FF00"/>
+		<FGColor Value="$FFFFFF"/>
+		<FilteredBGColor Value="$F3F2EB"/>
+		<FilteredFGColor Value="$808000"/>
+		<FolderInfoFGColor Value="$C0C0C0"/>
+		<FontStr Value=""/>
+		<LeftBGColor Value="$5B5B00"/>
+		<LeftFGColor Value="-"/>
+		<LogColor Value="$FFDFBF"/>
+		<MergeableBGColor Value="$008080"/>
+		<MergeableFGColor Value="-"/>
+		<NewerBGColor Value="-"/>
+		<NewerFGColor Value="$2EE2A6"/>
+		<OlderBGColor Value="-"/>
+		<OlderFGColor Value="$C0C0C0"/>
+		<OrphanBGColor Value="-"/>
+		<OrphanFGColor Value="$FF518D"/>
+		<RightBGColor Value="$660066"/>
+		<RightFGColor Value="-"/>
+		<SameBGColor Value="-"/>
+		<SameFGColor Value="$FFFFFF"/>
+		<SelFocusedBGColor Value="$51605E"/>
+		<SelFocusedFGColor Value="$FFFFFF"/>
+		<SelSystem Value="False"/>
+		<StripeBGColor Value="$2C3433"/>
+		<UnknownBGColor Value="-"/>
+		<UnknownColor Value="$00CCFF"/>
+		<UnknownFGColor Value="$C0C0C0"/>
+		<UseStripes Value="True"/>
+	</TDirColors>
+	<TFileColors>
+		<AlignedColor Value="$FFFF00"/>
+		<BGColor Value="$222827"/>
+		<CurBGColor Value="-"/>
+		<CurFGColor Value="-"/>
+		<CurOverUnderOnly Value="False"/>
+		<EditedColor Value="$6CE9FF"/>
+		<EditorFontStr Value=""/>
+		<ElementPSs>
+			<Item>
+				<ElementStr Value="&#2;Keyword"/>
+				<ValueStr Value="$7226F9"/>
+			</Item>
+			<Item>
+				<ElementStr Value="&#2;Identifier"/>
+				<ValueStr Value="$008FAF"/>
+			</Item>
+			<Item>
+				<ElementStr Value="&#2;Number"/>
+				<ValueStr Value="$FF81AE"/>
+			</Item>
+			<Item>
+				<ElementStr Value="&#2;String"/>
+				<ValueStr Value="$008000"/>
+			</Item>
+			<Item>
+				<ElementStr Value="&#2;Directive"/>
+				<ValueStr Value="$2EE2A6"/>
+			</Item>
+			<Item>
+				<ElementStr Value="&#2;EnvironmentVar"/>
+				<ValueStr Value="$FF81AE"/>
+			</Item>
+			<Item>
+				<ElementStr Value="&#2;Comment"/>
+				<ValueStr Value="$5E7175"/>
+			</Item>
+			<Item>
+				<ElementStr Value="Symbol"/>
+				<ValueStr Value="$CCCC33"/>
+			</Item>
+		</ElementPSs>
+		<FGColor Value="$FFFFFF"/>
+		<GutterBGColor Value="$2A3130"/>
+		<GutterFGColor Value="$3B5258"/>
+		<HasInsigConflictBGColor Value="$595A5F"/>
+		<HasInsigDiffBGColor Value="$FF000010"/>
+		<HasInsigLeftBGColor Value="$645000"/>
+		<HasInsigOrphanBGColor Value="$FF0000"/>
+		<HasInsigRightBGColor Value="$533E68"/>
+		<HasSigConflictBGColor Value="$838393"/>
+		<HasSigDiffBGColor Value="$000055"/>
+		<HasSigLeftBGColor Value="$A30000"/>
+		<HasSigOrphanBGColor Value="$800080"/>
+		<HasSigRightBGColor Value="$700070"/>
+		<HexFontStr Value=""/>
+		<IgnoredColor Value="$008000"/>
+		<InsigDiffBGColor Value="-"/>
+		<InsigDiffFGColor Value="$FFCC00"/>
+		<InsigDiffFontStyle Value="fssInherit"/>
+		<ItemNumFontStr Value=""/>
+		<ListFontStr Value=""/>
+		<OutputBGColor Value="$58696C"/>
+		<ReplacedDiffBGColor Value="-"/>
+		<ReplacedDiffFGColor Value="$FF0000"/>
+		<ReplacedDiffFontStyle Value="fssItalic"/>
+		<SavedColor Value="$9CF5A8"/>
+		<SelFocusedBGColor Value="$4D5352"/>
+		<SelFocusedFGColor Value="-"/>
+		<SelSystem Value="False"/>
+		<SigDiffBGColor Value="$2C2CA8"/>
+		<SigDiffFGColor Value="-"/>
+		<SigDiffFontStyle Value="fssInherit"/>
+		<StripeBGColor Value="$F9FAF8"/>
+		<UseStripes Value="False"/>
+		<WhitespaceBGColor Value="-"/>
+		<WhitespaceFGColor Value="$FF000010"/>
+	</TFileColors>
+	<TPixColors>
+		<BGColor Value="$232E2E"/>
+		<DiffColor Value="$0000FF"/>
+		<SameColor Value="$000000"/>
+		<ShowCheckerboard Value="True"/>
+		<SimilarColor Value="$FF0000"/>
+	</TPixColors>
+</BCColors>
