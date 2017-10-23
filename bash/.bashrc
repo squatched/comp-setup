@@ -6,14 +6,50 @@ __source_if_file () {
     [[ -f "$1" ]] && source "$1"
 }
 
+#DEBUG_PATH=true
+PATH_CACHE=
+
+__format_path () {
+    echo "${PATH//:/$'\n'}"
+}
+
+__update_path_cache () {
+   [[ $DEBUG_PATH != true ]] && return 0
+
+    PATH_CACHE=$(__format_path)
+}
+
+__display_path () {
+   [[ $DEBUG_PATH != true ]] && return 0
+    
+   echo "$1 PATH:"
+   __format_path
+   echo $'\n'
+}
+
+__display_path_diff () {
+   [[ $DEBUG_PATH != true ]] && return 0
+    
+    DISP_PATH=$(__format_path)
+    echo "$1 PATH Differences:"
+    diff --normal <(echo "$PATH_CACHE") <(echo "$DISP_PATH")
+    echo ""
+    PATH_CACHE=$DISP_PATH
+}
+
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+__update_path_cache
+__display_path "Initial path"
+
 # Source global definitions
 __source_if_file /etc/bashrc
+__display_path_diff "After /etc/bashrc"
 
 # Source pre-proprietary stuff
 __source_if_file ~/.bash_proprietary_pre
+__display_path_diff "After ~/.bash_proprietary_pre"
 
 # Turn off history expansion through '!'.
 set +o histexpand
@@ -39,6 +75,9 @@ export HISTFILESIZE=2000000
 # ignore the exit command and duplicates
 export HISTIGNORE="&:[ ]*:exit:ignoredups"
 
+# Tell ncurses to always use UTF-8 line drawing characters
+export NCURSES_NO_UTF8_ACS=1
+
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
@@ -58,10 +97,12 @@ if $(hash brew 2>/dev/null) && [[ -e "$(brew --prefix git)/etc/bash_completion.d
     source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
     source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
 fi
+__display_path_diff "After git prompt & completion"
 
 # Source fzf auto completion
 __source_if_file /usr/share/fzf/key-bindings.bash
 __source_if_file ~/.fzf.bash
+__display_path_diff "After fzf setup"
 
 # colorize the font if we're capable of doing so
 if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
@@ -88,12 +129,12 @@ PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
 # Alias definitions from a separate file.
 __source_if_file $HOME/.bash_aliases
+__display_path_diff "After .bash_aliases"
 
 # Environment exports from a separate file.
 __source_if_file $HOME/.bash_environment
+__display_path_diff "After .bash_environment"
 
 # Proprietary scripts.
 __source_if_file $HOME/.bash_proprietary_post
-
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-export PATH="$PATH:/usr/local/bin"
+__display_path_diff "After .bash_proprietary_post"
