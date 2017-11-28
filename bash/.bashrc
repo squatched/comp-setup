@@ -51,9 +51,6 @@ __display_path_diff "After /etc/bashrc"
 __source_if_file ~/.bash_proprietary_pre
 __display_path_diff "After ~/.bash_proprietary_pre"
 
-# Turn off history expansion through '!'.
-set +o histexpand
-
 # Disable C-d exiting the shell.
 set -o ignoreeof
 export IGNOREEOF=1000
