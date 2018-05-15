@@ -78,7 +78,9 @@ Write-Debug "Dot sourcing complete."
 ###
 
 ## Notepad Alias
-Set-Alias np "C:\Program Files\Emacs\bin\emacsclientw.exe"
+function np ([String]$file) {
+    & "$Env:ProgramFiles\Emacs\bin\emacsclientw.exe" --alternate-editor="" --create-frame $file
+}
 
 ## Timestamp
 function Get-TimeStamp { Get-Date -UFormat "%Y%m%d%H%M%S" }
