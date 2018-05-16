@@ -40,22 +40,22 @@ function assert (
 [String]$profileScriptsPath          = $profilePath + "\Scripts\"
 [String]$profileScriptsMiscUtils     = $profileScriptsPath + "MiscUtils.ps1"
 [String]$profileScriptsVsVars        = $profileScriptsPath + "VsVars.ps1"                        # Routines for handling visual studio commandline.
-[String]$profileScriptsSCMgmt        = $profileScriptsPath + "SourceControlManagement.ps1"       # Routines for handling common source control tasks.
+#[String]$profileScriptsSCMgmt        = $profileScriptsPath + "SourceControlManagement.ps1"       # Routines for handling common source control tasks.
 [String]$profileScriptsGit           = $profileScriptsPath + "Git.ps1"                           # Custom routines that give us interaction with git.
-[String]$profileScriptsCtags         = $profileScriptsPath + "CtagsGeneration.ps1"               # Routines to generate TAGS files in a hierarchy.
-[String]$profileScriptsHybridRepos   = $profileScriptsPath + "HybridRepositories.ps1"            # Routines to manage P4/Git hybrid repos.
+#[String]$profileScriptsCtags         = $profileScriptsPath + "CtagsGeneration.ps1"               # Routines to generate TAGS files in a hierarchy.
+#[String]$profileScriptsHybridRepos   = $profileScriptsPath + "HybridRepositories.ps1"            # Routines to manage P4/Git hybrid repos.
 
 ## Dot source personal scripts.
 Write-Debug "Dot sourcing: $profileScriptsMiscUtils"
 . $profileScriptsMiscUtils
 Write-Debug "Dot sourcing: $profileScriptsVsVars"
 . $profileScriptsVsVars
-Write-Debug "Dot sourcing: $profileScriptsSCMgmt"
-. $profileScriptsSCMgmt
+#Write-Debug "Dot sourcing: $profileScriptsSCMgmt"
+#. $profileScriptsSCMgmt
 Write-Debug "Dot sourcing: $profileScriptsGit"
 . $profileScriptsGit
-Write-Debug "Dot sourcing: $profileScriptsCtags"
-. $profileScriptsCtags
+#Write-Debug "Dot sourcing: $profileScriptsCtags"
+#. $profileScriptsCtags
 
 ## Load my dev profile stuff if it exists on this machine.
 [String] $devProfilePath             = $profilePath + "\DevScripts\Profile.ps1"
@@ -67,7 +67,7 @@ if ($usingDevProfile) {
 }
 
 ## This requires devProfile to define some things.
-. $profileScriptsHybridRepos
+#. $profileScriptsHybridRepos
 Write-Debug "Dot sourcing complete."
 
 
@@ -103,12 +103,14 @@ function prompt {
     $DebugPreference = "SilentlyContinue"
 
     [String]$prefix = ""
+    [String]$rootPrompt = $Env:USERNAME + "@" + $Env:COMPUTERNAME
+    [String]$separator = ":"
     [String]$location = Get-Location
     [String]$gitString = ""
     [String]$vsString = $currentVsCmdVer
     [String]$p4CliString = ""
     [String]$p4CliBranchString = ""
-    [String]$suffix = ">"
+    [String]$suffix = "`n>"
 
     [String]$gitBranch = Get-GitBranch
     if ($gitBranch) {
@@ -135,18 +137,20 @@ function prompt {
     }
 
     if ($nestedpromptlevel -ge 1) {
-        $suffix = ">>"
+        $suffix += ">"
     }
 
     Write-Host $prefix -nonewline -foregroundcolor Red
-    Write-Host $vsString -nonewline -foregroundcolor Blue
+    Write-Host $vsString -nonewline -foregroundcolor DarkYellow
 
     if ($usingDevProfile -and (Get-Command -CommandType Function -Name DevPrompt -ErrorAction SilentlyContinue)) {
         DevPrompt
     }
 
-    Write-Host $gitstring -nonewline -foregroundcolor DarkYellow
-    Write-Host $location -nonewline -foregroundcolor Yellow
+    Write-Host $gitstring -nonewline -foregroundcolor Yellow
+    Write-Host $rootPrompt -nonewline -foregroundcolor Green
+    Write-Host $separator -nonewline -foregroundcolor Gray
+    Write-Host $location -nonewline -foregroundcolor Blue
     Write-Host $suffix -nonewline -foregroundcolor Gray
 
     $DebugPreference = $oldDebugPreference
