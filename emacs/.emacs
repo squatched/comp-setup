@@ -108,3 +108,4 @@
 
 ;; Disable the system beep warning bell
 (setq ring-bell-function 'ignore)
+(put 'upcase-region 'disabled nil)
