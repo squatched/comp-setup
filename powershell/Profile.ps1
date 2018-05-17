@@ -152,6 +152,7 @@ function prompt {
     Write-Host $separator -nonewline -foregroundcolor Gray
     Write-Host $location -foregroundcolor Blue
 
+    $suffix += ' '
     # Check for ConEmu existance and ANSI emulation enabled
     if ($Env:ConEmuANSI -eq "ON") {
         # Let ConEmu know when the prompt ends, to select typed
@@ -172,6 +173,6 @@ function prompt {
 
     $DebugPreference = $oldDebugPreference
 
-    return $suffix + ' '
+    return $suffix
 }
 Write-Debug "Prompt handler: End"
