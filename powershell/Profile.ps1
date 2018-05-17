@@ -110,7 +110,7 @@ function prompt {
     [String]$vsString = $currentVsCmdVer
     [String]$p4CliString = ""
     [String]$p4CliBranchString = ""
-    [String]$suffix = "`n>"
+    [String]$suffix = ">"
 
     [String]$gitBranch = Get-GitBranch
     if ($gitBranch) {
@@ -150,11 +150,28 @@ function prompt {
     Write-Host $gitstring -nonewline -foregroundcolor Yellow
     Write-Host $rootPrompt -nonewline -foregroundcolor Green
     Write-Host $separator -nonewline -foregroundcolor Gray
-    Write-Host $location -nonewline -foregroundcolor Blue
-    Write-Host $suffix -nonewline -foregroundcolor Gray
+    Write-Host $location -foregroundcolor Blue
+
+    # Check for ConEmu existance and ANSI emulation enabled
+    if ($Env:ConEmuANSI -eq "ON") {
+        # Let ConEmu know when the prompt ends, to select typed
+        # command properly with "Shift+Home", to change cursor
+        # position in the prompt by simple mouse click, etc.
+        $suffix += "$([char]27)]9;12$([char]7)"
+
+        # And current working directory (FileSystem)
+        # ConEmu may show full path or just current folder name
+        # in the Tab label (check Tab templates)
+        # Also this knowledge is crucial to process hyperlinks clicks
+        # on files in the output from compilers and source control
+        # systems (git, hg, ...)
+        if ($location.Provider.Name -eq "FileSystem") {
+            $suffix += "$([char]27)]9;9;`"$($location.Path)`"$([char]7)"
+        }
+    }
 
     $DebugPreference = $oldDebugPreference
 
-    return " "
+    return $suffix + ' '
 }
 Write-Debug "Prompt handler: End"
