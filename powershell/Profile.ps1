@@ -97,20 +97,25 @@ if (!(Test-Path "HKCR:")) {
 
 Write-Debug "Prompt handler: Begin"
 #=============================================================================
+## User's Home Dir
+[String]$__userHomeDir = $Env:HOMEDRIVE + $Env:HOMEPATH
+Write-Debug "User's Home Directory: $__userHomeDir"
+
 ## Adjust the command prompt.
 function prompt {
     [String]$oldDebugPreference = $DebugPreference
     $DebugPreference = "SilentlyContinue"
 
-    [String]$prefix = ""
-    [String]$rootPrompt = $Env:USERNAME + "@" + $Env:COMPUTERNAME
+    $location = Get-Location; Write-Debug "Prompt Var Location: $location"
+    [String]$prefix = "[PS]"
+    [String]$prefixColor = "Gray"
     [String]$separator = ":"
-    [String]$location = Get-Location
+    [String]$locationPath = $location.Path -Replace "^$([Regex]::Escape($__userHomeDir))","~"; Write-Debug "Prompt Var LocationPath: $locationPath"
     [String]$gitString = ""
     [String]$vsString = $currentVsCmdVer
-    [String]$p4CliString = ""
-    [String]$p4CliBranchString = ""
     [String]$suffix = ">"
+
+    Write-Debug "Current location: $locationPath"
 
     [String]$gitBranch = Get-GitBranch
     if ($gitBranch) {
@@ -133,26 +138,21 @@ function prompt {
     }
 
     if (Test-Path variable:/PSDebugContext) {
-        $prefix += "[DBG]: "
+        $prefix += "[DBG]"
+        $prefixColor += "Red"
     }
 
     if ($nestedpromptlevel -ge 1) {
         $suffix += ">"
     }
 
-    Write-Host $prefix -nonewline -foregroundcolor Red
+    [String]$result = $vsString
     Write-Host $vsString -nonewline -foregroundcolor DarkYellow
 
     if ($usingDevProfile -and (Get-Command -CommandType Function -Name DevPrompt -ErrorAction SilentlyContinue)) {
         DevPrompt
     }
 
-    Write-Host $gitstring -nonewline -foregroundcolor Yellow
-    Write-Host $rootPrompt -nonewline -foregroundcolor Green
-    Write-Host $separator -nonewline -foregroundcolor Gray
-    Write-Host $location -foregroundcolor Blue
-
-    $suffix += ' '
     # Check for ConEmu existance and ANSI emulation enabled
     if ($Env:ConEmuANSI -eq "ON") {
         # Let ConEmu know when the prompt ends, to select typed
@@ -166,13 +166,21 @@ function prompt {
         # Also this knowledge is crucial to process hyperlinks clicks
         # on files in the output from compilers and source control
         # systems (git, hg, ...)
-        if ($location.Provider.Name -eq "FileSystem") {
+        if ($locationProvider.Name -eq "FileSystem") {
             $suffix += "$([char]27)]9;9;`"$($location.Path)`"$([char]7)"
         }
     }
 
+    $result += $prefix + $gitString + $separator + $locationPath + $suffix
+    Write-Debug "Calculated prompt text: ${result}"
+    Write-Host $prefix -nonewline -foregroundcolor $prefixColor
+    Write-Host $gitstring -nonewline -foregroundcolor Yellow
+    Write-Host $separator -nonewline -foregroundcolor Gray
+    Write-Host $locationPath -nonewline -foregroundcolor Blue
+    Write-Host $suffix -nonewline -foregroundcolor Gray
+
     $DebugPreference = $oldDebugPreference
 
-    return $suffix
+    return " "
 }
 Write-Debug "Prompt handler: End"
