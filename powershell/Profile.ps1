@@ -166,7 +166,7 @@ function prompt {
         # Also this knowledge is crucial to process hyperlinks clicks
         # on files in the output from compilers and source control
         # systems (git, hg, ...)
-        if ($locationProvider.Name -eq "FileSystem") {
+        if ($location.Provider.Name -eq "FileSystem") {
             $suffix += "$([char]27)]9;9;`"$($location.Path)`"$([char]7)"
         }
     }
