@@ -74,6 +74,9 @@
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "http://melpa.milkbox.net/packages/"))))
+ '(package-selected-packages
+   (quote
+    (yaml-mode textmate smex rinari powershell popup modern-cpp-font-lock lua-mode load-dir json-mode idomenu ido-ubiquitous ecb batch-mode)))
  '(reb-re-syntax (quote string))
  '(save-place t nil (saveplace))
  '(show-paren-mode t)
