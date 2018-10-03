@@ -24,7 +24,7 @@
 ####
 function trySourceDirContents ([String]$dirPath) {
     if (Test-Path $dirPath) {
-        foreach ($file in (Get-ChildItem -Path $dirPath)) {
+        foreach ($file in (Get-ChildItem -Path $dirPath -Filter "*.ps1")) {
             Write-Debug "Dot sourcing: $($file.FullName)"
             . $file.FullName
             Write-Debug "Dot sourcing of $($file.Name) complete."
@@ -33,6 +33,6 @@ function trySourceDirContents ([String]$dirPath) {
 }
 
 ## Dot source all scripts in the given directory.
-[String]$profilePath                    = Split-Path -Parent $MyInvocation.MyCommand.Definition
+[String]$profilePath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 . trySourceDirContents "$profilePath\ProfileAutoLoadScripts\"
 . trySourceDirContents "$profilePath\ProfileAutoLoadProprietaryScripts\"
