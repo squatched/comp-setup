@@ -37,6 +37,3 @@ if ( tryImportModule( "PSReadLine" ) ) {
 
 ## Import posh-git - See https://github.com/dahlbyk/posh-git
 if ( tryImportModule( "posh-git" ) ) {}
-
-## Import powershell community extensions - See https://github.com/Pscx/Pscx
-if ( tryImportModule( "pscx" ) ) {}
