@@ -1,7 +1,8 @@
 ##############################################################################
 #
 #  Microsoft.PowerShell_profile.ps1
-#  Customizes my instance of PowerShell (non-ISE).
+#  Customizes my instance of PowerShell (non-ISE). Is loaded after
+#  Profile.ps1.
 #
 #  By Caleb McCombs (7/28/2013)
 #
