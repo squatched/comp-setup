@@ -34,5 +34,5 @@ function trySourceDirContents ([String]$dirPath) {
 
 ## Dot source all scripts in the given directory.
 [String]$profilePath = Split-Path -Parent $MyInvocation.MyCommand.Definition
-. trySourceDirContents "$profilePath\ProfileAutoLoadScripts\"
-. trySourceDirContents "$profilePath\ProfileAutoLoadProprietaryScripts\"
+. trySourceDirContents "$profilePath\Profile_AutoLoadScripts\"
+. trySourceDirContents "$profilePath\Profile_ProprietaryAutoLoadScripts\"

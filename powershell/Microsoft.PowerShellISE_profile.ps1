@@ -7,4 +7,13 @@
 #
 ####
 
-## Nothing to do here just yet.
+##############################################################################
+#
+#  Load External Scripts & Modules
+#
+####
+
+## Dot source all scripts in the given directory.
+[String]$profilePath = Split-Path -Parent $MyInvocation.MyCommand.Definition
+. trySourceDirContents "$profilePath\PowerShellISE_Profile_AutoLoadScripts\"
+. trySourceDirContents "$profilePath\PowerShellISE_Profile_AutoLoadScripts_Proprietary\"

@@ -14,6 +14,6 @@
 ####
 
 ## Dot source all scripts in the given directory.
-[String]$profilePath                    = Split-Path -Parent $MyInvocation.MyCommand.Definition
-. trySourceDirContents "$profilePath\ProfileAutoLoadDefaultHostScripts\"
-. trySourceDirContents "$profilePath\ProfileAutoLoadProprietaryDefaultHostScripts\"
+[String]$profilePath = Split-Path -Parent $MyInvocation.MyCommand.Definition
+. trySourceDirContents "$profilePath\PowerShell_Profile_AutoLoadScripts\"
+. trySourceDirContents "$profilePath\PowerShell_Profile_ProprietaryAutoLoadScripts\"
