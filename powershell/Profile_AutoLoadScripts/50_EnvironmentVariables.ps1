@@ -7,6 +7,7 @@
 #
 ####
 
+#=============================================================================
 function Get-ProprietaryModulesPath {
     [String[]]$psModulePaths = $Env:PSModulePath.split(';')
     [String[]]$userModulePath = (

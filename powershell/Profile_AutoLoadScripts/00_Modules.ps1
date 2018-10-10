@@ -1,7 +1,9 @@
 ##############################################################################
 #
 #  Modules.ps1
-#  Load modules.
+#  Load modules before they get auto-loaded by using one of their exported
+#  members. That way, when I add something that clashes in my scripts, the
+#  module's version gets over-written.
 #
 #  By Caleb McCombs (2018/10/03)
 #
