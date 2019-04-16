@@ -37,11 +37,14 @@ __display_path_diff () {
     PATH_CACHE=$DISP_PATH
 }
 
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
-
 __update_path_cache
 __display_path "Initial path"
+
+__source_if_file ~/.bash_proprietary_pre_all
+__display_path_diff "After ~/.bash_proprietary_pre_all"
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
 
 # Source global definitions
 __source_if_file /etc/bashrc
