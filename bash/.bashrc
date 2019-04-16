@@ -89,14 +89,26 @@ shopt -s checkwinsize
 [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # source git prompt decoration and tab completion
+distributor_id=''
+hash brew 2>/dev/null && distributor_id="MacOS"
+if hash lsb_release 2>/dev/null; then
+    distributor_id=$(lsb_release -a 2>/dev/null | sed --expression '/^Distributor ID:/!d' --regexp-extended --expression 's/^[^:]+:\s*//')
+fi
+
 # For arch.
-__source_if_file /usr/share/git/completion/git-prompt.sh
-__source_if_file /usr/share/git/completion/git-completion.bash
+if [[ ${distributor_id} == Arch ]]; then
+    __source_if_file /usr/share/git/completion/git-prompt.sh
+    __source_if_file /usr/share/git/completion/git-completion.bash
+fi
+
 # For Ubuntu
-__source_if_file /etc/bash_completion.d/git
-__source_if_file /etc/bash_completion.d/git-prompt
+if [[ ${distributor_id} == Ubuntu ]]; then
+    __source_if_file /etc/bash_completion.d/git
+    __source_if_file /etc/bash_completion.d/git-prompt
+fi
+
 # For MacOS
-if $(hash brew 2>/dev/null) && [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
+if [[ ${distributor_id} == MacOS ]] && [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
     source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
     source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
 fi
