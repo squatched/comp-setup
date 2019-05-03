@@ -4,7 +4,9 @@ set -eou pipefail
 IFS=$'\n\t'
 
 # Won't work in 100% of our cases (http://mywiki.wooledge.org/BashFAQ/028) but it'll do for now.
-SOURCE_DIR="${BASH_SOURCE[@]%/*}/"
+pushd "${BASH_SOURCE[@]%/*}/" >/dev/null
+SOURCE_DIR=$(pwd)
+popd >/dev/null
 
 [[ -d ~/.emacs.d ]] || mkdir ~/.emacs.d
 ln --symbolic --force ${SOURCE_DIR}/.emacs ~/.emacs
