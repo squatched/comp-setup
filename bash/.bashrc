@@ -119,6 +119,10 @@ __source_if_file /usr/share/fzf/key-bindings.bash
 __source_if_file ~/.fzf.bash
 __display_path_diff "After fzf setup"
 
+# Source pyenv/rbenv auto completion
+__source_if_file ~/.rbenv/completions/rbenv.bash
+__source_if_file ~/.pyenv/completions/pyenv.bash
+
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
