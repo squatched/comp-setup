@@ -26,8 +26,8 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
- '(auto-save-file-name-transforms (quote ((".*" "~/.emacs.autosaves/\\1" t))))
- '(backup-directory-alist (quote ((".*" . "~/.emacs.backups/"))))
+ '(auto-save-file-name-transforms (quote ((".*" "~/.emacs.d/auto-saves/\\1" t))))
+ '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backups/"))))
  '(c-tab-always-indent nil)
  '(column-number-mode t)
  '(custom-enabled-themes (quote (deeper-blue)))
@@ -79,6 +79,7 @@
     (powershell yaml-mode textmate smex rinari popup modern-cpp-font-lock lua-mode load-dir json-mode idomenu ido-ubiquitous ecb batch-mode)))
  '(reb-re-syntax (quote string))
  '(save-place t nil (saveplace))
+ '(save-place-mode t nil (saveplace))
  '(show-paren-mode t)
  '(tab-always-indent (quote complete))
  '(tab-width 2)

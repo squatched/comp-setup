@@ -9,6 +9,6 @@ SOURCE_DIR=$(pwd)
 popd >/dev/null
 
 [[ -d ~/.emacs.d ]] || mkdir ~/.emacs.d
-ln --symbolic --force ${SOURCE_DIR}/.emacs ~/.emacs
+ln --symbolic --force ${SOURCE_DIR}/init.el ~/.emacs.d/init.el
 ln --symbolic --force --no-target-directory ${SOURCE_DIR}/elpa ~/.emacs.d/elpa
 ln --symbolic --force --no-target-directory ${SOURCE_DIR}/init ~/.emacs.d/init
