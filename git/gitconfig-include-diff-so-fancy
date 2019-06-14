@@ -7,7 +7,7 @@
 #   path = /full/path/to/file
 
 [core]
-  pager = diff-so-fancy | less --tabs=4 -RFX
+	pager = diff-so-fancy | less --tabs=4 -RFX
 [color]
 	ui = always
 [color "diff"]
@@ -16,9 +16,16 @@
 	frag = "magenta bold"
 	old = "red bold"
 	new = "green bold"
-	whitespace = red reverse
+	whitespace = "red reverse"
 [color "diff-highlight"]
 	oldNormal = "red bold"
 	oldHighlight = "red bold 52"
 	newNormal = "green bold"
 	newHighlight = "green bold 22"
+[diff-so-fancy]
+	first-run = false
+
+# Add an alias for generating patch files.
+# Suitable for usage like `git patch >delta.patch`
+[alias]
+	patch = !git --no-pager diff --no-color
