@@ -23,7 +23,10 @@ fi
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Enable emacsclient while sudoing.
-alias sudoemacsclient="SUDO_EDITOR=\"emacsclient -nw\" sudo -e"
+alias sudoemacsclient="SUDO_EDITOR=\"emacsclient --tty\" sudo -e"
+alias sudodoom-emacsclient="SUDO_EDITOR=\"emacsclient --tty --socket-name=doom \" sudo -e"
+alias sudoemacs="SUDO_EDITOR=\"emacs --no-window-system\" sudo -e"
+alias sudodoom-emacs="SUDO_EDITOR=\"emacs --with-profile=doom --no-window-system\" sudo -e"
 
 # Add the UUID to lsblk's default output.
 alias lsblk="lsblk --output=+UUID"
