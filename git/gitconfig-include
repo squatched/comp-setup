@@ -5,7 +5,7 @@
 
 # Set emacsclient as the deault editor.
 [core]
-	editor = emacsclient -nw --alternate-editor=\"\"
+	editor = emacs --with-profile=doom
 
 # Use a newer heuristic that groups changed hunks a little better.
 #
