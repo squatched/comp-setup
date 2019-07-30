@@ -21,7 +21,7 @@ __update_path_cache () {
 
 __display_path () {
    [[ $DEBUG_PATH != true ]] && return 0
-    
+
    echo "$1 PATH:"
    __format_path
    echo $'\n'
@@ -29,7 +29,7 @@ __display_path () {
 
 __display_path_diff () {
    [[ $DEBUG_PATH != true ]] && return 0
-    
+
     DISP_PATH=$(__format_path)
     echo "$1 PATH Differences:"
     diff --normal <(echo "$PATH_CACHE") <(echo "$DISP_PATH")
@@ -105,6 +105,7 @@ fi
 if [[ ${distributor_id} == Ubuntu ]]; then
     __source_if_file /etc/bash_completion.d/git
     __source_if_file /etc/bash_completion.d/git-prompt
+    __source_if_file /usr/share/bash-completion/completions/git
 fi
 
 # For MacOS
@@ -135,12 +136,12 @@ esac
 
 if [[ -n ${force_color_prompt} ]]; then
     if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
