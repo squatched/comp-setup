@@ -177,6 +177,9 @@ fi
 __source_if_file $HOME/.bash_aliases
 __display_path_diff "After .bash_aliases"
 
+__source_if_file $HOME/.bash_functions
+__display_path_diff "After .bash_functions"
+
 # Environment exports from a separate file.
 __source_if_file $HOME/.bash_environment
 __display_path_diff "After .bash_environment"
