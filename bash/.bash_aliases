@@ -24,3 +24,6 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 
 # Enable emacsclient while sudoing.
 alias sudoemacsclient="SUDO_EDITOR=\"emacsclient -nw\" sudo -e"
+
+# Add the UUID to lsblk's default output.
+alias lsblk="lsblk --output=NAME,MAJ:MIN,RM,SIZE,RO,TYPE,MOUNTPOINT,UUID"
