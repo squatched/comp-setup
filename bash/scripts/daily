@@ -1,0 +1,95 @@
+#!/bin/bash
+
+getopt --test >/dev/null
+if [[ ${?} -ne 4 ]]; then
+    printf "Missing the right `getopt` version.\n"
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+deobfuscate() {
+    tr '[N-ZA-M]' '[A-Z]' <<<"${@}" | tr '[n-za-m]' '[a-z]'
+}
+
+push_pop_close_string=''
+pud () {
+    local open_string="########## ${1^^} ##########"
+    IFS=$' ' push_pop_close_string=$(printf '%.s#' $(eval echo {1..${#open_string}}))
+    printf "${open_string}\n"
+}
+
+pod () {
+    set +u; suffix=${1}; set -u
+    printf "${push_pop_close_string}${suffix}"
+    push_pop_close_string=''
+}
+
+password=""
+stdin_password() {
+    cat <<EOF
+${password}
+EOF
+}
+
+sudo_exec() {
+    stdin_password | sudo --stdin "$@"
+}
+
+show_help() {
+    cat <<EOF
+Usage: ${0##*/} [options]
+Simplify a set of things I do every day.
+  -h | --help   Display this help.
+  -f | --force  Force auth to happen. (Does nothing this version of the script.)
+EOF
+}
+
+PARSED_ARGS=$(getopt --options=hf --longoptions=help,force --name ${0##*/} -- "$@")
+if [[ ${?} -ne 0 ]]; then
+    # Getopt has complained about invalid arguments.
+    exit 2
+fi
+
+FORCE=""
+eval set -- "${PARSED_ARGS}"
+while [[ ${#} -gt 0 ]]; do
+    case "${1}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -f|--force)
+            FORCE=true
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            printf "Programming error... Go yell at Caleb.\n"
+            exit 3
+            ;;
+    esac
+done
+
+printf "Enter your password: "
+read -rs password
+printf "\n\n"
+
+pud "Updating System Packages"
+sudo_exec apt-get --assume-yes update
+sudo_exec apt-get --assume-yes upgrade
+#sudo_exec snap refresh
+pod "\n\n"
+
+pud "Updating Git Projects"
+pushd ~/Projects >/dev/null
+./update.sh
+popd >/dev/null
+pod "\n\n"
+
+printf "Completed: "
+date
