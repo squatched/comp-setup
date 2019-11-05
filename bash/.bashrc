@@ -95,24 +95,24 @@ if hash lsb_release 2>/dev/null; then
     distributor_id=$(lsb_release -a 2>/dev/null | sed --expression '/^Distributor ID:/!d' --regexp-extended --expression 's/^[^:]+:\s*//')
 fi
 
-# For arch.
-if [[ ${distributor_id} == Arch ]]; then
-    __source_if_file /usr/share/git/completion/git-prompt.sh
-    __source_if_file /usr/share/git/completion/git-completion.bash
-fi
-
-# For Ubuntu
-if [[ ${distributor_id} == Ubuntu ]]; then
-    __source_if_file /etc/bash_completion.d/git
-    __source_if_file /etc/bash_completion.d/git-prompt
-    __source_if_file /usr/share/bash-completion/completions/git
-fi
-
-# For MacOS
-if [[ ${distributor_id} == MacOS ]] && [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
-    source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
-    source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
-fi
+case $distributor_id in
+    Arch|Manjaro|BlackArch)
+        # Arch based distros
+        __source_if_file /usr/share/git/completion/git-prompt.sh
+        __source_if_file /usr/share/git/completion/git-completion.bash
+        ;;
+    Ubuntu|Parrot)
+        # Debian distros
+        __source_if_file /usr/lib/git-core/git-sh-prompt
+        __source_if_file /usr/share/bash-completion/completions/git
+        ;;
+    MacOS)
+        if [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
+            source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
+            source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
+        fi
+        ;;
+esac
 __display_path_diff "After git prompt & completion"
 
 # Source fzf auto completion
@@ -145,15 +145,28 @@ if [[ -n ${force_color_prompt} ]]; then
     fi
 fi
 
+xtc_default=
+xtc_yellow=
+xtc_green=
+xtc_purple=
 if [[ ${color_prompt} = yes ]]; then
-    PS1='\[\033[01;32m\]\u@${HOSTNAME_PROMPT_LABEL:-\h}\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    # Set a bunch of xTerm colors.
+    xtc_default='\[\e[00;00m\]'
+    xtc_yellow='\[\e[01;33m\]'
+    xtc_green='\[\e[01;32m\]'
+    xtc_purple='\[\e[01;34m\]'
+fi
+
+# Customize the prompt based on the presence of __git_ps1.
+if type __git_ps1 >/dev/null; then
+    PROMPT_PRE_GIT=''
+    PROMPT_POST_GIT=$xtc_green'\u@${HOSTNAME_PROMPT_LABEL:-\h}'$xtc_default':'$xtc_purple'\w'$xtc_default'$ '
+    PROMPT_GIT=$xtc_yellow'[%s]'$xtc_default
+    PROMPT_COMMAND='__git_ps1 "$PROMPT_PRE_GIT" "$PROMPT_POST_GIT" "$PROMPT_GIT"'
 else
-    PS1='\u@${HOSTNAME_PROMPT_LABEL:-\h}:\w\$ '
+    PS1=$xtc_green'\u@${HOSTNAME_PROMPT_LABEL:-\h}'$xtc_default':'$xtc_purple'\w'$xtc_default'$ '
 fi
 unset color_prompt force_color_prompt
-
-# add git decoration
-PS1='$(__git_ps1 "\[\e[33;1m\][%s]\[\e[0m\]")'$PS1
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
