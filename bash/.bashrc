@@ -178,7 +178,7 @@ PROMPT_PRE_GIT=$PROMPT_PRE_GIT'['$xtc_green'\w'$xtc_red']'$xtc_default
 # Second line └──╼ $
 PROMPT_POST_GIT='\n'$xtc_red'└──╼ '$xtc_yellow'$'$xtc_default
 
-if type __git_ps1 >/dev/null; then
+if type __git_ps1 >/dev/null 2>&1; then
     # Git customization, show in yellow.
     PROMPT_GIT=$xtc_red'─['$xtc_yellow'%s'$xtc_red']'$xtc_default
 
