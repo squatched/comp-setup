@@ -149,22 +149,44 @@ xtc_default=
 xtc_yellow=
 xtc_green=
 xtc_purple=
+xtc_red=
+xtc_white=
+xtc_lblue=
+xtc_lgreen=
 if [[ ${color_prompt} = yes ]]; then
     # Set a bunch of xTerm colors.
     xtc_default='\[\e[00;00m\]'
     xtc_yellow='\[\e[01;33m\]'
     xtc_green='\[\e[01;32m\]'
     xtc_purple='\[\e[01;34m\]'
+    xtc_red='\[\e[00;31m\]'
+    xtc_white='\[\e[00;37m\]'
+    xtc_lblue='\[\e[01;96m\]'
+    xtc_lgreen='\[\e[00;39m\]'
 fi
 
-# Customize the prompt based on the presence of __git_ps1.
+# Prompt customization. Broken up this way to facilitate
+# PROMPT_COMMAND='__git_ps1 ...'
+# Red with an optional (white) [✗] if the last command failed.
+PROMPT_PRE_GIT=$xtc_red'┌─$([[ $? != 0 ]] && echo "['$xtc_white'✗'$xtc_red']─")'
+# [user with normal user being green and root being red.
+PROMPT_PRE_GIT=$PROMPT_PRE_GIT'['$(if [[ ${EUID} == 0 ]]; then echo $xtc_red'root'; else echo $xtc_lgreen'\u'; fi)
+# yellow '@' and light blue hostname with red ']─'.
+PROMPT_PRE_GIT=$PROMPT_PRE_GIT$xtc_yellow'@'$xtc_lblue'${HOSTNAME_PROMPT_LABEL:-\h}'$xtc_red']─'
+# [pwd] (green)
+PROMPT_PRE_GIT=$PROMPT_PRE_GIT'['$xtc_green'\w'$xtc_red']'$xtc_default
+# Second line └──╼ $
+PROMPT_POST_GIT='\n'$xtc_red'└──╼ '$xtc_yellow'$'$xtc_default
+
 if type __git_ps1 >/dev/null; then
-    PROMPT_PRE_GIT=''
-    PROMPT_POST_GIT=$xtc_green'\u@${HOSTNAME_PROMPT_LABEL:-\h}'$xtc_default':'$xtc_purple'\w'$xtc_default'$ '
-    PROMPT_GIT=$xtc_yellow'[%s]'$xtc_default
+    # Git customization, show in yellow.
+    PROMPT_GIT=$xtc_red'─['$xtc_yellow'%s'$xtc_red']'$xtc_default
+
     PROMPT_COMMAND='__git_ps1 "$PROMPT_PRE_GIT" "$PROMPT_POST_GIT" "$PROMPT_GIT"'
 else
-    PS1=$xtc_green'\u@${HOSTNAME_PROMPT_LABEL:-\h}'$xtc_default':'$xtc_purple'\w'$xtc_default'$ '
+    PS1=$PROMPT_PRE_GIT$PROMPT_POST_GIT
+
+    unset PROMPT_PRE_GIT PROMPT_POST_GIT
 fi
 unset color_prompt force_color_prompt
 
