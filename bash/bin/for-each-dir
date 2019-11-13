@@ -8,8 +8,12 @@ function back_to_parent {
 }
 trap back_to_parent EXIT
 
+first_subdir_visited=false
 for subdir in ./*/; do
     cd "${subdir}"
+    ${first_subdir_visited} && printf "\n"
+    printf "%s:\n" "${subdir:2:$((${#subdir}-3))}"
     "${@}"
     back_to_parent
+    first_subdir_visited=true
 done
