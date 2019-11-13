@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+
+getopt --test >/dev/null
+if [[ ${?} -ne 4 ]]; then
+    printf "Missing the right `getopt` version.\n"
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+function show_help() {
+    cat <<EOF
+Usage: ${0##*/} <command>
+Run one of the commands for controlling a media player.
+  -h | --help   Display this help.
+
+commands: [playpause|next|prev]
+EOF
+}
+
+PARSED_ARGS=$(getopt --options=h --longoptions=help --name ${0##*/} -- "$@")
+if [[ ${?} -ne 0 ]]; then
+    # Getopt has complained about invalid arguments.
+    exit 2
+fi
+
+eval set -- "${PARSED_ARGS}"
+while [[ ${#} -gt 0 ]]; do
+    case "${1}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            printf "Programming error... Go yell at Caleb.\n"
+            exit 3
+            ;;
+    esac
+    shift
+done
+
+MEDIA_COMMAND="${1:-}"
+if [[ -z ${MEDIA_COMMAND} ]]; then
+    printf "No command given.\n"
+    exit 4
+fi
+
+function find_destinations() {
+    local names=$(
+        dbus-send \
+            --print-reply \
+            --session \
+            --dest=org.freedesktop.DBus \
+            /org/freedesktop/DBus \
+            org.freedesktop.DBus.ListNames | \
+            grep --fixed-strings org.mpris.MediaPlayer2 | \
+            awk '{print $2}' | \
+            sed --expression 's|"||g'
+          )
+
+    printf "$names"
+}
+
+function send_command() {
+    local dest="${1}"
+    local command="${2}"
+
+    dbus-send \
+        --print-reply \
+        --dest="$dest" \
+        /org/mpris/MediaPlayer2 \
+        "org.mpris.MediaPlayer2.Player.${2}"
+}
+
+case "${MEDIA_COMMAND,,}" in
+    play|pause|playpause)
+        MEDIA_COMMAND=PlayPause
+        ;;
+    next|nexttrack|next_track)
+        MEDIA_COMMAND=Next
+        ;;
+    prev|previous|prevtrack|previoustrack|prev_track|previous_track)
+        MEDIA_COMMAND=Previous
+        ;;
+    *)
+        show_help
+        exit 0
+        ;;
+esac
+
+set -x
+while read -r destination; do
+    send_command "${destination}" "${MEDIA_COMMAND}"
+done <<< "$(find_destinations)"
+
+exit 0

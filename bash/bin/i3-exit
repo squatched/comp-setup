@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+getopt --test >/dev/null
+if [[ ${?} -ne 4 ]]; then
+    printf "Missing the right `getopt` version.\n"
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+show_help() {
+    cat <<EOF
+Usage: ${0##*/} <command>
+Script around system management functions for the i3 wm.
+
+Commands:
+    lock
+    logout
+    suspend
+    reboot
+    shutdown
+EOF
+}
+
+PARSED_ARGS=$(getopt --options=h --longoptions=help --name ${0##*/} -- "$@")
+if [[ ${?} -ne 0 ]]; then
+    # Getopt has complained about invalid arguments.
+    exit 2
+fi
+
+eval set -- "${PARSED_ARGS}"
+while [[ ${#} -gt 0 ]]; do
+    case "${1}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            printf "Programming error... Go yell at Caleb.\n"
+            exit 3
+            ;;
+    esac
+done
+
+case "${1:-}" in
+    lock)
+        i3lock
+        ;;
+    logout)
+        i3-msg exit
+        ;;
+    suspend)
+        # Don't need i3lock because system policies already enforce locking.
+        systemctl suspend
+        ;;
+    reboot)
+        systemctl reboot
+        ;;
+    shutdown)
+        systemctl poweroff
+        ;;
+    help)
+        show_help
+        ;;
+    *)
+        printf "Unknown command or none given.\n\n"
+        exit 4
+        ;;
+esac
