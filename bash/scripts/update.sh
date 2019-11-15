@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -ueo pipefail
-IFS='$\n\t'
+IFS=$'\n\t'
 
 PUSH_POP_CLOSE_STRING=''
 pud () {
