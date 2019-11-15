@@ -26,6 +26,12 @@ pud comp-setup
 git pull
 pod "\n\n"
 
+pud comp-setup/emacs-doom/doom-emacs
+bin/doom clean
+bin/doom --yes upgrade
+bin/doom --yes compile :core
+pod "\n\n"
+
 pud diff-so-fancy
 git fetch
 git checkout tags/$(git tag --list | tail -1)
@@ -52,14 +58,6 @@ pod "\n\n"
 #pud chemacs
 #git pull
 #pod "\n\n"
-
-#pud doom-emacs
-#bin/doom clean
-#git pull
-#bin/doom --yes update
-#bin/doom --yes refresh
-#bin/doom --yes compile :core
-#pod "\n"
 
 #pud yakuake-init
 #git pull
