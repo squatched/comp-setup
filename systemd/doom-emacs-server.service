@@ -1,0 +1,15 @@
+[Unit]
+Description=Doom Emacs: Emacs for stubborn, shell-dwelling, and melodromatic folks, envious of the features of modern text editors.
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/emacs --daemon --with-profile=doom
+ExecStop=/usr/bin/emacsclient --socket-name=doom --eval "(kill-emacs)"
+Restart=ne
+
+# Remove the limit in startup timeout, since emacs cloning
+# and building all packages can take time.
+TimeoutStartSec=0
+
+[Install]
+WantedBy=default.target
