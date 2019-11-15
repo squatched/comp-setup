@@ -6,7 +6,7 @@ IFS='$\n\t'
 PUSH_POP_CLOSE_STRING=''
 pud () {
     OPEN_STRING="########## UPDATING ${1^^} ##########"
-    PUSH_POP_CLOSE_STRING=$(printf '#%.0s' $(eval echo {1..${#OPEN_STRING}}))
+    IFS=' ' PUSH_POP_CLOSE_STRING=$(printf '#%.0s' $(eval echo {1..${#OPEN_STRING}}))
     printf "${OPEN_STRING}\n"
     pushd $1 >/dev/null
 }
