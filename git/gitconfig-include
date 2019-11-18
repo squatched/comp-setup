@@ -5,7 +5,7 @@
 
 # Set emacsclient as the deault editor.
 [core]
-	editor = emacsclient --tty --socket-name=doom
+	editor = emacsclient --tty
 
 # Use a newer heuristic that groups changed hunks a little better.
 #
