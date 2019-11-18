@@ -12,7 +12,8 @@ IFS=$'\n\t'
 show_help() {
     cat <<EOF
 Usage: ${0##*/} <command>
-Script around system management functions for the i3 wm.
+Script around system management functions for the i3 wm. Integrates with
+xautolock for locking needs.
 
 Commands:
     lock
@@ -49,13 +50,13 @@ done
 
 case "${1:-}" in
     lock)
-        i3lock
+        eval "${LOCK_CMD}"
         ;;
     logout)
         i3-msg exit
         ;;
     suspend)
-        # Don't need i3lock because system policies already enforce locking.
+        eval "${LOCK_CMD}"
         systemctl suspend
         ;;
     reboot)
