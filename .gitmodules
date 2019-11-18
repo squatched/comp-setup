@@ -1,4 +1,4 @@
 [submodule "emacs-doom/doom-emacs"]
 	path = emacs-doom/doom-emacs
-	url = ssh://github-personal/hlissner/doom-emacs.git
+	url = https://github.com/hlissner/doom-emacs.git
 	branch = develop
