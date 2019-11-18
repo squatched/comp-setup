@@ -9,7 +9,11 @@ fi
 set -euo pipefail
 IFS=$'\n\t'
 
-show_help() {
+function lock() {
+    xautolock -locknow
+}
+
+function show_help() {
     cat <<EOF
 Usage: ${0##*/} <command>
 Script around system management functions for the i3 wm. Integrates with
@@ -50,13 +54,13 @@ done
 
 case "${1:-}" in
     lock)
-        eval "${LOCK_CMD}"
+        lock
         ;;
     logout)
         i3-msg exit
         ;;
     suspend)
-        eval "${LOCK_CMD}"
+        lock
         systemctl suspend
         ;;
     reboot)
