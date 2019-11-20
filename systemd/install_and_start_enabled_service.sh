@@ -88,5 +88,6 @@ install -D --target-directory="${install_path}" "${systemd_unit_path}"
 ${install_only} && exit 0
 
 systemd_unit=$(basename "${systemd_unit_path}")
+systemctl ${systemd_user_arg} reload-daemon
 systemctl ${systemd_user_arg} start ${systemd_unit}
 systemctl ${systemd_user_arg} enable ${systemd_unit}
