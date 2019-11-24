@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+getopt --test >/dev/null
+if [[ ${?} -ne 4 ]]; then
+    printf "Missing the right `getopt` version.\n"
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+function show_help() {
+    cat <<EOF
+Usage: ${0##*/} [options] <directory>
+Assemble a conf file from all the *.conf files in its associated *.conf.d
+directory. Note that the order of the resulting file is determined by order
+that the shell resolves the glob <directory>/*.conf. The resulting file will
+be placed next to the directory, named the same as the directory without
+the trailing '.d'. e.g. - foo.conf.d will generate foo.conf.
+
+Options:
+    -h | --help         Display this help.
+    -o | --out-file     Specify the output file's location.
+EOF
+}
+
+OUT_FILE_OVERRIDE=""
+PARSED_ARGS=$(getopt --options=ho: --longoptions=help,out-file --name ${0##*/} -- "$@")
+if [[ ${?} -ne 0 ]]; then
+    # Getopt has complained about invalid arguments.
+    exit 2
+fi
+
+eval set -- "${PARSED_ARGS}"
+while [[ ${#} -gt 0 ]]; do
+    case "${1}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -o|--out-file)
+            shift
+            OUT_FILE_OVERRIDE="${1}"
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            printf "Programming error... Go yell at Caleb.\n"
+            exit 3
+            ;;
+    esac
+    shift
+done
+
+# Strip trailing slash if given.
+CONF_DIRECTORY="${1%%/}"
+if [[ ! -d ${CONF_DIRECTORY} ]]; then
+    printf "Must specify a conf directory.\n"
+    exit 4
+fi
+
+if [[ -z ${OUT_FILE_OVERRIDE} ]]; then
+    if [[ ${CONF_DIRECTORY} != *.conf.d ]]; then
+        printf "Specified directory does not end in \".conf.d\" so you must specify an output file explicitly.\n"
+        exit 5
+    fi
+    OUT_FILE="${CONF_DIRECTORY/%.conf.d/.conf}"
+else
+    OUT_FILE="${OUT_FILE_OVERRIDE}"
+fi
+
+TMP_FILE=$(mktemp -t "${0##*/}.tmp.XXXXXX")
+if [[ -z ${TMP_FILE} ]]; then
+    printf "Unable to create a tmp file.\n"
+    exit 5
+fi
+function cleanup_tmp() {
+    rm ${TMP_FILE};
+}
+trap cleanup_tmp EXIT
+
+first_file_included=false
+for conf_file in "${CONF_DIRECTORY}"/*; do
+    [[ ${conf_file} != *.conf ]] && continue
+
+    ${first_file_included} && printf "\n\n" >>${TMP_FILE}
+
+    open_string="########## SOURCE FILE ${conf_file##*/} ##########"
+    IFS=' ' close_string=$(printf '#%.0s' $(eval echo {1..${#open_string}}))
+    printf "%s\n" "${open_string}" >>${TMP_FILE}
+    cat "${conf_file}" >>${TMP_FILE}
+    printf "%s\n" "${close_string}" >>${TMP_FILE}
+    first_file_included=true
+done
+
+cp --force "${TMP_FILE}" "${OUT_FILE}"
