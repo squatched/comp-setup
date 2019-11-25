@@ -29,7 +29,7 @@ pod "\n\n"
 pud comp-setup/emacs-doom/doom-emacs
 if [[ $(date "+%A") == "Monday" ]]; then
     bin/doom clean
-    bin/doom --yes upgrade
+    bin/doom upgrade
     bin/doom --yes compile :core
 else
     printf "Skipping for today...\n"
