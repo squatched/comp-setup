@@ -242,5 +242,7 @@ __display_path_diff "After .bash_proprietary_post"
 # Always include the systemd expected local bin. This is where I put
 # my scripts so to keep things sane, I'll include it even in non
 # systemd managed systems.
-$(echo ${PATH} | grep "/.local/bin") || PATH="${HOME}/.local/bin:${PATH}"
+echo "${PATH}" | grep "/.local/bin" >/dev/null || PATH="${HOME}/.local/bin:${PATH}"
 __display_path_diff "After ~/.local/bin setup"
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
