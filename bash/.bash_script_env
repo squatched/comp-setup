@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# rbenv
+if [[ -d ${HOME}/.rbenv ]]; then
+    export RBENV_ROOT="${HOME}/.rbenv"
+    export PATH="${RBENV_ROOT}/bin:${PATH}"
+    eval "$(rbenv init -)"
+    __source_if_file ~/.rbenv/completions/rbenv.bash
+fi
+
+# pyenv
+if [[ -d ${HOME}/.pyenv ]]; then
+    export PYENV_ROOT="${HOME}/.pyenv"
+    export PATH="${PYENV_ROOT}/bin:${PATH}"
+    eval "$(pyenv init -)"
+    __source_if_file ~/.pyenv/completions/pyenv.bash
+fi

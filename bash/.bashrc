@@ -40,7 +40,7 @@ __display_path_diff () {
 __update_path_cache
 __display_path "Initial path"
 
-__source_if_file ~/.bash_proprietary_pre_all
+__source_if_file ${HOME}/.bash_proprietary_pre_all
 __display_path_diff "After ~/.bash_proprietary_pre_all"
 
 # If not running interactively, don't do anything
@@ -51,7 +51,7 @@ __source_if_file /etc/bashrc
 __display_path_diff "After /etc/bashrc"
 
 # Source pre-proprietary stuff
-__source_if_file ~/.bash_proprietary_pre
+__source_if_file ${HOME}/.bash_proprietary_pre
 __display_path_diff "After ~/.bash_proprietary_pre"
 
 # Turn off history expansion through '!'.
@@ -117,24 +117,20 @@ __display_path_diff "After git prompt & completion"
 
 # Source fzf auto completion
 __source_if_file /usr/share/fzf/key-bindings.bash
-__source_if_file ~/.fzf.bash
+__source_if_file ${HOME}/.fzf.bash
 __display_path_diff "After fzf setup"
-
-# Source pyenv/rbenv auto completion
-__source_if_file ~/.rbenv/completions/rbenv.bash
-__source_if_file ~/.pyenv/completions/pyenv.bash
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
+    linux|xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+#force_color_prompt=true
 
-if [[ -n ${force_color_prompt} ]]; then
+if ${force_color_prompt:-false}; then
     if [[ -x /usr/bin/tput ]] && tput setaf 1 >&/dev/null; then
         # We have color support; assume it's compliant with Ecma-48
         # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
@@ -224,6 +220,10 @@ fi
 # Configure Perforce
 [[ -f $HOME/.p4config ]] && export P4CONFIG=$HOME/.p4config
 
+# Source script environment setup.
+__source_if_file ${HOME}/.bash_script_env
+__display_path_diff "After .bash_script_env"
+
 # Alias definitions from a separate file.
 __source_if_file $HOME/.bash_aliases
 __display_path_diff "After .bash_aliases"
@@ -238,3 +238,9 @@ __display_path_diff "After .bash_environment"
 # Proprietary scripts.
 __source_if_file $HOME/.bash_proprietary_post
 __display_path_diff "After .bash_proprietary_post"
+
+# Always include the systemd expected local bin. This is where I put
+# my scripts so to keep things sane, I'll include it even in non
+# systemd managed systems.
+$(echo ${PATH} | grep "/.local/bin") || PATH="${HOME}/.local/bin:${PATH}"
+__display_path_diff "After ~/.local/bin setup"

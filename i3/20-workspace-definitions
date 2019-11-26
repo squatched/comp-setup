@@ -1,0 +1,11 @@
+# Naming my workspaces.
+set $workspace1 1:chime
+set $workspace2 2:im
+set $workspace3 3:work
+set $workspace4 4:work-cli
+set $workspace5 5:personal
+set $workspace6 6:personal-im
+set $workspace7 7:mail
+set $workspace8 8
+set $workspace9 9
+set $workspace10 0:ctrl

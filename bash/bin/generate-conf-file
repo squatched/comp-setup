@@ -130,4 +130,4 @@ fi
 
 CP_ARG_FORCE=""
 ${OPT_FORCE} && CP_ARG_FORCE="--force"
-cp "${CP_ARG_FORCE}" "${TMP_FILE}" "${OUT_FILE}"
+cp ${CP_ARG_FORCE} "${TMP_FILE}" "${OUT_FILE}"

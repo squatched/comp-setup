@@ -61,6 +61,7 @@ case "${1:-}" in
         ;;
     suspend)
         lock
+        sleep 1
         systemctl suspend
         ;;
     reboot)

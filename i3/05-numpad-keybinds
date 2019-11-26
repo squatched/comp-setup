@@ -1,0 +1,13 @@
+# Getting around https://github.com/i3/i3/issues/2558 and making
+# the numpad keys useable in a sane way.
+# Thanks "rpicot" https://github.com/i3/i3/issues/2558#issuecomment-262484806
+set $KP_1 87
+set $KP_2 88
+set $KP_3 89
+set $KP_4 83
+set $KP_5 84
+set $KP_6 85
+set $KP_7 79
+set $KP_8 80
+set $KP_9 81
+set $KP_0 90

@@ -17,4 +17,5 @@ ln --symbolic --force ${SOURCE_DIR}/.bashrc ~/.bashrc.mine
 ln --symbolic --force ~/.bashrc.mine ~/.bashrc
 ln --symbolic --force ${SOURCE_DIR}/.bash_aliases ~/.bash_aliases
 ln --symbolic --force ${SOURCE_DIR}/.bash_functions ~/.bash_functions
+ln --symbolic --force ${SOURCE_DIR}/.bash_script_env ~/.bash_script_env
 ln --symbolic --force ${SOURCE_DIR}/tmux/.tmux.conf ~/.tmux.conf

@@ -1,0 +1,18 @@
+# Setup a shutdown/lock/etc mode. Shortcut reminders are in the
+# mode name.
+set $mode_system_name System (l) lock, (e) logout, (s) suspend, (r) reboot, (Shift+s) shutdown
+mode "$mode_system_name" {
+         bindsym l exec --no-startup-id $lock, mode "default"
+         bindsym e exec --no-startup-id i3-exit logout, mode "default"
+         bindsym s exec --no-startup-id i3-exit suspend, mode "default"
+         bindsym r exec --no-startup-id i3-exit reboot, mode "default"
+         bindsym Shift+s exec --no-startup-id i3-exit shutdown, mode "default"
+
+         # Cancel mode: Enter, Escape, or Ctrl+g
+         bindsym Return mode "default"
+         bindsym Escape mode "default"
+         bindsym Ctrl+g mode "default"
+
+}
+bindsym $mod+Delete mode "$mode_system_name"
+bindsym $mod+Pause mode "$mode_system_name"
