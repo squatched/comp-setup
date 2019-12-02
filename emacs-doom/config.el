@@ -6,3 +6,10 @@
 (projectile-register-project-type 'Brazil-Package '("Config")
                                   :compile "brazil-build")
 (projectile-register-project-type 'Brazil-Workspace '("packageInfo"))
+
+;; From @Henrik (via Discord):
+;; A breaking update in the doom-modeline package is causing (void-function battery-update) errors at startup. It was introduced in https://github.com/seagle0128/doom-modeline/commit/247d77cc60dffb85f779c612fe792c07a8b5705a.
+;;
+;; - The issue has been reported: https://github.com/seagle0128/doom-modeline/issues/274
+;; - Adding this to ~/.doom.d/config.el will suppress the error while we wait for a fix: (fset 'battery-update #'ignore)
+(fset 'battery-update #'ignore)
