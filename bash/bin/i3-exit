@@ -10,6 +10,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 function lock() {
+    xautolock -enable
     xautolock -locknow
 }
 

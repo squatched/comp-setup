@@ -1,0 +1,17 @@
+# Start i3bar to display a workspace bar (plus the system information i3status
+# finds out, if available)
+bar {
+        #status_command i3status
+        status_command i3blocks -c ~/.config/i3/i3blocks.conf
+        font pango:Sans 10
+        colors {
+               background $color-bg
+               separator  $color-separator
+
+               # <colorclass>       <border>            <background>        <text>
+               focused_workspace    $color-bd           $color-bg           $color-text
+               inactive_workspace   $color-bd-inactive  $color-bg-inactive  $inactive-color-text
+               urgent_workspace     $color-bd-urgent    $color-bg-urgent    $color-text
+        }
+}
+#exec --no-startup-id yabar

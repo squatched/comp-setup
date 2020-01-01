@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 set -eou pipefail
 IFS=$'\n\t'
 
@@ -8,11 +9,25 @@ pushd "${BASH_SOURCE[@]%/*}/" >/dev/null
 SOURCE_DIR=$(pwd)
 popd >/dev/null
 
-CONFIG_DIR=${HOME}/.config/i3/config.d
+CONFIG_DIR=${HOME}/.config/i3
 [[ -d ${CONFIG_DIR} ]] || mkdir --parent "${CONFIG_DIR}"
 
-for f in ${SOURCE_DIR}/*; do
-    [[ $f == *${0##*/} ]] && continue
+for f in ${SOURCE_DIR}/* ${SOURCE_DIR}/**/*; do
+    file_name=$(basename "${f}")
+    dir_name=$(dirname "${f##${SOURCE_DIR}}")
 
-    ln --symbolic --force "${f}" "${CONFIG_DIR}"
+    # Skip this script.
+    [[ ${file_name} == ${0##*/} ]] && continue
+
+    # Skip directories.
+    [[ -d ${f} ]] && continue
+
+    # Make the target directory if necessary.
+    dest_dir=${CONFIG_DIR}${dir_name}
+    [[ -d ${dest_dir} ]] || mkdir --parent "${dest_dir}"
+
+    # Don't setup the link if file exists.
+    [[ -e ${dest_dir}/${file_name} ]] && continue
+
+    ln --symbolic --force "${f}" "${dest_dir}"
 done

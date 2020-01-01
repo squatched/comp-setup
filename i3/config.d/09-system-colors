@@ -1,0 +1,11 @@
+# Set some defines for system colors.
+set $color-bg               #2f343f
+set $color-bg-inactive      #2f343f
+set $color-bg-urgent        #E53935
+set $color-bd               #2f343f
+set $color-bd-inactive      #2f343f
+set $color-bd-urgent        #E53935
+set $color-text             #f3f4f5
+set $color-text-inactive    #676E7D
+set $color-separator        #757575
+set $color-window-indicator #757575
