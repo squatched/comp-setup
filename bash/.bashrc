@@ -246,3 +246,4 @@ echo "${PATH}" | grep "/.local/bin" >/dev/null || PATH="${HOME}/.local/bin:${PAT
 __display_path_diff "After ~/.local/bin setup"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+__display_path_diff "After FZF setup"
