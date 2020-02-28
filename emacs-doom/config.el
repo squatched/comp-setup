@@ -2,7 +2,7 @@
 
 ;; Place your private configuration here
 
-;; Most basic I support for Brazil I could possibly do.
+;; Most basic support for Brazil I could possibly do.
 (projectile-register-project-type 'Brazil-Package '("Config")
                                   :compile "brazil-build")
 (projectile-register-project-type 'Brazil-Workspace '("packageInfo"))
@@ -13,3 +13,9 @@
 ;; - The issue has been reported: https://github.com/seagle0128/doom-modeline/issues/274
 ;; - Adding this to ~/.doom.d/config.el will suppress the error while we wait for a fix: (fset 'battery-update #'ignore)
 (fset 'battery-update #'ignore)
+
+;; Projectile project dirs...
+(setq projectile-project-search-path '("~/Projects" "~/Workspaces"))
+
+;; Enable subword mode everywhere!!!
+(global-subword-mode 1)
