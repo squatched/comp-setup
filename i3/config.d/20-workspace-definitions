@@ -2,7 +2,7 @@
 set $workspace1 1:chime
 set $workspace2 2:im
 set $workspace3 3:work
-set $workspace4 4:work-cli
+set $workspace4 4:work-alt
 set $workspace5 5:personal
 set $workspace6 6:personal-im
 set $workspace7 7:mail
