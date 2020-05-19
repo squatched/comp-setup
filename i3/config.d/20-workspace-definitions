@@ -1,5 +1,5 @@
 # Naming my workspaces.
-set $workspace1 1:chime
+set $workspace1 1:vc
 set $workspace2 2:im
 set $workspace3 3:work
 set $workspace4 4:work-alt
