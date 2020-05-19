@@ -235,12 +235,14 @@ __display_path_diff "After .bash_functions"
 __source_if_file $HOME/.bash_environment
 __display_path_diff "After .bash_environment"
 
-# Source completions.
-if [[ -d $HOME/.bash_completion.d ]]; then
-  for completion_file in $(ls $HOME/.bash_completion.d); do
-    source "$HOME/.bash_completion.d/$completion_file"
-  done
-fi
+# Source completions. The nullglob shenanigans are just in case
+# the directory doesn't exist.
+ORIGINAL_NULLGLOB=$(shopt -p nullglob)
+shopt -s nullglob
+for completion_file in $HOME/.bash_completion.d/*; do
+  source "$completion_file"
+done
+$ORIGINAL_NULLGLOB
 
 # Proprietary scripts.
 __source_if_file $HOME/.bash_proprietary_post
