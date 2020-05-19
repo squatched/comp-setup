@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+getopt --test >/dev/null
+if [[ ${?} -ne 4 ]]; then
+    printf "Missing the right `getopt` version.\n"
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+function on_activate() {
+    xset -dpms
+    xautolock -disable
+}
+
+function on_deactivate() {
+    xautolock -enable
+    xset +dpms
+}
+
+function show_help() {
+        cat <<EOF
+Usage: ${0##*/} [options] [INHIBIT_TIME]
+Inhibit screen saver and power saving for some amount of time.
+  -h | --help       Display this help.
+
+  INHIBIT_TIME: How long to block screen saver/power saving. Defaults to
+    seconds (suffix: s) but may be minutes (m), hours (h), or days (d).
+
+
+Sample usage:
+
+  ${0##*/} 30m
+    Stops screen saver & sleep for 30 minutes.
+
+  ${0##*/}
+    Stops screen saver & sleep until user presses a key.
+EOF
+}
+
+OPTIONS_SHORT="h"
+OPTIONS_LONG="help"
+
+PARSED_ARGS=$(getopt \
+    --options="${OPTIONS_SHORT}" \
+    --longoptions="${OPTIONS_LONG}" \
+    --name "${0##*/}" \
+    -- "$@" \
+)
+if [[ ${?} -ne 0 ]]; then
+    # Getopt has complained about invalid arguments.
+    exit 2
+fi
+
+eval set -- "${PARSED_ARGS}"
+while [[ ${#} -gt 0 ]]; do
+    case "${1}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            printf "Programming error... Go yell at Caleb.\n"
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+OPT_TIME="${1:-}"
+
+on_activate
+trap "on_deactivate" EXIT
+
+if [[ -z "${OPT_TIME}" ]]; then
+    read -s -n1 -p "Press any key when done... "
+else
+    sleep "${OPT_TIME}"
+fi
+on_activate
+printf "\n"
