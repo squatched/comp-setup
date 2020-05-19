@@ -243,6 +243,7 @@ for completion_file in $HOME/.bash_completion.d/*; do
   source "$completion_file"
 done
 $ORIGINAL_NULLGLOB
+__display_path_diff "After .bash_completion.d/"
 
 # Proprietary scripts.
 __source_if_file $HOME/.bash_proprietary_post
