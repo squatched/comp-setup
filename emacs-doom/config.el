@@ -19,3 +19,11 @@
 
 ;; Enable subword mode everywhere!!!
 (global-subword-mode 1)
+
+
+;; If we have a local ca-bundle for DOOM Emacs, point GnuTLS at it rather than
+;; the system provided one.
+(let ((local-cert-bundle-path "~/.config/doom/ca-bundle.crt"))
+  (when (file-exists-p local-cert-bundle-path)
+    ;;; Code:
+    (setq gnutls-trustfiles local-cert-bundle-path)))
