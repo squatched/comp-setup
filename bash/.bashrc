@@ -94,6 +94,9 @@ hash brew 2>/dev/null && distributor_id="MacOS"
 if hash lsb_release 2>/dev/null; then
     distributor_id=$(lsb_release -a 2>/dev/null | sed --expression '/^Distributor ID:/!d' --regexp-extended --expression 's/^[^:]+:\s*//')
 fi
+if [[ -z $distributor_id ]] && [[ -f /etc/os-release ]]; then
+    distributor_id=$(sed '/^NAME=/ !d; s/NAME="\([^"]\+\)"/\1/' /etc/os-release)
+fi
 
 case $distributor_id in
     Arch|Manjaro|BlackArch)
@@ -112,6 +115,10 @@ case $distributor_id in
             source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
         fi
         ;;
+    "Amazon Linux")
+	# Git Completion is handled through /etc/bashrc but git-prompt is not...
+	# Go figure.
+	__source_if_file /usr/share/git-core/contrib/completion/git-prompt.sh
 esac
 __display_path_diff "After git prompt & completion"
 
