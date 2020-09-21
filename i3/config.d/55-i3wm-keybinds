@@ -6,3 +6,13 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 # Lock the screen
 bindsym $mod+l exec $lock
+
+# ---------- Screet Captures ----------
+# Capture screen to clipboard using ImageMagick or flameshot
+#bindsym Print exec "import -window root png:- | xclip -selection clipboard -target image/png"
+bindsym Print exec "flameshot full --clipboard"
+# Capture active window to clipboard using ImageMagick (not yet implemented in flameshot)
+bindsym Ctrl+Print exec "import -window $(xdotool getactivewindow) png:- | xclip -selection clipboard -target image/png"
+# Capture a selected rectangle to clipboard using ImageMagick or Flameshot
+#bindsym shift+Print exec "import png:- | xclip -selection clipboard -target image/png"
+bindsym Shift+Print exec "flameshot gui"
