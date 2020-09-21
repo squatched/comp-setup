@@ -13,5 +13,7 @@ bar {
                inactive_workspace   $color-bd-inactive  $color-bg-inactive  $inactive-color-text
                urgent_workspace     $color-bd-urgent    $color-bg-urgent    $color-text
         }
+
+        tray_output primary
 }
 #exec --no-startup-id yabar
