@@ -7,12 +7,18 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 # Lock the screen
 bindsym $mod+l exec $lock
 
-# ---------- Screet Captures ----------
-# Capture screen to clipboard using ImageMagick or flameshot
+# ---------- Screen Captures Using ImageMagick ----------
+# Full Screen Capture
 #bindsym Print exec "import -window root png:- | xclip -selection clipboard -target image/png"
-bindsym Print exec "flameshot full --clipboard"
-# Capture active window to clipboard using ImageMagick (not yet implemented in flameshot)
+# Capture Active Window
 bindsym Ctrl+Print exec "import -window $(xdotool getactivewindow) png:- | xclip -selection clipboard -target image/png"
-# Capture a selected rectangle to clipboard using ImageMagick or Flameshot
+# Capture a selected rectangle to clipboard
 #bindsym shift+Print exec "import png:- | xclip -selection clipboard -target image/png"
+
+# ---------- Screen Captures Using Flameshot ----------
+# Full Screen Capture
+bindsym Print exec "flameshot full --clipboard"
+# Capture Active Window
+#not yet implemented
+# Capture a selected rectangle to clipboard
 bindsym Shift+Print exec "flameshot gui"
