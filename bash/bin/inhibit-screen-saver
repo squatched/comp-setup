@@ -79,8 +79,7 @@ trap "on_deactivate" EXIT
 
 if [[ -z "${OPT_TIME}" ]]; then
     read -s -n1 -p "Press any key when done... "
+    printf "\n"
 else
     sleep "${OPT_TIME}"
 fi
-on_activate
-printf "\n"
