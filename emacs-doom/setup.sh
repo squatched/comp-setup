@@ -11,7 +11,7 @@ DOOM_DIR="${HOME}/.config/doom"
 
 mkdir --parents "${DOOM_DIR}"
 ln --symbolic --force "${SOURCE_DIR}/doom-emacs" "${HOME}/.emacs.d"
-ln --symbolic --force --target-directory="${DOOM_DIR}" "${SOURCE_DIR}/config.el"
+ln --symbolic --force --target-directory="${DOOM_DIR}" "${SOURCE_DIR}/config.org"
 ln --symbolic --force --target-directory="${DOOM_DIR}" "${SOURCE_DIR}/init.el"
 ln --symbolic --force --target-directory="${DOOM_DIR}" "${SOURCE_DIR}/packages.el"
 

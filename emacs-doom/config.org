@@ -40,6 +40,12 @@ DOOM Emacs may provide a ca-bundle. Point GnuTLS at that rather than the system 
 #+END_SRC
 ** TODO Consider the ramifications of this in light of Amazon's internal CAs.
 
+* Org Reveal Mode
+Enable it and set the location of reveal.js
+#+BEGIN_SRC emacs-lisp
+(require 'ox-reveal)
+#+END_SRC
+
 * Custom Key Bindings
 #+BEGIN_SRC emacs-lisp
 ;; Enable the Treemacs toggle.

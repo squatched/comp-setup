@@ -8,3 +8,7 @@
 
 ;; Support CMakeLists.txt
 (package! cmake-mode)
+
+;; Export Org docs to beautiful reveal.js presentations
+(package! org-reveal)
+(package! htmlize)
