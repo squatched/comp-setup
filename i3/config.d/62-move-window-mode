@@ -1,0 +1,20 @@
+# move floating windows with keys
+mode "move" {
+    bindsym $mod+Tab focus right
+
+    bindsym Left  move left
+    bindsym Down  move down
+    bindsym Up    move up
+    bindsym Right move right
+
+    bindsym b     move left
+    bindsym n     move down
+    bindsym p     move up
+    bindsym f     move right
+
+    # Cancel mode: Enter, Escape, or Ctrl+g
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym Ctrl+g mode "default"
+}
+bindsym $mod+m mode "move" focus floating
