@@ -99,7 +99,7 @@ if [[ -z $distributor_id ]] && [[ -f /etc/os-release ]]; then
 fi
 
 case $distributor_id in
-    Arch|Manjaro|BlackArch)
+    Arch*|Manjaro*|BlackArch*)
         # Arch based distros
         __source_if_file /usr/share/git/completion/git-prompt.sh
         __source_if_file /usr/share/git/completion/git-completion.bash
