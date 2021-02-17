@@ -27,12 +27,13 @@ main() {
     fi
 
     # Find all files or symbolic links in the given source directory.
-    for file in $(find "${source_dir}" -type f -or -type l); do
+    # The '-L' option makes find follow symbolic links if they're a directory.
+    for file in $(find -L "${source_dir}" -type f -or -type l); do
         # If the file is a symlink somewhere else, then let's point the symlink there.
         # However, let's keep the file's name and name the symlink that. (${file_name})
         target_file="$(readlink --canonicalize-existing "${file}")"
-        file_source_dir=$(dirname "$(realpath "${file}")")
-        file_name=$(basename "${file}")
+        file_source_dir="$(dirname "${file}")"
+        file_name="$(basename "${file}")"
 
         # Replace the prefix of ${source_dir} with ${dest_dir}
         file_dest_dir="${file_source_dir/#${source_dir}/${dest_dir}}"
@@ -48,8 +49,8 @@ main() {
 show_help() {
     cat <<EOF
 Usage: ${0##*/} [options] [TARGET]
-Setup the proprietary portion of my bash environment given some particular
-TARGET environment which is a directory. If no TARGET given, works from cwd.
+Setup my home directory given some particular TARGET environment which is a
+directory. If no TARGET given, works from CWD.
 
 Options:
   -h | --help  Display this help.
