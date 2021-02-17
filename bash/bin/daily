@@ -9,9 +9,18 @@ fi
 set -euo pipefail
 IFS=$'\n\t'
 
+THIS_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source ${THIS_SCRIPT_DIR}/libs/password-utilities
+
 deobfuscate() {
     tr '[N-ZA-M]' '[A-Z]' <<<"${@}" | tr '[n-za-m]' '[a-z]'
 }
+
+# If you have multiple SSH certs you want added to your SSH agent, add
+# them here separated by spaces.
+SSH_CERTS=( \
+    "${HOME}/.ssh/id_rsa" \
+)
 
 push_pop_close_string=''
 pud () {
@@ -26,43 +35,39 @@ pod () {
     push_pop_close_string=''
 }
 
-password=""
-stdin_password() {
-    cat <<EOF
-${password}
-EOF
-}
-
-sudo_exec() {
-    stdin_password | sudo --stdin "$@"
-}
-
 show_help() {
     cat <<EOF
 Usage: ${0##*/} [options]
 Simplify a set of things I do every day.
   -h | --help   Display this help.
   -f | --force  Force auth to happen. (Does nothing this version of the script.)
+  -v | --verbose    Turn up the auth check output verbosity. May be specified
+                    more than once. (Max useful is 2x, any more are ignored.)
 EOF
 }
 
-PARSED_ARGS=$(getopt --options=hf --longoptions=help,force --name ${0##*/} -- "$@")
+SHORT_OPTIONS="hfv"
+LONG_OPTIONS="help,force,verbose"
+PARSED_ARGS=$(getopt \
+    --options="${SHORT_OPTIONS}" \
+    --longoptions="${LONG_OPTIONS}" \
+    --name="${0##*/}" \
+    -- "$@")
 if [[ ${?} -ne 0 ]]; then
     # Getopt has complained about invalid arguments.
     exit 2
 fi
 
-FORCE=""
+OPT_FORCE=""
+OPT_VERBOSITY=()
 eval set -- "${PARSED_ARGS}"
 while [[ ${#} -gt 0 ]]; do
     case "${1}" in
+        -f|--force)     OPT_FORCE=true;;
+        -v|--verbose)   OPT_VERBOSITY+=("--verbose");;
         -h|--help)
             show_help
             exit 0
-            ;;
-        -f|--force)
-            FORCE=true
-            shift
             ;;
         --)
             shift
@@ -73,22 +78,50 @@ while [[ ${#} -gt 0 ]]; do
             exit 3
             ;;
     esac
+    shift
 done
 
-printf "Enter your password: "
-read -rs password
-printf "\n\n"
+# LOG_LEVEL is necessary for io libs but OPT_VERBOSITY can be passed
+# on to commands that also take verbosity options.
+LOG_LEVEL="${#OPT_VERBOSITY[@]}"
+
+prompt_for_password
+printf "\n"
+
+# Echoing $password using EOF to avoid seeing it in a `ps` command output.
+#pud "Renewing/Checking Authentication Credentials"
+#stdin_password | check-auth ${OPT_FORCE/#true/--force} ${OPT_VERBOSITY[@]}
+#pod "\n\n"
+
+pud "Ensuring SSH Certs Are In Agent"
+for cert in ${SSH_CERTS[@]}; do
+    if ssh-add -l | awk '{print $3;}' | grep --quiet "${cert}"; then
+        printf "Found cert: ${cert}\n"
+    else
+        ssh-add "${cert}"
+    fi
+done
+pod "\n\n"
 
 pud "Updating System Packages"
-sudo_exec apt-get --assume-yes update
-sudo_exec apt-get --assume-yes upgrade
-#sudo_exec snap refresh
+if hash apt-get 2>/dev/null; then
+    sudo_exec apt-get --assume-yes update
+    sudo_exec apt-get --assume-yes upgrade
+fi
+hash snap 2>/dev/null && sudo_exec snap refresh
+hash rustup 2>/dev/null && rustup update
 pod "\n\n"
 
 pud "Updating Git Projects"
-pushd ~/Projects >/dev/null
-./update.sh
-popd >/dev/null
+if [[ -d ${HOME}/Projects ]] && [[ -f ${HOME}/Projects/update.sh ]]; then
+    pushd ~/Projects >/dev/null
+    ./update.sh
+    popd >/dev/null
+fi
+pod "\n\n"
+
+pud "The internet is on fire"
+dig +short txt istheinternetonfire.com
 pod "\n\n"
 
 printf "Completed: "
