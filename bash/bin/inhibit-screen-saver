@@ -11,11 +11,13 @@ IFS=$'\n\t'
 
 function on_activate() {
     xset -dpms
+    xset s off
     xautolock -disable
 }
 
 function on_deactivate() {
     xautolock -enable
+    xset s on
     xset +dpms
 }
 
