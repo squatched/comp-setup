@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+
+getopt --test >/dev/null
+if [[ ${?} -ne 4 ]]; then
+    printf "Missing the right `getopt` version.\n"
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+TMUX_WINDOW_CMD="rename-window"
+TMUX_WINDOW_CMD_PARAM_FLAG=""
+
+function add_tmux_window() {
+    local window_index="${1}"
+    local window_name="${2}"
+    local window_cmd="${3:-}"
+
+    tmux ${TMUX_WINDOW_CMD} -t "${SESSION_NAME}:${window_index}" ${TMUX_WINDOW_CMD_PARAM_FLAG} ${window_name}
+
+    if [[ -n ${window_cmd} ]]; then
+        tmux send-keys -t "${SESSION_NAME}:${window_name}" "${window_cmd}" Enter
+    fi
+
+    # Now that the first window has been renamed, we're creating windows which
+    # requires slightly different syntax.
+    TMUX_WINDOW_CMD="new-window"
+    TMUX_WINDOW_CMD_PARAM_FLAG="-n"
+}
+
+function make_tmux_session_from_dir() {
+    local session_dir="${1}"
+    local include_jctl="${2}"
+    local session_name="${3}"
+
+    tmux -u new-session -d -s "${session_name}"
+    trap "tmux kill-session -t \"${session_name}\"" ERR
+
+    local index=0
+    local pkg_path=""
+    for d in $(ls "${session_dir}"); do
+        d_path="${session_dir}/${d}"
+        if [[ -d ${d_path} ]]; then
+            add_tmux_window "${index}" "${d}" "cd \"${d_path}\" && clear"
+            index=$((${index} + 1))
+        fi
+    done
+
+    # Putting the root at the end may seem weird but it's a vestige of
+    # how I originally wrote this script (wasn't just opening sub dirs).
+    [[ ${index} -lt 9 ]] && index=9
+    add_tmux_window ${index} "root" "cd \"${session_dir}\" && clear"
+    index=$((${index} + 1))
+
+    if ${include_jctl}; then
+        add_tmux_window ${index} \
+            "journalctl" \
+            "journalctl --follow"
+        index=$((${index} + 1))
+    fi
+}
+
+function select_root_window() {
+    local session_name="${1}"
+    tmux select-window -t "${session_name}:root"
+}
+
+function try_attach_tmux_session() {
+    local session_name="${1}"
+
+    if tmux has-session -t "${session_name}" >/dev/null 2>&1; then
+        tmux attach-session -t "${session_name}"
+        return 0
+    fi
+
+    return 1
+}
+
+function show_help() {
+    cat <<FOE
+Usage: ${0##*/} [options] [path to dir]
+Create a tmux session based on sub-dirs of the given dir.
+  -h | --help         Display this help.
+  -j | --journalctl   Include a pane tailing journalctl.
+FOE
+}
+
+OPT_INCLUDE_JCTL=false
+
+SHORT_OPTIONS="hj"
+LONG_OPTIONS="help,journalctl"
+PARSED_ARGS=$(getopt \
+    --options="${SHORT_OPTIONS}" \
+    --longoptions="${LONG_OPTIONS}" \
+    --name ${0##*/} \
+    -- "$@")
+
+# Check getopt complaining about invalid arguments.
+[[ ${?} -ne 0 ]] && exit 2
+
+eval set -- "${PARSED_ARGS}"
+while [[ ${#} -gt 0 ]]; do
+    case "${1}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -j|--journalctl)
+            OPT_INCLUDE_JCTL=true
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            printf "Programming error... Go yell at Caleb.\n"
+            exit 3
+            ;;
+    esac
+    shift
+done
+
+DIR_NAME="$(realpath "${1:-$(pwd)}")"
+[[ -d ${DIR_NAME} ]] || exit 4
+SESSION_ROOT="${DIR_NAME}"
+SESSION_NAME="${SESSION_ROOT##*/}"
+
+try_attach_tmux_session "${SESSION_NAME}" && exit 0
+make_tmux_session_from_dir "${SESSION_ROOT}" ${OPT_INCLUDE_JCTL} "${SESSION_NAME}"
+select_root_window "${SESSION_NAME}"
+
+try_attach_tmux_session "${SESSION_NAME}" || exit 5
+exit 0
