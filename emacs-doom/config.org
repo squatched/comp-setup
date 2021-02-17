@@ -3,6 +3,13 @@
 * Overview
 My attempt at making a literate ~config.el~.
 
+* Personal Info
+This is used by GPG and many other things.
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Caleb McCombs"
+      user-mail-address "cmccomb@amazon.com")
+#+END_SRC
+
 * Projectile
 Projects! Yay!
 ** Brazil Support
@@ -24,7 +31,7 @@ Where to scan for Project directories.
 #+END_SRC
 
 * Subword Mode
-Allow moving by word (~A-f~, ~A-b~) within large identifiers.
+Allow moving by word (~A-f~, ~A-b~) within large identifiers. Generally allows movement through CamelCase words.
 #+BEGIN_SRC emacs-lisp
 (global-subword-mode 1)
 #+END_SRC
@@ -44,6 +51,7 @@ DOOM Emacs may provide a ca-bundle. Point GnuTLS at that rather than the system 
 Enable it and set the location of reveal.js
 #+BEGIN_SRC emacs-lisp
 (require 'ox-reveal)
+(setq org-reveal-root "/home/ANT.AMAZON.COM/cmccomb/Projects/reveal-js")
 #+END_SRC
 
 * Custom Key Bindings
