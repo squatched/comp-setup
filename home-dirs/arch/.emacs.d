@@ -1,0 +1,1 @@
+../../emacs-doom/doom-emacs

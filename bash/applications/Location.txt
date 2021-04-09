@@ -1,1 +1,0 @@
-These should go in ~/.local/share/applications/.
