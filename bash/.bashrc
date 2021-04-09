@@ -179,7 +179,7 @@ PROMPT_PRE_GIT=$PROMPT_PRE_GIT$xtc_yellow'@'$xtc_lblue'${HOSTNAME_PROMPT_LABEL:-
 # [pwd] (green)
 PROMPT_PRE_GIT=$PROMPT_PRE_GIT'['$xtc_green'\w'$xtc_red']'$xtc_default
 # Second line └──╼ $
-PROMPT_POST_GIT='\n'$xtc_red'└──╼ '$xtc_yellow'$'$xtc_default
+PROMPT_POST_GIT='\n'$xtc_red'└──╼'$xtc_yellow'$'$xtc_default' '
 
 if type __git_ps1 >/dev/null 2>&1; then
     # Git customization, show in yellow.
