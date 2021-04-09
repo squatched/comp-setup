@@ -1,0 +1,22 @@
+[Desktop Entry]
+Comment[en_US]=Use you an email for great good
+Comment=Use you an email for great good
+Exec=/opt/vivaldi/vivaldi --profile-directory=Default --app="https://www.gmail.com" --class=www.gmail.com --user-data-dir="${HOME}/.config/vivaldi"
+GenericName[en_US]=Email
+GenericName=Email
+Icon=google-gmail
+Keywords=Office
+MimeType=
+Name[en_US]=Gmail
+Name=Gmail
+Path=
+StartupNotify=true
+StartupWMClass=www.gmail.com
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

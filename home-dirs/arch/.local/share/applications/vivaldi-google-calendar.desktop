@@ -1,0 +1,22 @@
+[Desktop Entry]
+Comment[en_US]=Keep yourself organized
+Comment=Keep yourself organized
+Exec=/opt/vivaldi/vivaldi --profile-directory=Default --app="https://calendar.google.com" --class=calendar.google.com --user-data-dir="${HOME}/.config/vivaldi"
+GenericName[en_US]=Calendar
+GenericName=Calendar
+Icon=google-calendar
+Keywords=Office
+MimeType=
+Name[en_US]=Google Calendar
+Name=Google Calendar
+Path=
+StartupNotify=true
+StartupWMClass=calendar.google.com
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
