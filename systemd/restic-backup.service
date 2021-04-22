@@ -1,0 +1,8 @@
+[Unit]
+Description=Restic backup service
+
+[Service]
+Type=oneshot
+ExecStart=restic --option rclone.program=/usr/bin/rclone --option rclone.args="serve restic --stdio --b2-hard-delete --verbose" backup --verbose --one-file-system --tag systemd.timer --exclude-file=/home/calebm/.restic_excludes --exclude-if-present .exclude_from_backup --exclude=/media --exclude=/mnt --exclude=/var/tmp / /efi /home /vms
+ExecStartPost=restic forget --verbose --tag systemd.timer --group-by "paths,tags" --keep-daily 14
+EnvironmentFile=/etc/restic-backup.conf

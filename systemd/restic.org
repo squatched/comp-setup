@@ -1,0 +1,9 @@
+#+TITLE: Restic
+
+* Setup
+1. Install `restic` and `rclone` (well, you don't really NEED `rclone` but I'm using it right now).
+2. Fill out the .conf file with the appropriate values. It's currently setup expecting `rclone` to be providing access to the repository (which supports Google Drive).
+3. Put it in `/etc/`.
+4. Ensure `/root/.cache/restic` folder exists
+5. Move `.restic_excludes` to your home folder, edit as necessary, and ensure the `restic-backup.service` points to it (correct path).
+6. Install the services, then install, enable, and start the timers.
