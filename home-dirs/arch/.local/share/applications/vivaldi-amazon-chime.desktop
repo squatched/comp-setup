@@ -1,0 +1,21 @@
+[Desktop Entry]
+Comment=Amazon's ill-advised attempt at a chat app that they purchased.
+Exec=/opt/vivaldi/vivaldi --profile-directory=Default --app="https://app.chime.aws" --class=app.chime.aws --user-data-dir="${HOME}/.config/vivaldi"
+GenericName[en_US]=Internet Chat
+GenericName=Internet Chat
+Icon=amazon-chime
+Keywords=Internet
+MimeType=
+Name[en_US]=Amazon Chime
+Name=Amazon Chime
+Path=
+StartupNotify=true
+StartupWMClass=app.chime.aws
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=
