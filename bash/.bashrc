@@ -220,10 +220,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-if [[ -e /usr/bin/aws_completer ]]; then
-    complete -C '/usr/bin/aws_completer' aws
-fi
-
 # Configure Perforce
 [[ -f $HOME/.p4config ]] && export P4CONFIG=$HOME/.p4config
 
@@ -251,6 +247,10 @@ for completion_file in $HOME/.bash_completion.d/*; do
 done
 $ORIGINAL_NULLGLOB
 __display_path_diff "After .bash_completion.d/"
+
+# Special bash tab-completion
+hash aws_completer 2>/dev/null && complete -C aws_completer aws
+hash terraform 2>/dev/null && complete -C terraform terraform
 
 # Proprietary scripts.
 __source_if_file $HOME/.bash_proprietary_post
