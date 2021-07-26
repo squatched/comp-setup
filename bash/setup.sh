@@ -13,9 +13,11 @@ if [[ ! -L ~/.bashrc && -e ~/.bashrc && ! -e ~/.bashrc.original ]]; then
     echo "Moving original .bashrc to .bashrc.original."
     mv ~/.bashrc ~/.bashrc.original
 fi
-ln --symbolic --force ${SOURCE_DIR}/.bashrc ~/.bashrc.mine
-ln --symbolic --force ~/.bashrc.mine ~/.bashrc
-ln --symbolic --force ${SOURCE_DIR}/.bash_aliases ~/.bash_aliases
-ln --symbolic --force ${SOURCE_DIR}/.bash_functions ~/.bash_functions
-ln --symbolic --force ${SOURCE_DIR}/.bash_script_env ~/.bash_script_env
-ln --symbolic --force ${SOURCE_DIR}/tmux/.tmux.conf ~/.tmux.conf
+ln --symbolic --force ${SOURCE_DIR}/.bashrc ${HOME}/.bashrc.mine
+ln --symbolic --force ~/.bashrc.mine ${HOME}/.bashrc
+ln --symbolic --force ${SOURCE_DIR}/.bash_aliases ${HOME}/
+ln --symbolic --force ${SOURCE_DIR}/.bash_functions ${HOME}/
+ln --symbolic --force ${SOURCE_DIR}/.bash_script_env ${HOME}/
+ln --symbolic --force ${SOURCE_DIR}/.bash_environment_global ${HOME}/
+ln --symbolic --force ${SOURCE_DIR}/tmux/.tmux.conf ${HOME}/
+ln --symbolic --force ${SOURCE_DIR}/.pam_environment ${HOME}/

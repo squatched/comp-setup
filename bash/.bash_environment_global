@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Add ~/.local/bin/ to PATH unless it already exists (varies per distro)
+echo "${PATH}" | grep "${HOME}/.local/bin" >/dev/null || export PATH="${HOME}/.local/bin:${PATH}"
+
+# I always want my emacsclient as my editor...
+export VISUAL='emacsclient --tty --alternate-editor=""'
+
+# For my systemd based SSH agent.
+export $XDG_RUNTIME_DIR/ssh-agent.socket

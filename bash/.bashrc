@@ -235,6 +235,8 @@ __source_if_file $HOME/.bash_functions
 __display_path_diff "After .bash_functions"
 
 # Environment exports from a separate file.
+__source_if_file $HOME/.bash_environment_global
+__display_path_diff "After .bash_environment_global"
 __source_if_file $HOME/.bash_environment
 __display_path_diff "After .bash_environment"
 
