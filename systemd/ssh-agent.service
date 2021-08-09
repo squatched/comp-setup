@@ -6,11 +6,8 @@ Type=simple
 Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
 # DISPLAY required for ssh-askpass to work
 Environment=DISPLAY=:0
-# Set this to the full path to your askpass program if confirmation
-# for usage of a key is required. Or if you like pretty password input
-# boxes.
-#Environment=SSH_ASKPASS=/usr/bin/lxqt-openssh-askpass
-ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
+Environment=/usr/bin/lxqt-openssh-askpass
+ExecStart=/usr/bin/firejail /usr/bin/ssh-agent -d -a $SSH_AUTH_SOCK
 
 [Install]
 WantedBy=default.target
