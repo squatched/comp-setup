@@ -6,5 +6,5 @@ echo "${PATH}" | grep "${HOME}/.local/bin" >/dev/null || export PATH="${HOME}/.l
 # I always want my emacsclient as my editor...
 export VISUAL='emacsclient --tty --alternate-editor=""'
 
-# For my systemd based SSH agent.
-export $XDG_RUNTIME_DIR/ssh-agent.socket
+# Expose the ssh-agent's socket.
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"

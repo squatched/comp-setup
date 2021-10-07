@@ -12,10 +12,10 @@ This is used by GPG and many other things.
 
 * Projectile
 Projects! Yay!
-** Brazil Support
+** DEPRECATED: Brazil Support
 This is about as basic a support for Brazil as I could possibly do... Bases the detection of a Projectile project on the existence of a ~packageInfo~ file.
 #+BEGIN_SRC emacs-lisp
-(projectile-register-project-type 'Brazil-Workspace '("packageInfo"))
+;(projectile-register-project-type 'Brazil-Workspace '("packageInfo"))
 #+END_SRC
 
 Determine a project type of brazil package based on the existence of the ~Config~ file. This doesn't pan out that well though because Projectile doesn't like projects in other projects.
@@ -30,10 +30,17 @@ Where to scan for Project directories.
 (setq projectile-project-search-path '("~/Projects" "~/Workspaces"))
 #+END_SRC
 
-* Subword Mode
+* Global Settings
+** Subword Mode
 Allow moving by word (~A-f~, ~A-b~) within large identifiers. Generally allows movement through CamelCase words.
 #+BEGIN_SRC emacs-lisp
 (global-subword-mode 1)
+#+END_SRC
+** Global Line Number Mode
+Always show line numbers, every buffer. Straight from [[https://www.emacswiki.org/emacs/LineNumbers][here]].
+#+BEGIN_SRC emacs-lisp
+(when (version<= "26.0.50" emacs-version )
+  (global-display-line-numbers-mode))
 #+END_SRC
 
 * CA Configuration
@@ -45,13 +52,14 @@ DOOM Emacs may provide a ca-bundle. Point GnuTLS at that rather than the system 
     ;;; Code:
     (setq gnutls-trustfiles local-cert-bundle-path)))
 #+END_SRC
-** TODO Consider the ramifications of this in light of Amazon's internal CAs.
+** TODO Consider the ramifications of this in the face of internal CAs.
 
-* Org Reveal Mode
+* DEPRECATED: Org Reveal Mode
 Enable it and set the location of reveal.js
 #+BEGIN_SRC emacs-lisp
 (require 'ox-reveal)
-(setq org-reveal-root "/home/ANT.AMAZON.COM/cmccomb/Projects/reveal-js")
+; If you install reveal-md on Arch, the module is here.
+(setq org-reveal-root "file:///usr/lib/reveal-md/node_modules/reveal.js")
 #+END_SRC
 
 * Custom Key Bindings
