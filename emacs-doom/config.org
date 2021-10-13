@@ -7,23 +7,11 @@ My attempt at making a literate ~config.el~.
 This is used by GPG and many other things.
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Caleb McCombs"
-      user-mail-address "cmccomb@amazon.com")
+      user-mail-address "<replace me locally (comp-setup/emacs-doom/config.org)>")
 #+END_SRC
 
 * Projectile
 Projects! Yay!
-** DEPRECATED: Brazil Support
-This is about as basic a support for Brazil as I could possibly do... Bases the detection of a Projectile project on the existence of a ~packageInfo~ file.
-#+BEGIN_SRC emacs-lisp
-;(projectile-register-project-type 'Brazil-Workspace '("packageInfo"))
-#+END_SRC
-
-Determine a project type of brazil package based on the existence of the ~Config~ file. This doesn't pan out that well though because Projectile doesn't like projects in other projects.
-#+BEGIN_SRC emacs-lisp
-;(projectile-register-project-type 'Brazil-Package '("Config")
-;                                  :compile "brazil-build")
-#+END_SRC
-
 ** Project Directories
 Where to scan for Project directories.
 #+BEGIN_SRC emacs-lisp
@@ -54,7 +42,15 @@ DOOM Emacs may provide a ca-bundle. Point GnuTLS at that rather than the system 
 #+END_SRC
 ** TODO Consider the ramifications of this in the face of internal CAs.
 
-* DEPRECATED: Org Reveal Mode
+* Org Mode Customizations
+** Closing TODO Behavior
+When I mark a TODO item as DONE, I would like a record of when that happens.
+Could also be set to `note` instead of `time` if I want to record a closing note in addition to a timestamp.
+#+BEGIN_SRC emacs-lisp
+(setq org-log-done 'time)
+#+END_SRC
+
+** DEPRECATED: Org Reveal Mode
 Enable it and set the location of reveal.js
 #+BEGIN_SRC emacs-lisp
 (require 'ox-reveal)
