@@ -171,15 +171,17 @@ fi
 # Prompt customization. Broken up this way to facilitate
 # PROMPT_COMMAND='__git_ps1 ...'
 # Red with an optional (white) [✗] if the last command failed.
-PROMPT_PRE_GIT=$xtc_red'┌─$([[ $? != 0 ]] && echo "['$xtc_white'✗'$xtc_red']─")'
+PROMPT_PRE_GIT=$xtc_red'┌─$([[ $? != 0 ]] && printf "['$xtc_white'✗'$xtc_red']─")'
 # [user with normal user being green and root being red.
 PROMPT_PRE_GIT=$PROMPT_PRE_GIT'['$(if [[ ${EUID} == 0 ]]; then echo $xtc_red'root'; else echo $xtc_lgreen'\u'; fi)
 # yellow '@' and light blue hostname with red ']─'.
 PROMPT_PRE_GIT=$PROMPT_PRE_GIT$xtc_yellow'@'$xtc_lblue'${HOSTNAME_PROMPT_LABEL:-\h}'$xtc_red']─'
 # [pwd] (green)
 PROMPT_PRE_GIT=$PROMPT_PRE_GIT'['$xtc_green'\w'$xtc_red']'$xtc_default
+# ─[virtualenv] if it exists.
+PROMPT_POST_GIT='$([[ ! -z $VIRTUAL_ENV ]] && printf "'$xtc_red'─['$xtc_purple\${VIRTUAL_ENV//*\\/}$xtc_red']'$xtc_default'")'
 # Second line └──╼ $
-PROMPT_POST_GIT='\n'$xtc_red'└──╼'$xtc_yellow'$'$xtc_default' '
+PROMPT_POST_GIT=$PROMPT_POST_GIT'\n'$xtc_red'└──╼'$xtc_yellow'$'$xtc_default' '
 
 if type __git_ps1 >/dev/null 2>&1; then
     # Git customization, show in yellow.
@@ -188,8 +190,6 @@ if type __git_ps1 >/dev/null 2>&1; then
     PROMPT_COMMAND='__git_ps1 "$PROMPT_PRE_GIT" "$PROMPT_POST_GIT" "$PROMPT_GIT"'
 else
     PS1=$PROMPT_PRE_GIT$PROMPT_POST_GIT
-
-    unset PROMPT_PRE_GIT PROMPT_POST_GIT
 fi
 
 # Set 'man' colors
