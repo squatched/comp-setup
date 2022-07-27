@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # rbenv
-if hash rbenv || [[ -d ${HOME}/.rbenv ]]; then
+if hash rbenv >/dev/null 2>&1 || [[ -d ${HOME}/.rbenv ]]; then
     export RBENV_ROOT="${HOME}/.rbenv"
     export PATH="${RBENV_ROOT}/bin:${PATH}"
     eval "$(rbenv init -)"
@@ -9,7 +9,7 @@ if hash rbenv || [[ -d ${HOME}/.rbenv ]]; then
 fi
 
 # pyenv
-if hash pyenv || [[ -d ${HOME}/.pyenv ]]; then
+if hash pyenv >/dev/null 2>&1 || [[ -d ${HOME}/.pyenv ]]; then
     export PYENV_ROOT="${HOME}/.pyenv"
     export PATH="${PYENV_ROOT}/bin:${PATH}"
     eval "$(pyenv init -)"

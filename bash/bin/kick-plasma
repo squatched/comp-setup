@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+IFS=$'\n\t'
+
+set +u
+if [[ -z ${DISPLAY} ]]; then
+    printf "No DISPLAY env var defined. Setting to \":0\"\n"
+    export DISPLAY=":0"
+fi
+set -u
+
+kquitapp5 plasmashell >/dev/null || killall plasmashell >/dev/null || true
+bash -c "kwin_x11 --replace & disown" >/dev/null 2>/dev/null
+bash -c "kstart5 plasmashell & disown" >/dev/null 2>/dev/null
