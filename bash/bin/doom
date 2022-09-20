@@ -3,4 +3,4 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-~/Projects/comp-setup/emacs-doom/doom-emacs/bin/doom "${@}"
+~/Projects/comp-setup/emacs/doom/bin/doom "${@}"

@@ -1,4 +1,0 @@
-%USERHOMEDIRECTORY%AppData/Roaming
-e.g. - C:/Users/cmccombs/AppData/Roaming
-elpa goes in Roaming/.emacs.d/
-init goes in Roaming/.emacs.d/

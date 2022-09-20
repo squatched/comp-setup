@@ -1,4 +1,4 @@
-[submodule "emacs-doom/doom-emacs"]
-	path = emacs-doom/doom-emacs
+[submodule "emacs/doom"]
+	path = emacs/doom
 	url = https://github.com/hlissner/doom-emacs.git
 	branch = develop
