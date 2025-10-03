@@ -46,22 +46,203 @@ DOOM Emacs may provide a ca-bundle. Point GnuTLS at that rather than the system 
 ** Closing TODO Behavior
 When I mark a TODO item as DONE, I would like a record of when that happens.
 Could also be set to `note` instead of `time` if I want to record a closing note in addition to a timestamp.
+
 #+BEGIN_SRC emacs-lisp
 (setq org-log-done 'time)
 #+END_SRC
 
-** DEPRECATED: Org Reveal Mode
-Enable it and set the location of reveal.js
+
+** Reveal.js
+Enable reveal.js (org-re-reveal) and point it at Reveal.js v5.
+
 #+BEGIN_SRC emacs-lisp
-(require 'ox-reveal)
-; If you install reveal-md on Arch, the module is here.
-(setq org-reveal-root "file:///usr/lib/reveal-md/node_modules/reveal.js")
+(use-package! org-re-reveal
+  :after org
+  :config
+  (setq org-re-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js@5"
+        org-re-reveal-revealjs-version "4"
+        org-re-reveal-plugins '(markdown highlight notes mermaid))
+  ;; Ensure the plugin registry contains Mermaid with a non-nil URL
+  (add-to-list 'org-re-reveal-plugin-config
+               '(mermaid "RevealMermaid"
+                 "https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js")))
+#+END_SRC
+
+
+** Helpers: slugify titles and ensure unique/custom IDs
+Utilities to:
+- make kebab-case slugs,
+- avoid collisions,
+- ensure a parent slide has a CUSTOM_ID when we need it.
+
+#+BEGIN_SRC emacs-lisp
+(defun cm/org--slugify (s)
+  "Downcase S and convert to kebab-case, trimming leading/trailing hyphens."
+  (let* ((down (downcase s))
+         (hyph (replace-regexp-in-string "[^[:alnum:]]+" "-" down))
+         (trim (replace-regexp-in-string "\\`-+\\|-+\\'" "" hyph)))
+    (if (string= trim "") "slide" trim)))
+
+(defun cm/org--unique-custom-id (slug)
+  "Return SLUG or SLUG-N if that CUSTOM_ID already exists in the buffer."
+  (let ((base slug) (n 2))
+    (while (save-excursion
+             (goto-char (point-min))
+             (re-search-forward
+              (concat "^[ \t]*:CUSTOM_ID:[ \t]*" (regexp-quote slug) "[ \t]*$") nil t))
+      (setq slug (format "%s-%d" base n))
+      (setq n (1+ n)))
+    slug))
+
+(defun cm/org--ensure-parent-id ()
+  "Return parent's CUSTOM_ID, generating one from its title if missing."
+  (save-excursion
+    (org-back-to-heading t)
+    (let* ((title (org-get-heading t t t t))
+           (cid   (org-entry-get (point) "CUSTOM_ID")))
+      (unless cid
+        (setq cid (cm/org--unique-custom-id (cm/org--slugify title)))
+        (org-entry-put (point) "CUSTOM_ID" cid))
+      cid)))
+#+END_SRC
+
+
+** Commands: add ID to the *current* heading (by title)
+Two helpers to attach a :CUSTOM_ID: to the *current* heading.  
+
+- `cm/org-add-custom-id-from-title` → kebab-case from the current heading’s title.
+- `cm/org-add-namespaced-id-from-title` → `PARENT--CHILD` if there’s a parent; just `CHILD` at top level. `C-u` forces replacement.
+
+#+BEGIN_SRC emacs-lisp
+(defun cm/org-add-custom-id-from-title ()
+  "Add a kebab-cased :CUSTOM_ID: to the current heading if missing, derived from its title."
+  (interactive)
+  (org-back-to-heading t)
+  (let* ((title (org-get-heading t t t t))
+         (slug  (cm/org--unique-custom-id (cm/org--slugify title))))
+    (org-entry-put (point) "CUSTOM_ID" slug)
+    (message "CUSTOM_ID: %s" slug)))
+
+(defun cm/org-add-namespaced-id-from-title (&optional force)
+  "Add or replace :CUSTOM_ID: on the current heading.
+
+If this heading has a parent (level > 1), namespace as PARENT--CHILD where
+PARENT is the parent's CUSTOM_ID (created if missing). If top-level, just CHILD.
+
+With prefix arg FORCE (C-u), replace any existing CUSTOM_ID without prompting."
+  (interactive "P")
+  (org-back-to-heading t)
+  (let* ((level (or (org-current-level) 1))
+         (title (org-get-heading t t t t))
+         (child (cm/org--slugify title))
+         (parent-id (when (> level 1)
+                      (save-excursion
+                        (outline-up-heading 1 t)
+                        (cm/org--ensure-parent-id))))
+         (base (if parent-id (format "%s--%s" parent-id child) child))
+         (new  (cm/org--unique-custom-id base))
+         (old  (org-entry-get (point) "CUSTOM_ID")))
+    (when (or force (null old)
+              (y-or-n-p (format "Replace CUSTOM_ID %s with %s? " old new)))
+      (org-entry-put (point) "CUSTOM_ID" new)
+      (message "CUSTOM_ID: %s" new))))
+#+END_SRC
+
+
+** Commands: insert slides with IDs (sibling / child)
+These create new headings (slides) and set :CUSTOM_ID:.  
+
+- `cm/org-insert-slide-with-id` → insert **sibling** (or **child** with `C-u`) and auto `:CUSTOM_ID:`.
+- `cm/org-insert-child-slide-with-namespaced-id` → insert **child** with id `parent--child`.
+
+#+BEGIN_SRC emacs-lisp
+(defun cm/org-insert-slide-with-id (title &optional as-child)
+  "Insert a new slide with TITLE and a kebab-cased :CUSTOM_ID:.
+With prefix arg AS-CHILD (C-u), insert as a child of the current heading;
+otherwise insert as a sibling at the current level (or level-1 if before the first heading)."
+  (interactive "sSlide title: \nP")
+  (let* ((slug (cm/org--unique-custom-id (cm/org--slugify title)))
+         (cur-level (or (org-current-level) 0))
+         (level (cond
+                 (as-child (1+ cur-level))
+                 ((= cur-level 0) 1)
+                 (t cur-level)))
+         (stars (make-string level ?*)))
+    (org-end-of-subtree t t)
+    (insert (format "\n%s %s\n:PROPERTIES:\n:CUSTOM_ID: %s\n:END:\n\n"
+                    stars title slug))
+    (forward-line -1)))
+
+(defun cm/org-insert-child-slide-with-namespaced-id (title)
+  "Insert a child slide whose CUSTOM_ID is 'parent--child'. Ensures parent has a CUSTOM_ID."
+  (interactive "sChild slide title: ")
+  (let* ((parent-id (cm/org--ensure-parent-id))
+         (child-slug (cm/org--slugify title))
+         (combined (cm/org--unique-custom-id (format "%s--%s" parent-id child-slug)))
+         (parent-level (or (org-current-level) 0))
+         (stars (make-string (1+ (max 1 parent-level)) ?*)))
+    (org-end-of-subtree t t)
+    (insert (format "\n%s %s\n:PROPERTIES:\n:CUSTOM_ID: %s\n:END:\n\n"
+                    stars title combined))
+    (forward-line -1)))
+#+END_SRC
+
+
+** Keybindings (Org-only prefix; auto-pick a free one)
+We bind the slide helpers under a single Org-local prefix. By default it tries =C-c r=
+(“reveal”), and falls back to a few alternates if that’s taken.
+
+- =<prefix> i= → insert sibling slide with ID (prompt)
+- =<prefix> I= → insert child slide with namespaced ID (prompt)
+- =<prefix> a= → add :CUSTOM_ID: to current heading
+- =<prefix> A= → add namespaced :CUSTOM_ID: to current heading
+
+#+BEGIN_SRC emacs-lisp
+(defvar cm/org-slide-prefix-candidates
+  '("C-c r" "C-c C-r" "C-c M-r" "C-c ;")
+  "Preferred prefixes for cm/org-slide-map in org-mode; first free is used.")
+
+(defvar cm/org-slide-prefix nil
+  "Chosen prefix for cm/org-slide-map. Set this to force a specific prefix.")
+
+(defun cm/org--first-free-prefix (map candidates)
+  "Return the first key in CANDIDATES not bound in key MAP."
+  (require 'seq)
+  (seq-find (lambda (k) (null (lookup-key map (kbd k)))) candidates))
+
+(with-eval-after-load 'org
+  (let* ((prefix (or cm/org-slide-prefix
+                     (cm/org--first-free-prefix org-mode-map cm/org-slide-prefix-candidates)
+                     "C-c r"))) ;; last resort
+    (define-prefix-command 'cm/org-slide-map)
+    (define-key org-mode-map (kbd prefix) 'cm/org-slide-map)
+
+    ;; <prefix> i : insert sibling slide with ID
+    (define-key cm/org-slide-map (kbd "i") #'cm/org-insert-slide-with-id)
+    ;; <prefix> I : insert child slide with namespaced ID
+    (define-key cm/org-slide-map (kbd "I") #'cm/org-insert-child-slide-with-namespaced-id)
+    ;; <prefix> a : add :CUSTOM_ID: to current heading
+    (define-key cm/org-slide-map (kbd "a") #'cm/org-add-custom-id-from-title)
+    ;; <prefix> A : add namespaced :CUSTOM_ID: to current heading
+    (define-key cm/org-slide-map (kbd "A") #'cm/org-add-namespaced-id-from-title)
+
+    (message "cm/org-slide-map bound on %s (i: insert, I: child, a: add-id)" prefix)))
 #+END_SRC
 
 * Custom Key Bindings
 #+BEGIN_SRC emacs-lisp
 ;; Enable the Treemacs toggle.
 (map! "<f9>" #'treemacs)
+#+END_SRC
+
+When jumping from one buffer to another, ace-window uses default home row
+keys, let's move those to Dvorak since that's what I use.
+#+BEGIN_SRC emacs-lisp
+(after! ace-window
+  (setq aw-keys '(?a ?o ?e ?u ?h ?t ?n ?s)
+        aw-scope 'global
+        aw-dispatch-when-more-than 1
+        aw-ignore-current nil))
 #+END_SRC
 
 * Fill Line

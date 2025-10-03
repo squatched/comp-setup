@@ -116,9 +116,9 @@ case $distributor_id in
         fi
         ;;
     "Amazon Linux")
-	# Git Completion is handled through /etc/bashrc but git-prompt is not...
-	# Go figure.
-	__source_if_file /usr/share/git-core/contrib/completion/git-prompt.sh
+        # Git Completion is handled through /etc/bashrc but git-prompt is not...
+        # Go figure.
+        __source_if_file /usr/share/git-core/contrib/completion/git-prompt.sh
 esac
 __display_path_diff "After git prompt & completion"
 
@@ -253,6 +253,7 @@ __display_path_diff "After .bash_completion.d/"
 # Special bash tab-completion
 hash aws_completer 2>/dev/null && complete -C aws_completer aws
 hash terraform 2>/dev/null && complete -C terraform terraform
+hash aider 2>/dev/null && eval $(aider --shell-completions bash)
 
 # Proprietary scripts.
 __source_if_file $HOME/.bash_proprietary_post
@@ -264,5 +265,5 @@ __display_path_diff "After .bash_proprietary_post"
 echo "${PATH}" | grep "/.local/bin" >/dev/null || PATH="${HOME}/.local/bin:${PATH}"
 __display_path_diff "After ~/.local/bin setup"
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+hash fzf 2>/dev/null && eval "$(fzf --bash)"
 __display_path_diff "After FZF setup"

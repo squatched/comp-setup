@@ -10,5 +10,8 @@
 (package! cmake-mode)
 
 ;; Export Org docs to beautiful reveal.js presentations
-(package! org-reveal)
+(package! ox-reveal :disable t)
+(package! org-re-reveal
+  :recipe (:host gitlab :repo "oer/org-re-reveal"))
+
 (package! htmlize)
