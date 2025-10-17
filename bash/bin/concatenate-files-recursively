@@ -1,0 +1,369 @@
+#!/usr/bin/env bash
+
+# Require GNU getopt (macOS: brew install gnu-getopt and ensure it's first in PATH)
+getopt --test >/dev/null
+if [[ $? -ne 4 ]]; then
+    printf "Missing the right `getopt` version.\n"
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+show_help() {
+    cat <<EOF
+Usage: ${0##*/} [options] [SRC ...] [OUT_FILE]
+
+Concatenate text from files and/or directories (recursively) into a single
+output, inserting headers that include the source "root" and the path relative
+to that root. Sorting is deterministic (LC_ALL=C) by relative path, then by the
+order of the given sources.
+
+Behavior:
+  * If no SRC is provided, the current directory (.) is used.
+  * If no OUT_FILE is provided (or OUT_FILE is '-'), output goes to stdout.
+  * SRC items can be a mix of files and directories.
+  * If OUT_FILE is inside any source directory, it is skipped automatically.
+  * Explicit file arguments are always included (extension filter is NOT applied).
+
+Examples:
+  ${0##*/} ./docs ./plans project_docs.txt
+  ${0##*/} -e "txt,md" ./docs ./plans -o project_docs.txt
+  ${0##*/} ./docs -o -                 # stdout
+  ${0##*/}                              # crawl CWD → stdout
+
+Options:
+  -d | --dry-run        Don't write to a file; print the would-be output.
+  -f | --force          Overwrite the output file if it exists.
+  -h | --help           Display this help.
+  -o | --out-file FILE  Write to FILE (or '-' for stdout). If omitted, last
+                        positional arg is treated as OUT_FILE; if absent → '-'.
+  -e | --ext LIST       Comma- or space-separated extensions (case-insensitive).
+                        Examples: "txt,md" or "TXT MD". If omitted, include all.
+  -v | --verbose        Print progress/logs to stderr.
+       --debug-args     Print argv as seen after getopt parsing.
+
+Notes:
+  * Filenames with spaces/newlines are handled safely.
+  * For file SRC items, ROOT is the file argument; FILE is its basename.
+  * For directory SRC items, ROOT is the directory; FILE is the path relative
+    to that directory.
+EOF
+}
+
+write_header() {
+  # $1 = display path to show
+  local path="$1"
+  local bar
+  bar=$(printf '%*s' "$HEADER_WIDTH" '' | tr ' ' '=')
+
+  # Compose the middle line: "== FILE: <path> ==" with padding if it fits
+  local left="== FILE: "
+  local right=" =="
+  local core="${left}${path}"
+  local core_len=${#core}
+  local right_len=${#right}
+
+  if (( core_len + right_len <= HEADER_WIDTH )); then
+    # pad with spaces so right delimiter aligns
+    local pad_len=$(( HEADER_WIDTH - core_len - right_len ))
+    printf '%s\n' "$bar" >> "$TMP_FILE"
+    printf '%s%s%s\n' "$core" "$(printf '%*s' "$pad_len" '')" "$right" >> "$TMP_FILE"
+    printf '%s\n' "$bar" >> "$TMP_FILE"
+  else
+    # too long → just print without right "==", as requested
+    printf '%s\n' "$bar" >> "$TMP_FILE"
+    printf '%s\n' "$core" >> "$TMP_FILE"
+    printf '%s\n' "$bar" >> "$TMP_FILE"
+  fi
+}
+
+# ---- option defaults ----
+OPT_DRY_RUN=false
+OPT_FORCE=false
+OPT_OUT_FILE=""
+OPT_EXT_LIST=""
+OPT_VERBOSE=false
+OPT_DEBUG_ARGS=false
+
+EXT_FILTER_ENABLED=false
+HEADER_WIDTH=80   # number of '=' chars in the file header
+SHORT_OPTIONS="dfho:e:v"
+LONG_OPTIONS="dry-run,force,help,out-file:,ext:,verbose,debug-args"
+
+PARSED_ARGS=$(
+  getopt \
+    --options="${SHORT_OPTIONS}" \
+    --longoptions="${LONG_OPTIONS}" \
+    --name "${0##*/}" \
+    -- "$@"
+)
+if [[ $? -ne 0 ]]; then
+  exit 2
+fi
+
+eval set -- "${PARSED_ARGS}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -d|--dry-run)    OPT_DRY_RUN=true ;;
+    -f|--force)      OPT_FORCE=true ;;
+    -h|--help)       show_help; exit 0 ;;
+    -o|--out-file)   shift; OPT_OUT_FILE="${1:-}" ;;
+    -e|--ext)        shift; OPT_EXT_LIST="${1:-}" ;;
+    -v|--verbose)    OPT_VERBOSE=true ;;
+    --debug-args)    OPT_DEBUG_ARGS=true ;;
+    --)              shift; break ;;
+    *)               printf "Programming error... Go yell at Caleb.\n"; exit 3 ;;
+  esac
+  shift
+done
+
+log() {
+  $OPT_VERBOSE && printf "[%s] %s\n" "${0##*/}" "$*" >&2 || true
+}
+
+$OPT_DEBUG_ARGS && {
+  printf "DEBUG argv after getopt:\n" >&2
+  for a in "$@"; do printf "  [%s]\n" "$a" >&2; done
+}
+
+# ---- positional parsing ----
+SOURCES=()
+if [[ -n "${OPT_OUT_FILE}" ]]; then
+  SOURCES=( "$@" )
+  OUT_FILE="${OPT_OUT_FILE}"
+else
+  if [[ $# -eq 0 ]]; then
+    SOURCES=( "." )
+    OUT_FILE="-"
+  elif [[ $# -eq 1 ]]; then
+    SOURCES=( "$1" )
+    OUT_FILE="-"
+  else
+    OUT_FILE="${@: -1}"
+    SOURCES=( "${@:1:$(($#-1))}" )
+  fi
+fi
+
+log "Initial sources (raw): ${SOURCES[*]}"
+log "Initial OUT_FILE: ${OUT_FILE}"
+
+# --- robust glob expansion with nullglob (handles patterns like dir/*.md) ---
+_EXPANDED=()
+shopt -s nullglob
+for s in "${SOURCES[@]}"; do
+  case "$s" in
+    *[\*\?\[]*)
+      _matches=( $s )
+      if (( ${#_matches[@]} )); then
+        _EXPANDED+=( "${_matches[@]}" )
+      else
+        _EXPANDED+=( "$s" )
+      fi
+      ;;
+    *) _EXPANDED+=( "$s" ) ;;
+  esac
+done
+shopt -u nullglob
+SOURCES=( "${_EXPANDED[@]}" )
+log "Sources after glob-expansion: ${SOURCES[*]:-<none>}"
+
+# Normalize/validate sources; allow files or directories
+CLEAN_SOURCES=()
+for s in "${SOURCES[@]}"; do
+  s="${s%/}"
+  if [[ ! -e "$s" ]]; then
+    printf "Source not found: %s\n" "$s" >&2
+    exit 4
+  fi
+  if [[ ! -f "$s" && ! -d "$s" ]]; then
+    printf "Source is neither a regular file nor a directory: %s\n" "$s" >&2
+    exit 4
+  fi
+  CLEAN_SOURCES+=( "$s" )
+done
+SOURCES=( "${CLEAN_SOURCES[@]}" )
+
+# Normalize OUT_FILE (if not stdout)
+if [[ "${OUT_FILE}" != "-" ]]; then
+  OUT_FILE_ABS="$(cd "$(dirname "$OUT_FILE")" && pwd)/$(basename "$OUT_FILE")"
+else
+  OUT_FILE_ABS="-"
+fi
+log "Normalized OUT_FILE_ABS: ${OUT_FILE_ABS}"
+
+# Overwrite checks
+if [[ "$OUT_FILE_ABS" != "-" && -e "$OUT_FILE_ABS" ]] && ! $OPT_DRY_RUN && ! $OPT_FORCE; then
+  printf "Output file \"%s\" exists. Use '--force' to overwrite. Aborting.\n" "$OUT_FILE_ABS" >&2
+  exit 4
+fi
+
+# ---- tmp files & cleanup ----
+TMP_FILE="$(mktemp -t "${0##*/}.tmp.XXXXXX")"
+REC_FILE="$(mktemp -t "${0##*/}.recs.XXXXXX")"
+if [[ -z "$TMP_FILE" || -z "$REC_FILE" ]]; then
+  printf "Unable to create tmp files.\n" >&2
+  exit 5
+fi
+cleanup_tmp() { rm -f "$TMP_FILE" "$REC_FILE"; }
+trap cleanup_tmp EXIT
+log "TMP_FILE: $TMP_FILE"
+log "REC_FILE: $REC_FILE"
+
+# ---- extension filter prep (Bash 3 friendly) ----
+OPT_EXT_LIST_TRIMMED="$(printf '%s' "$OPT_EXT_LIST" | awk '{$1=$1; print}')"  # trims simple leading/trailing spaces
+if [[ -n "$OPT_EXT_LIST_TRIMMED" ]]; then
+  EXT_FILTER_ENABLED=true
+fi
+
+_OPT_EXTS_RAW="$(echo "$OPT_EXT_LIST" | tr '[:upper:], ' '[:lower:]\n\n' | awk 'NF')"
+_EXTS=()
+while IFS= read -r _ext; do
+  _EXTS+=( "$_ext" )
+done <<< "$_OPT_EXTS_RAW"
+
+$OPT_VERBOSE && {
+  if $EXT_FILTER_ENABLED; then
+    printf "[%s] Extension filter enabled: " "${0##*/}" >&2
+    ((${#_EXTS[@]})) && printf "%s " "${_EXTS[@]}" >&2 || printf "<none-parsed>" >&2
+    printf "\n" >&2
+  else
+    printf "[%s] Extension filter disabled\n" "${0##*/}" >&2
+  fi
+}
+
+match_ext() {
+  local base="${1##*/}"
+  if (( ${#_EXTS[@]} == 0 )); then
+    return 0   # allow all when list empty
+  fi
+  local name_l
+  name_l="$(echo "$base" | tr '[:upper:]' '[:lower:]')"
+  local e
+  for e in "${_EXTS[@]}"; do
+    local ee="${e#.}"
+    [[ -z "$ee" ]] && continue   # ignore accidental empty tokens
+    [[ "$name_l" == *."$ee" ]] && return 0
+  done
+  return 1
+}
+
+# ---- build arrays of absolute roots & display roots & kinds ----
+# kind: "dir" or "file" (explicit file args bypass extension filter)
+ABS_ROOTS=()
+DSP_ROOTS=()
+KINDS=()
+for src in "${SOURCES[@]}"; do
+  if [[ -d "$src" ]]; then
+    ABS_ROOTS+=( "$(cd "$src" && pwd)" )
+    DSP_ROOTS+=( "$src" )
+    KINDS+=( "dir" )
+  else
+    abs_file="$(cd "$(dirname "$src")" && pwd)/$(basename "$src")"
+    ABS_ROOTS+=( "$(dirname "$abs_file")" )
+    DSP_ROOTS+=( "$src" )
+    KINDS+=( "file" )
+  fi
+done
+log "Computed roots: ${#ABS_ROOTS[@]} (dirs/files)"
+
+# ---- helper: NUL-safe sort by key2 (rel), then key1 (root index)
+sort_records() {
+  if sort -z </dev/null >/dev/null 2>&1; then
+    LC_ALL=C sort -z -t $'\t' -k2,2 -k1,1
+  else
+    perl -0 -e '
+      local $/ = "\0";
+      my @r = <STDIN>;
+      print
+        sort {
+          my ($ai,$ar) = split /\t/, $a, 2;
+          my ($bi,$br) = split /\t/, $b, 2;
+          ($ar cmp $br) || ($ai <=> $bi)
+        } @r;
+    '
+  fi
+}
+
+# ---- collect records: rootIdx<TAB>relPath (NUL-terminated) ----
+for i in "${!ABS_ROOTS[@]}"; do
+  root_abs="${ABS_ROOTS[$i]}"
+  kind="${KINDS[$i]}"
+  if [[ "$kind" == "dir" ]]; then
+    log "Scanning dir: $root_abs"
+    find "$root_abs" -type f -print0 | \
+    while IFS= read -r -d '' abs; do
+    case "$abs" in
+        "$root_abs"/*) rel="${abs#"$root_abs"/}" ;;
+        *)              rel="$(basename "$abs")" ;;
+    esac
+    if [[ "$OUT_FILE_ABS" != "-" && "$abs" == "$OUT_FILE_ABS" ]]; then
+        log "Skipping output file inside tree: $abs"
+        continue
+    fi
+    if $EXT_FILTER_ENABLED && ! match_ext "$rel"; then
+        log "Filtered by extension: $rel"
+        continue
+    fi
+    printf '%s\t%s\0' "$i" "$rel" >> "$REC_FILE"
+    done
+  else
+    # explicit file: always include (bypass extension filter)
+    abs_file="$(cd "$root_abs" && pwd)/$(basename "${DSP_ROOTS[$i]}")"
+    if [[ "$OUT_FILE_ABS" != "-" && "$abs_file" == "$OUT_FILE_ABS" ]]; then
+      log "Skipping explicit file (is output): $abs_file"
+      continue
+    fi
+    rel="$(basename "$abs_file")"
+    printf '%s\t%s\0' "$i" "$rel" >> "$REC_FILE"
+  fi
+done
+$OPT_VERBOSE && { n=$(tr -cd '\0' < "$REC_FILE" | wc -c | tr -d ' '); log "Collected $n file record(s)"; }
+
+# ---- if nothing collected, fail loudly ----
+if [[ ! -s "$REC_FILE" ]]; then
+  printf "No input files matched (after filters). Aborting.\n" >&2
+  exit 6
+fi
+
+# ---- sort and write ----
+log "Sorting and writing…"
+first_file=true
+sort_records < "$REC_FILE" | \
+while IFS=$'\t' read -r -d '' root_idx rel; do
+  root_abs="${ABS_ROOTS[$root_idx]}"
+  root_dsp="${DSP_ROOTS[$root_idx]}"
+  abs="$root_abs/$rel"
+
+  # Decide what to display:
+  # - explicit file args: show exactly what user passed (root_dsp)
+  # - directory-discovered files: show the relative path within the directory
+  display_path="$rel"
+  if [[ "${KINDS[$root_idx]}" == "file" ]]; then
+    display_path="$root_dsp"
+  fi
+
+  # Separate files with a newline — but not before the very first one
+  $first_file || printf '\n\n' >> "$TMP_FILE"
+  first_file=false
+
+  # New boxed header
+  write_header "$display_path"
+
+  # File contents
+  cat -- "$abs" >> "$TMP_FILE"
+
+  # Ensure trailing newline
+  tail -c1 "$TMP_FILE" 2>/dev/null | od -An -t x1 | grep -q '0a' || printf '\n' >> "$TMP_FILE"
+done
+
+# ---- output handling ----
+if $OPT_DRY_RUN || [[ "$OUT_FILE_ABS" == "-" ]]; then
+  log "Emitting to stdout"
+  cat "$TMP_FILE"
+  exit 0
+fi
+
+cp ${OPT_FORCE:+--force} "$TMP_FILE" "$OUT_FILE_ABS"
+printf 'Wrote: %s\n' "$OUT_FILE_ABS"
