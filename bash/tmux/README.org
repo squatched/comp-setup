@@ -1,0 +1,256 @@
+#+TITLE: tmux
+
+A tmux config for modern tmux (>= 3.0; tested on 3.4), plus a cheatsheet for the
+bindings it defines.
+
+*The prefix is =C-o=*, not the stock =C-b=. Throughout this file, =C-o x= means:
+press =Ctrl-o=, release, then press =x=. Anything marked ★ is a custom binding
+from this repo's =.tmux.conf=; everything else is stock tmux.
+
+* Contents
+
+| File                       | What it is                                                     |
+|----------------------------+----------------------------------------------------------------|
+| =.tmux.conf=               | The config. Symlinked to =~/.tmux.conf=.                       |
+| =screen-256color.terminfo= | Legacy terminfo source. No longer used — see the last section. |
+
+* Installation
+
+#+BEGIN_SRC sh
+ln -s "$PWD/.tmux.conf" ~/.tmux.conf
+#+END_SRC
+
+Then =tmux= — or =C-o r= to reload if a server is already running.
+
+Note the config search path (tmux 3.4; =tmux -V= to check yours):
+
+#+BEGIN_EXAMPLE
+/etc/tmux.conf : ~/.tmux.conf : $XDG_CONFIG_HOME/tmux/tmux.conf : ~/.config/tmux/tmux.conf
+#+END_EXAMPLE
+
+tmux sources *every* file in that list that exists, in that order — it does not
+stop at the first hit. Later files therefore override earlier ones on any setting
+they both touch. So if =~/.config/tmux/tmux.conf= exists, this symlink still
+loads, but the XDG file silently wins wherever the two disagree. Worth checking
+if a setting here mysteriously refuses to apply.
+
+-----
+
+* Cheatsheet
+
+Mental model, outermost to innermost:
+
+#+BEGIN_EXAMPLE
+server ──> session ──> window (a "tab")  ──> pane (a split)
+                       window            ──> pane
+           session ──> window            ──> pane
+#+END_EXAMPLE
+
+A *session* is what survives you closing the terminal. That's the whole point
+of tmux.
+
+** The 10 things to re-learn first
+
+| Keys          | Does                                                         |
+|---------------+--------------------------------------------------------------|
+| =C-o c=       | *c*reate a new window ★ (opens in current dir)               |
+| =C-o f=       | next window (*f*orward) ★                                    |
+| =C-o b=       | previous window (*b*ack) ★                                   |
+| =C-o 1= … =9= | jump straight to window N                                    |
+| =C-o= \vert{} | split pane *vertically* (side by side) ★                     |
+| =C-o -=       | split pane *horizontally* (stacked) ★                        |
+| =C-o o=       | cycle to next pane                                           |
+| =C-o ←↑↓→=    | move to the pane in that direction                           |
+| =C-o d=       | *d*etach — leave everything running, drop back to your shell |
+| =C-o ?=       | list every key binding (searchable; =q= to quit)             |
+
+=C-o o= is easy to remember: same letter as the prefix.
+
+** From outside tmux (plain shell commands)
+
+| Command                     | Does                                |
+|-----------------------------+-------------------------------------|
+| =tmux=                      | start an unnamed session            |
+| =tmux new -s work=          | start a session named =work=        |
+| =tmux ls=                   | list sessions                       |
+| =tmux attach= or =tmux a=   | reattach to the most recent session |
+| =tmux a -t work=            | reattach to =work=                  |
+| =tmux kill-session -t work= | kill one session                    |
+| =tmux kill-server=          | kill everything                     |
+
+*The habit worth building:* always =tmux new -s <name>= and always
+=tmux a -t <name>=. Named sessions are the difference between tmux being useful
+and tmux being a pile of anonymous numbers.
+
+** Windows (tabs)
+
+| Keys              | Does                                                           |
+|-------------------+----------------------------------------------------------------|
+| =C-o c=           | new window ★                                                   |
+| =C-o ,=           | rename current window                                          |
+| =C-o &=           | kill current window (asks to confirm)                          |
+| =C-o w=           | interactive window/session picker — *the one to use when lost* |
+| =C-o C-f=         | find window by name/content ★                                  |
+| =C-o f= / =C-o b= | next / previous ★                                              |
+| =C-o l=           | *l*ast window (toggle back and forth)                          |
+
+Stock tmux uses =n= / =p= for next/prev — this config *unbinds those* and uses
+=f= / =b= instead, to match emacs =forward-char= / =backward-char=. Stock =f= was
+find-window, which moves to =C-o C-f=.
+
+Windows are numbered from *1* in this config, so =C-o 1= is the first window.
+
+** Panes (splits)
+
+| Keys              | Does                                                                |
+|-------------------+---------------------------------------------------------------------|
+| =C-o= \vert{}     | split left/right ★                                                  |
+| =C-o -=           | split top/bottom ★                                                  |
+| =C-o ←↑↓→=        | move between panes                                                  |
+| =C-o o=           | next pane                                                           |
+| =C-o q=           | show pane numbers; press one to jump there                          |
+| =C-o x=           | kill current pane (confirms)                                        |
+| =C-o z=           | *zoom* — blow current pane up to fullscreen; press again to restore |
+| =C-o Space=       | cycle through preset layouts (even-horizontal, tiled, …)            |
+| =C-o !=           | break current pane out into its own window                          |
+| =C-o {= / =C-o }= | swap pane with previous / next                                      |
+| =C-o M-←↑↓→=      | resize by 5 cells — repeatable, keep tapping                        |
+| =C-o C-←↑↓→=      | resize by 1 cell — repeatable                                       |
+
+=C-o z= is the single most underrated key in tmux. Use it constantly.
+
+Because =mouse on= is set, you can also *click* a pane to focus it and *drag
+the border* to resize.
+
+** Scrolling and copying
+
+| Keys                     | Does                                           |
+|--------------------------+------------------------------------------------|
+| mouse wheel              | scroll back (enters copy mode automatically)   |
+| =C-o [=                  | enter copy mode explicitly                     |
+| =q=                      | leave copy mode                                |
+| =C-s= then text, =Enter= | search backward in the scrollback (emacs keys) |
+| =C-r=                    | search forward                                 |
+| =C-Space=                | start selection                                |
+| =M-w=                    | copy selection, exit copy mode                 |
+| =C-o ]=                  | paste the tmux buffer                          |
+| drag with mouse          | select + copy into the tmux buffer             |
+
+Copy mode uses *emacs* keys here. That isn't set explicitly — tmux infers
+=mode-keys= from =$VISUAL= / =$EDITOR=, and this setup's =$VISUAL= is
+=emacsclient=. Confirm with =tmux show -gw mode-keys=; if it ever reports =vi=,
+something changed those variables.
+
+*Gotcha worth memorising:* a mouse drag copies into tmux's /own/ buffer, not
+the system clipboard. To use the terminal emulator's native selection instead,
+*hold =Shift= while dragging* — that bypasses tmux entirely.
+
+** Sessions
+
+| Keys              | Does                       |
+|-------------------+----------------------------|
+| =C-o d=           | detach                     |
+| =C-o $=           | rename session             |
+| =C-o s=           | interactive session picker |
+| =C-o (= / =C-o )= | previous / next session    |
+
+** The command prompt
+
+=C-o := opens tmux's own command line. Every key binding is really just a command,
+so this is the escape hatch when you don't know the key:
+
+#+BEGIN_EXAMPLE
+:new-window -n logs
+:rename-session infra
+:kill-pane -t 2
+:setw synchronize-panes on     # type once, into every pane in the window
+:source-file ~/.tmux.conf      # reload config (or just C-o r ★)
+#+END_EXAMPLE
+
+=synchronize-panes= is worth knowing: toggle it on and your keystrokes go to
+every pane at once. Turn it off again with =:setw synchronize-panes off=.
+
+** Typing a literal =C-o=
+
+=C-o= is also =open-line= in emacs and readline. To send it through to the
+program inside tmux, press it *twice*: =C-o C-o=. ★
+
+** Using tmux with Claude Code teams
+
+- Nothing special is required beyond a working tmux — 3.4 is plenty modern.
+- =C-o z= to zoom into one agent's pane, =C-o z= again to see the whole team.
+- =C-o q= then a number is the fastest way to jump to a specific agent's pane.
+- The scrollback bump matters: agents generate a lot of output, and the old
+  5,000-line limit would silently truncate it.
+- Remember the prefix is =C-o=, so any instructions written for stock tmux that
+  say =C-b= mean =C-o= here.
+
+-----
+
+* Editing this config
+
+=C-o r= reloads in place ★. To check for errors without disturbing a live
+session, source it on a throwaway server using a separate socket (=-L=):
+
+#+BEGIN_SRC sh
+tmux -L test -f /dev/null new-session -d
+tmux -L test source-file ~/.tmux.conf   # any errors print here
+tmux -L test kill-server
+#+END_SRC
+
+Errors from a config sourced at startup are easy to miss — they scroll past or
+land in the message log. This makes them unmissable.
+
+** Behavioural settings worth knowing about
+
+Stock tmux defaults in parentheses, for contrast:
+
+- =mouse on= (off) — click panes, drag borders, scrollwheel scrolls.
+- =history-limit 100000= (2,000; this config previously set 5,000) — agent and
+  build output eats small scrollbacks fast.
+- =escape-time 10= (500) — the default makes Escape feel broken in
+  emacs/vim/readline.
+- =base-index 1= / =pane-base-index 1= (0) with =renumber-windows on= (off) — so
+  window numbers match the number keys and never leave gaps like 1,2,5.
+- =aggressive-resize on= (off) and =focus-events on= (off).
+- =default-terminal tmux-256color= plus =terminal-features ...:RGB= for 24-bit
+  colour. Set explicitly rather than left alone: tmux 3.4 already defaults to
+  =tmux-256color=, but older builds default to =screen=, so pinning it keeps
+  colour and italics consistent wherever this config lands.
+
+** Porting note: the tmux 2.9 style overhaul
+
+If you carry this config to an older tmux, or wonder why the pre-2022 version of
+this file produced dozens of =invalid option: ...= errors: tmux 2.9 removed
+every separate =*-fg=, =*-bg= and =*-attr= option, and collapsed each trio into
+a single =*-style=.
+
+#+BEGIN_EXAMPLE
+# before 2.9                      # 2.9 and later
+set -g status-fg colour137        set -g status-style 'fg=colour137,bg=colour234,dim'
+set -g status-bg colour234
+set -g status-attr dim
+#+END_EXAMPLE
+
+The same applies to =pane-border-*=, =pane-active-border-*=, =message-*=,
+=message-command-*=, =mode-*=, =window-status-*=, =window-status-current-*= and
+=window-status-bell-*=. This config uses the =-style= form throughout, so it will
+*not* work on tmux older than 2.9.
+
+** Obsolete: the terminfo step
+
+=screen-256color.terminfo= is retained for reference only. It used to require:
+
+#+BEGIN_SRC sh
+cd ~
+install -d .terminfo
+tic -o .terminfo/ /path/to/screen-256color.terminfo
+#+END_SRC
+
+That is no longer necessary. The config now sets =default-terminal= to
+=tmux-256color=, which ships with ncurses on every current distro — check with
+=infocmp tmux-256color= — and gets 24-bit colour from =terminal-features=
+instead. Nothing needs compiling into =~/.terminfo=.
+
+Keep the file only in case this config lands on a host old enough to lack a
+=tmux-256color= entry.
