@@ -1,5 +1,0 @@
-* Installation
-cd ~
-install -d .terminfo
-tic -o .terminfo/ /path/to/screen-256color.terminfo
-
