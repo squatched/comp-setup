@@ -57,7 +57,7 @@ of tmux.
 | =C-o f=       | next window (*f*orward) ★                                    |
 | =C-o b=       | previous window (*b*ack) ★                                   |
 | =C-o 1= … =9= | jump straight to window N                                    |
-| =C-o= \vert{} | split pane *vertically* (side by side) ★                     |
+| =C-o │=       | split pane *vertically* (side by side) ★                     |
 | =C-o -=       | split pane *horizontally* (stacked) ★                        |
 | =C-o o=       | cycle to next pane                                           |
 | =C-o ←↑↓→=    | move to the pane in that direction                           |
@@ -104,7 +104,7 @@ Windows are numbered from *1* in this config, so =C-o 1= is the first window.
 
 | Keys              | Does                                                                |
 |-------------------+---------------------------------------------------------------------|
-| =C-o= \vert{}     | split left/right ★                                                  |
+| =C-o │=           | split left/right ★                                                  |
 | =C-o -=           | split top/bottom ★                                                  |
 | =C-o ←↑↓→=        | move between panes                                                  |
 | =C-o o=           | next pane                                                           |
@@ -200,6 +200,36 @@ tmux -L test kill-server
 
 Errors from a config sourced at startup are easy to miss — they scroll past or
 land in the message log. This makes them unmissable.
+
+** Editing this file
+
+GitHub renders =.org= with the =org-ruby= gem, which is an old and incomplete Org
+implementation, so a few things here are deliberate workarounds. To preview a
+change the way GitHub will actually see it:
+
+#+BEGIN_SRC sh
+gem install org-ruby
+ruby -r org-ruby -e 'puts Orgmode::Parser.new(File.read("README.org"), offset: 1).to_html'
+#+END_SRC
+
+Gotchas found by doing exactly that:
+
+- The two split-key rows use =│= (U+2502 BOX DRAWINGS LIGHT VERTICAL), *not* an
+  ASCII pipe. A real =|= would be eaten as a table delimiter, and every escape
+  (=\vert{}=, =&#124;=, =\|=) renders literally when it is inside =…= markup.
+  Please do not "fix" it back.
+- Adjacent verbatim spans separated only by a slash get glued into one span
+  containing a stray equals sign. Always space them:
+
+  #+BEGIN_EXAMPLE
+  good:  =n= / =p=
+  bad:   =n=/=p=
+  #+END_EXAMPLE
+
+- Inline code is wrapped in equals signs rather than tildes, because a tilde
+  delimiter collides with the leading tilde of paths like =~/.tmux.conf=.
+- Do not wrap bold around verbatim that itself contains an asterisk, as in the
+  =*-fg= / =*-bg= list. It confuses the parser.
 
 ** Behavioural settings worth knowing about
 
