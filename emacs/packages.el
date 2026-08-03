@@ -15,3 +15,6 @@
   :recipe (:host gitlab :repo "oer/org-re-reveal"))
 
 (package! htmlize)
+
+;; Python style formatter.
+(package! blacken)
