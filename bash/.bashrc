@@ -6,6 +6,15 @@ __source_if_file () {
     [[ -f "$1" ]] && source "$1"
 }
 
+__source_if_file_exclusive () {
+   for file in "$@"; do
+     if [[ -f "$file" ]]; then
+         source "$file"
+         break
+     fi
+   done
+}
+
 #DEBUG_PATH=true
 PATH_CACHE=
 
@@ -104,7 +113,7 @@ case $distributor_id in
         __source_if_file /usr/share/git/completion/git-prompt.sh
         __source_if_file /usr/share/git/completion/git-completion.bash
         ;;
-    Ubuntu|Parrot)
+    Ubuntu|Parrot|Neon)
         # Debian distros
         __source_if_file /usr/lib/git-core/git-sh-prompt
         __source_if_file /usr/share/bash-completion/completions/git
@@ -253,6 +262,7 @@ __display_path_diff "After .bash_completion.d/"
 # Special bash tab-completion
 hash aws_completer 2>/dev/null && complete -C aws_completer aws
 hash terraform 2>/dev/null && complete -C terraform terraform
+hash op 2>/dev/null && source <(op completion bash)
 hash aider 2>/dev/null && eval $(aider --shell-completions bash)
 
 # Proprietary scripts.
@@ -265,5 +275,16 @@ __display_path_diff "After .bash_proprietary_post"
 echo "${PATH}" | grep "/.local/bin" >/dev/null || PATH="${HOME}/.local/bin:${PATH}"
 __display_path_diff "After ~/.local/bin setup"
 
-hash fzf 2>/dev/null && eval "$(fzf --bash)"
+# fzf shell integration.
+#
+# `fzf --bash` only exists in fzf >= 0.48. Distro packages lag badly -- Debian
+# and Ubuntu shipped 0.44 for a long time -- so on those boxes this is a no-op
+# and you get NO C-r / C-t / M-c bindings even though fzf itself is installed
+# and working. The 2>/dev/null keeps it from printing "unknown option: --bash"
+# on every new shell.
+#
+# Where that happens, source the key bindings directly from ~/.bash_environment;
+# Debian and Ubuntu put them in /usr/share/doc/fzf/examples/ rather than
+# upstream's /usr/share/fzf/. Check with `fzf --version`.
+hash fzf 2>/dev/null && eval "$(fzf --bash 2>/dev/null)"
 __display_path_diff "After FZF setup"
