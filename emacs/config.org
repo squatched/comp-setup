@@ -69,7 +69,7 @@ Enable reveal.js (org-re-reveal) and point it at Reveal.js v5.
 #+END_SRC
 
 
-** Helpers: slugify titles and ensure unique/custom IDs
+*** Helpers: slugify titles and ensure unique/custom IDs
 Utilities to:
 - make kebab-case slugs,
 - avoid collisions,
@@ -107,7 +107,7 @@ Utilities to:
 #+END_SRC
 
 
-** Commands: add ID to the *current* heading (by title)
+*** Commands: add ID to the *current* heading (by title)
 Two helpers to attach a :CUSTOM_ID: to the *current* heading.  
 
 - `cm/org-add-custom-id-from-title` → kebab-case from the current heading’s title.
@@ -149,7 +149,7 @@ With prefix arg FORCE (C-u), replace any existing CUSTOM_ID without prompting."
 #+END_SRC
 
 
-** Commands: insert slides with IDs (sibling / child)
+*** Commands: insert slides with IDs (sibling / child)
 These create new headings (slides) and set :CUSTOM_ID:.  
 
 - `cm/org-insert-slide-with-id` → insert **sibling** (or **child** with `C-u`) and auto `:CUSTOM_ID:`.
@@ -187,6 +187,25 @@ otherwise insert as a sibling at the current level (or level-1 if before the fir
     (forward-line -1)))
 #+END_SRC
 
+** Templates
+Configure custom Org structure templates. Each entry maps a short key (typed after =<=) to a block type. When you type =<KEY= at the beginning of a line and press =TAB=, Org expands it into the corresponding =#+BEGIN_...= / =#+END_...= block (e.g. =<n TAB= -> =#+BEGIN_NOTES= ... =#+END_NOTES=).
+
+#+BEGIN_SRC emacs-lisp
+;; Enable org-tempo for template usage
+(after! org
+  (require 'org-tempo)
+
+  ;; Define the templates.
+  (dolist (tpl '(("n"   . "NOTES")          ; <n   TAB → #+BEGIN_NOTES
+                 ("ss"  . "src")            ; <ss  TAB → #+BEGIN_SRC
+                 ("sel" . "src emacs-lisp") ; <sel TAB → #+BEGIN_SRC emacs-lisp
+                 ("spy" . "src python")     ; <spy TAB → #+BEGIN_SRC python
+                 ("ssh" . "src sh")         ; <ssh TAB → #+BEGIN_SRC sh
+                 ("sgo" . "src go")         ; <sgo TAB → #+BEGIN_SRC go
+                 ("e"   . "example")        ; <e   TAB → #+BEGIN_EXAMPLE
+                 ("q"   . "quote")))        ; <q   TAB → #+BEGIN_QUOTE
+    (add-to-list 'org-structure-template-alist tpl)))
+#+END_SRC
 
 ** Keybindings (Org-only prefix; auto-pick a free one)
 We bind the slide helpers under a single Org-local prefix. By default it tries =C-c r=
