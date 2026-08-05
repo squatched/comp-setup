@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+
+getopt --test >/dev/null
+GETOPT_TEST_STATUS=${?}
+if [[ ${GETOPT_TEST_STATUS} -ne 4 ]]; then
+    printf '%s\n' "Missing the right 'getopt' version."
+    exit 1
+fi
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# Plasma 6 runs plasmashell and kwin as systemd user units ('plasmashell
+# --no-respawn', 'kwin_x11 --replace'), so systemctl owns restarting them.
+# The old kquitapp5/kstart5 dance fought that: killing the shell already
+# triggers Restart=on-failure, and kstart5 would then spawn a second one
+# outside the unit. It also hung -- blocking D-Bus calls into plasmashell
+# can wedge indefinitely, so every D-Bus path here gets a timeout.
+DBUS_TIMEOUT=5
+SHELL_UNIT="plasma-plasmashell.service"
+declare -A WM_UNITS=(
+    [x11]="plasma-kwin_x11.service"
+    [wayland]="plasma-kwin_wayland.service"
+)
+
+function session_type() {
+    local session="${XDG_SESSION_TYPE:-}"
+    if [[ -z ${session} ]]; then
+        if [[ -n ${WAYLAND_DISPLAY:-} ]]; then
+            session="wayland"
+        elif [[ -n ${DISPLAY:-} ]]; then
+            session="x11"
+        else
+            session="unknown"
+        fi
+    fi
+    printf "%s" "${session}"
+}
+
+function unit_exists() {
+    local unit="${1}"
+
+    systemctl --user cat "${unit}" >/dev/null 2>&1
+}
+
+function unit_is_active() {
+    local unit="${1}"
+
+    systemctl --user is-active --quiet "${unit}"
+}
+
+function run_step() {
+    local description="${1}"
+    shift
+
+    # Script-wide IFS would join "${*}" with newlines rather than spaces.
+    local IFS=' '
+
+    printf "%s\n" "${description}"
+    if ${OPT_DRY_RUN}; then
+        printf "  (dry run) %s\n" "${*}"
+        return 0
+    fi
+
+    if "${@}"; then
+        return 0
+    fi
+
+    printf "  failed: %s\n" "${*}" >&2
+    return 1
+}
+
+# Only reached when the systemd units are missing, i.e. not a Plasma 6
+# session. kquitapp6 is tried first but never trusted to return.
+function legacy_kick_shell() {
+    printf "No %s unit; falling back to killing the shell directly.\n" \
+        "${SHELL_UNIT}"
+
+    if ${OPT_DRY_RUN}; then
+        printf "  (dry run) timeout %s kquitapp6 plasmashell || pkill -x plasmashell\n" \
+            "${DBUS_TIMEOUT}"
+        printf "  (dry run) kstart plasmashell\n"
+        return 0
+    fi
+
+    if hash kquitapp6 2>/dev/null; then
+        timeout "${DBUS_TIMEOUT}" kquitapp6 plasmashell >/dev/null 2>&1 || true
+    fi
+    pkill -x plasmashell >/dev/null 2>&1 || true
+
+    hash kstart 2>/dev/null || { printf "No kstart to restart with.\n" >&2; return 1; }
+    setsid kstart plasmashell >/dev/null 2>&1 &
+    disown
+}
+
+function kick_window_manager() {
+    local session="${1}"
+
+    if [[ ${session} == "wayland" ]]; then
+        printf "Wayland session: skipping the compositor.\n"
+        printf "  Restarting kwin_wayland would take the session down with it.\n"
+        return 0
+    fi
+
+    local unit="${WM_UNITS[${session}]:-}"
+    if [[ -z ${unit} ]] || ! unit_exists "${unit}"; then
+        printf "No kwin unit for a '%s' session; skipping the compositor.\n" \
+            "${session}"
+        return 0
+    fi
+
+    run_step "Restarting ${unit}" systemctl --user restart "${unit}"
+}
+
+function kick_shell() {
+    if ! unit_exists "${SHELL_UNIT}"; then
+        legacy_kick_shell
+        return ${?}
+    fi
+
+    run_step "Restarting ${SHELL_UNIT}" systemctl --user restart "${SHELL_UNIT}"
+}
+
+function report_state() {
+    local session="${1}"
+
+    printf "\nSession type: %s\n" "${session}"
+    local unit=""
+    for unit in "${WM_UNITS[${session}]:-}" "${SHELL_UNIT}"; do
+        [[ -n ${unit} ]] || continue
+        unit_exists "${unit}" || continue
+        if unit_is_active "${unit}"; then
+            printf "  %-32s active\n" "${unit}"
+        else
+            printf "  %-32s NOT active\n" "${unit}"
+        fi
+    done
+}
+
+function show_help() {
+    cat <<EOF
+Usage: ${0##*/} [options]
+Restart the Plasma shell, and optionally the window manager.
+
+Uses the systemd user units that Plasma 6 manages these with, falling back to
+killing plasmashell directly only when those units are absent. Only the shell
+is restarted by default: that is nearly always what is wedged, and it leaves
+the window manager -- and your windows -- alone.
+
+  -h | --help     Display this help.
+  -n | --dry-run  Print what would be run without restarting anything.
+  -w | --wm       Restart the window manager too. Skipped on Wayland, where
+                  restarting the compositor ends the session.
+EOF
+}
+
+OPT_DRY_RUN=false
+OPT_WITH_WM=false
+
+SHORT_OPTIONS="hnw"
+LONG_OPTIONS="help,dry-run,wm"
+if ! PARSED_ARGS=$(getopt \
+    --options="${SHORT_OPTIONS}" \
+    --longoptions="${LONG_OPTIONS}" \
+    --name="${0##*/}" \
+    -- "$@"); then
+    # Check getopt complaining about invalid arguments.
+    exit 2
+fi
+
+eval set -- "${PARSED_ARGS}"
+while [[ ${#} -gt 0 ]]; do
+    case "${1}" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -n|--dry-run)
+            OPT_DRY_RUN=true
+            ;;
+        -w|--wm)
+            OPT_WITH_WM=true
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            printf "Programming error... Go yell at Caleb.\n"
+            exit 3
+            ;;
+    esac
+    shift
+done
+
+SESSION_TYPE="$(session_type)"
+
+if [[ ${SESSION_TYPE} == "x11" && -z ${DISPLAY:-} ]]; then
+    printf "No DISPLAY env var defined. Setting to \":0\"\n"
+    export DISPLAY=":0"
+fi
+
+if ! unit_exists "${SHELL_UNIT}" && ! hash plasmashell 2>/dev/null; then
+    printf "No Plasma shell found to kick.\n" >&2
+    exit 4
+fi
+
+if ${OPT_WITH_WM}; then
+    kick_window_manager "${SESSION_TYPE}"
+fi
+kick_shell
+
+${OPT_DRY_RUN} && exit 0
+
+# Units come back asynchronously; give them a moment before reporting.
+sleep 2
+report_state "${SESSION_TYPE}"
+
+exit 0
