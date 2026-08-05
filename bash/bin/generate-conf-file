@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 getopt --test >/dev/null
-if [[ ${?} -ne 4 ]]; then
-    printf "Missing the right `getopt` version.\n"
+GETOPT_TEST_STATUS=${?}
+if [[ ${GETOPT_TEST_STATUS} -ne 4 ]]; then
+    printf '%s\n' "Missing the right 'getopt' version."
     exit 1
 fi
 
@@ -37,12 +38,11 @@ OPT_HIDE_SOURCE=false
 
 SHORT_OPTIONS="dfho:"
 LONG_OPTIONS="dry-run,force,help,out-file,hide-source"
-PARSED_ARGS=$(getopt \
+if ! PARSED_ARGS=$(getopt \
     --options="${SHORT_OPTIONS}" \
     --longoptions="${LONG_OPTIONS}" \
     --name ${0##*/} \
-    -- "$@")
-if [[ ${?} -ne 0 ]]; then
+    -- "$@"); then
     # Getopt has complained about invalid arguments.
     exit 2
 fi
@@ -91,7 +91,8 @@ else
 fi
 
 if [[ -e ${OUT_FILE} ]] && ! ${OPT_DRY_RUN} && ! ${OPT_FORCE}; then
-    printf "Output file \"${OUT_FILE}\" exists. Use '--force' option to override. Aborting.\n"
+    printf "Output file \"%s\" exists. Use '--force' option to override. Aborting.\n" \
+        "${OUT_FILE}"
     exit 4
 fi
 

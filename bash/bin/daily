@@ -1,8 +1,9 @@
 #!/bin/bash
 
 getopt --test >/dev/null
-if [[ ${?} -ne 4 ]]; then
-    printf "Missing the right `getopt` version.\n"
+GETOPT_TEST_STATUS=${?}
+if [[ ${GETOPT_TEST_STATUS} -ne 4 ]]; then
+    printf '%s\n' "Missing the right 'getopt' version."
     exit 1
 fi
 
@@ -26,12 +27,14 @@ push_pop_close_string=''
 pud () {
     local open_string="########## ${1^^} ##########"
     IFS=$' ' push_pop_close_string=$(printf '%.s#' $(eval echo {1..${#open_string}}))
-    printf "${open_string}\n"
+    printf '%s\n' "${open_string}"
 }
 
 pod () {
     set +u; suffix=${1}; set -u
-    printf "${push_pop_close_string}${suffix}"
+    # %b so that a suffix like "\n\n" still expands, as it did when the
+    # whole thing was the format string.
+    printf '%b' "${push_pop_close_string}${suffix}"
     push_pop_close_string=''
 }
 
@@ -48,12 +51,11 @@ EOF
 
 SHORT_OPTIONS="hfv"
 LONG_OPTIONS="help,force,verbose"
-PARSED_ARGS=$(getopt \
+if ! PARSED_ARGS=$(getopt \
     --options="${SHORT_OPTIONS}" \
     --longoptions="${LONG_OPTIONS}" \
     --name="${0##*/}" \
-    -- "$@")
-if [[ ${?} -ne 0 ]]; then
+    -- "$@"); then
     # Getopt has complained about invalid arguments.
     exit 2
 fi
@@ -96,7 +98,7 @@ printf "\n"
 pud "Ensuring SSH Certs Are In Agent"
 for cert in ${SSH_CERTS[@]}; do
     if ssh-add -l | awk '{print $3;}' | grep --quiet "${cert}"; then
-        printf "Found cert: ${cert}\n"
+        printf 'Found cert: %s\n' "${cert}"
     else
         ssh-add "${cert}"
     fi

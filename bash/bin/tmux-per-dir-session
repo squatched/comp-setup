@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 getopt --test >/dev/null
-if [[ ${?} -ne 4 ]]; then
-    printf "Missing the right `getopt` version.\n"
+GETOPT_TEST_STATUS=${?}
+if [[ ${GETOPT_TEST_STATUS} -ne 4 ]]; then
+    printf '%s\n' "Missing the right 'getopt' version."
     exit 1
 fi
 
@@ -90,14 +91,14 @@ OPT_INCLUDE_JCTL=false
 
 SHORT_OPTIONS="hj"
 LONG_OPTIONS="help,journalctl"
-PARSED_ARGS=$(getopt \
+if ! PARSED_ARGS=$(getopt \
     --options="${SHORT_OPTIONS}" \
     --longoptions="${LONG_OPTIONS}" \
     --name ${0##*/} \
-    -- "$@")
-
-# Check getopt complaining about invalid arguments.
-[[ ${?} -ne 0 ]] && exit 2
+    -- "$@"); then
+    # Check getopt complaining about invalid arguments.
+    exit 2
+fi
 
 eval set -- "${PARSED_ARGS}"
 while [[ ${#} -gt 0 ]]; do

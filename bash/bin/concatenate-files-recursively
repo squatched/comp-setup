@@ -2,8 +2,9 @@
 
 # Require GNU getopt (macOS: brew install gnu-getopt and ensure it's first in PATH)
 getopt --test >/dev/null
-if [[ $? -ne 4 ]]; then
-    printf "Missing the right `getopt` version.\n"
+GETOPT_TEST_STATUS=${?}
+if [[ ${GETOPT_TEST_STATUS} -ne 4 ]]; then
+    printf '%s\n' "Missing the right 'getopt' version."
     exit 1
 fi
 
@@ -91,14 +92,14 @@ HEADER_WIDTH=80   # number of '=' chars in the file header
 SHORT_OPTIONS="dfho:e:v"
 LONG_OPTIONS="dry-run,force,help,out-file:,ext:,verbose,debug-args"
 
-PARSED_ARGS=$(
+if ! PARSED_ARGS=$(
   getopt \
     --options="${SHORT_OPTIONS}" \
     --longoptions="${LONG_OPTIONS}" \
     --name "${0##*/}" \
     -- "$@"
-)
-if [[ $? -ne 0 ]]; then
+); then
+  # Getopt has complained about invalid arguments.
   exit 2
 fi
 

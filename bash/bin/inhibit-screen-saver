@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 getopt --test >/dev/null
-if [[ ${?} -ne 4 ]]; then
-    printf "Missing the right `getopt` version.\n"
+GETOPT_TEST_STATUS=${?}
+if [[ ${GETOPT_TEST_STATUS} -ne 4 ]]; then
+    printf '%s\n' "Missing the right 'getopt' version."
     exit 1
 fi
 
@@ -44,13 +45,12 @@ EOF
 OPTIONS_SHORT="h"
 OPTIONS_LONG="help"
 
-PARSED_ARGS=$(getopt \
+if ! PARSED_ARGS=$(getopt \
     --options="${OPTIONS_SHORT}" \
     --longoptions="${OPTIONS_LONG}" \
     --name "${0##*/}" \
     -- "$@" \
-)
-if [[ ${?} -ne 0 ]]; then
+); then
     # Getopt has complained about invalid arguments.
     exit 2
 fi

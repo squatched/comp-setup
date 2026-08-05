@@ -9,7 +9,7 @@ function get_first_stdin_byte() {
 
     # Dump that byte in octal format, one integer per byte (--format=o1)
     # with no indicated radix (--address-radix=n)
-    local octal_byte=$(printf "${stdin_byte}" | od --format=o1 --address-radix=n)
+    local octal_byte=$(printf '%s' "${stdin_byte}" | od --format=o1 --address-radix=n)
 
     # Delete all non-digits from output.
     local filtered_octal_code=$(tr --delete --complement 0-9 <<<"${octal_byte}")
@@ -17,7 +17,8 @@ function get_first_stdin_byte() {
     if [[ -z "${filtered_octal_code}" ]]; then
         printf ""
     else
-        printf "\\${filtered_octal_code}"
+        # %b keeps the octal escape expanding, as the format string did.
+        printf '%b' "\\${filtered_octal_code}"
     fi
 }
 
@@ -28,6 +29,8 @@ function log() {
 
     [[ ${log_level} -gt ${LOG_LEVEL-1} ]] && return
 
+    # Callers pass their own printf format, e.g. log 2 "found: %s\n" "${x}".
+    # shellcheck disable=SC2059
     printf "$@"
 }
 

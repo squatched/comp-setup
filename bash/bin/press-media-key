@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 getopt --test >/dev/null
-if [[ ${?} -ne 4 ]]; then
-    printf "Missing the right `getopt` version.\n"
+GETOPT_TEST_STATUS=${?}
+if [[ ${GETOPT_TEST_STATUS} -ne 4 ]]; then
+    printf '%s\n' "Missing the right 'getopt' version."
     exit 1
 fi
 
@@ -19,8 +20,7 @@ commands: [playpause|next|prev]
 EOF
 }
 
-PARSED_ARGS=$(getopt --options=h --longoptions=help --name ${0##*/} -- "$@")
-if [[ ${?} -ne 0 ]]; then
+if ! PARSED_ARGS=$(getopt --options=h --longoptions=help --name ${0##*/} -- "$@"); then
     # Getopt has complained about invalid arguments.
     exit 2
 fi
@@ -63,7 +63,7 @@ function find_destinations() {
             sed --expression 's|"||g'
           )
 
-    printf "$names"
+    printf '%s' "${names}"
 }
 
 function send_command() {

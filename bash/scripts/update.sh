@@ -7,14 +7,16 @@ PUSH_POP_CLOSE_STRING=''
 pud () {
     OPEN_STRING="########## UPDATING ${1^^} ##########"
     IFS=' ' PUSH_POP_CLOSE_STRING=$(printf '#%.0s' $(eval echo {1..${#OPEN_STRING}}))
-    printf "${OPEN_STRING}\n"
+    printf '%s\n' "${OPEN_STRING}"
     pushd $1 >/dev/null
 }
 
 pod () {
     set +u; suffix=${1}; set -u
     popd >/dev/null
-    printf "${PUSH_POP_CLOSE_STRING}${suffix}"
+    # %b so that a suffix like "\n\n" still expands, as it did when the
+    # whole thing was the format string.
+    printf '%b' "${PUSH_POP_CLOSE_STRING}${suffix}"
     PUSH_POP_CLOSE_STRING=''
 }
 
