@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# Launch Helldivers II
+/usr/bin/steam steam://rungameid/553850 >/dev/null 2>&1 & disown
+
+# Ensure USB stuff is setup appropriately.
+${HOME}/.local/bin/game-hd2-usb & disown

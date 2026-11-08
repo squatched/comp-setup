@@ -21,3 +21,5 @@ ln --symbolic --force ${SOURCE_DIR}/.bash_script_env ${HOME}/
 ln --symbolic --force ${SOURCE_DIR}/.bash_environment_global ${HOME}/
 ln --symbolic --force ${SOURCE_DIR}/tmux/.tmux.conf ${HOME}/
 ln --symbolic --force ${SOURCE_DIR}/.pam_environment ${HOME}/
+
+"${SOURCE_DIR}/games/setup.sh"

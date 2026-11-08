@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+NAS_HOST="cloud-drive"
+NAS_SSHFS_PORT=4222
+MOUNT_POINT="${HOME}/Network/McCombalot NAS"
+KDEWALLET_NAME=kdewallet
+KDEWALLET_FOLDER=Passwords
+KDEWALLET_ENTRY=mccombalot-nas
+
+if mount | grep "${MOUNT_POINT}" >/dev/null; then
+    exit 0
+fi
+
+function query_wallet_jq() {
+    kwallet-query --read-password "${KDEWALLET_ENTRY}" "${KDEWALLET_NAME}" --folder "${KDEWALLET_FOLDER}" | jq --raw-output "$1"
+}
+
+query_wallet_jq '.password' | \
+    sshfs "$(query_wallet_jq '.login')@${NAS_HOST}:/" \
+        "${MOUNT_POINT}" \
+        -p "${NAS_SSHFS_PORT}" \
+        -o password_stdin

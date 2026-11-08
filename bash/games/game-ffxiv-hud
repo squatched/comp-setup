@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+GDK_DPI_SCALE=0.8 hudkit http://proxy.iinact.com/overlay/horizoverlay/?HOST_PORT=ws://127.0.0.1:10501/ 2>&1 | sed --unbuffered --regexp-extended --expression='
+    /^CONSOLE NETWORK ERROR WebSocket connection to '\''ws:\/\/127\.0\.0\.1:[[:digit:]]+\/MiniParse'\'' failed: The server did not accept the WebSocket handshake\.$/d;
+    /^http:\/\/proxy.iinact.com\/overlay\/horizoverlay\/static\/js\/main.2398fbdb.js:2:[[:digit:]]+: CONSOLE LOG \[object Event\]$/d;
+'

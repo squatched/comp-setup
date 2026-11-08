@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# Ensure that all the USB related daemons are restarted and fresh.
+systemctl --user restart openrazer-daemon.service || true
+input-remapper-restart
+
+# Load Helldivers II presets.
+/usr/bin/input-remapper-control --command start --device "Logitech G604 " --preset "Helldivers II"
+/usr/bin/input-remapper-control --command start --device "Razer Razer Tartarus V2" --preset "Helldivers II"

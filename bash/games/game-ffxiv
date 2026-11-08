@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# steam://rungameid returns as soon as Steam accepts the launch, so this
+# script watches the game itself. XIVLauncher.Core stays up through login;
+# ffxiv_dx11.exe is the client and is what "the game quit" means.
+
+hud_pid=
+cleaned=0
+
+game_running() {
+    pgrep -x 'ffxiv_dx11.exe' >/dev/null 2>&1 && return 0
+    # Wine sometimes keeps the exe name only in argv, under a preloader comm.
+    pgrep -f '[f]fxiv_dx11\.exe' >/dev/null 2>&1
+}
+
+launcher_running() {
+    pgrep -f '[X]IVLauncher\.Core' >/dev/null 2>&1
+}
+
+cleanup() {
+    local status=$?
+    trap - EXIT INT TERM HUP
+    if (( cleaned )); then
+        exit "${status}"
+    fi
+    cleaned=1
+
+    if [[ -n "${hud_pid}" ]] && kill -0 -- "-${hud_pid}" 2>/dev/null; then
+        echo "Closing the damage meter overlay."
+        kill -- "-${hud_pid}" 2>/dev/null || true
+        sleep 0.5
+        kill -KILL -- "-${hud_pid}" 2>/dev/null || true
+        wait "${hud_pid}" 2>/dev/null || true
+    fi
+
+    game-ffxiv-backup-configs || true
+    exit "${status}"
+}
+
+# 0: client is running. 1: nothing appeared. 2: launcher closed first.
+wait_for_game_start() {
+    local deadline=$((SECONDS + 180))
+
+    echo "Waiting for FFXIV to start..."
+    while (( SECONDS < deadline )); do
+        if game_running || launcher_running; then
+            break
+        fi
+        sleep 1
+    done
+
+    if ! game_running && ! launcher_running; then
+        echo "FFXIV did not start within 3 minutes." >&2
+        return 1
+    fi
+
+    echo "Waiting for the game client. The overlay stays down until then."
+    while true; do
+        if game_running; then
+            return 0
+        fi
+        if ! launcher_running; then
+            echo "XIVLauncher closed before the game started."
+            return 2
+        fi
+        sleep 1
+    done
+}
+
+wait_for_game_exit() {
+    echo "FFXIV client is running. The overlay closes and the backup runs when the game exits."
+    while true; do
+        if game_running; then
+            sleep 2
+            continue
+        fi
+
+        # Ignore a brief gap if the client process is replaced.
+        sleep 5
+        if game_running; then
+            continue
+        fi
+        echo "FFXIV exited."
+        return 0
+    done
+}
+
+trap cleanup EXIT INT TERM HUP
+
+/usr/bin/steam steam://rungameid/39210 >/dev/null 2>&1 & disown
+
+${HOME}/.local/bin/game-ffxiv-usb &
+
+start_status=0
+wait_for_game_start || start_status=$?
+if (( start_status == 2 )); then
+    exit 0
+fi
+if (( start_status != 0 )); then
+    exit "${start_status}"
+fi
+
+# Own process group so the hudkit | sed pipeline can be killed together.
+echo "Starting the damage meter overlay."
+setsid ${HOME}/.local/bin/game-ffxiv-hud &
+hud_pid=$!
+
+wait_for_game_exit

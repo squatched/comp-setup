@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+DEVICE="ASUSTeK Computer Inc. N-KEY Device"
+PRESET="Dungeon Defenders"
+TIMEOUT=5  # seconds to wait for device enumeration
+
+systemctl --user restart openrazer-daemon.service || true
+input-remapper-restart
+
+# Wait for the device to be enumerated
+deadline=$(( SECONDS + TIMEOUT ))
+while ! /usr/bin/input-remapper-control --list-devices 2>/dev/null | grep -qF "$DEVICE"; do
+    if (( SECONDS >= deadline )); then
+        echo "Error: \"$DEVICE\" did not appear within ${TIMEOUT}s." >&2
+        echo "Available devices:" >&2
+        /usr/bin/input-remapper-control --list-devices 2>/dev/null >&2 || true
+        exit 1
+    fi
+    sleep 0.1
+done
+
+/usr/bin/input-remapper-control --command start --device "$DEVICE" --preset "$PRESET"

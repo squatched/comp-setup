@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# Fix Dungeon Defenders Key Binds
+${HOME}/.local/bin/patch_dd_udkinput.py
+
+# Launch Dungeon Defenders
+/usr/bin/steam steam://rungameid/65800 >/dev/null 2>&1 & disown
+
+# Ensure USB stuff is setup appropriately.
+${HOME}/.local/bin/game-dd-usb & disown

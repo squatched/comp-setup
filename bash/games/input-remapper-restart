@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+# Restart the user input-remapper service without racing its system-bus name.
+# A plain `systemctl restart` can start the new process while the old one
+# still owns inputremapper.Control. The new process is queued (RequestName
+# reply 2), treats that as fatal, and exits. input-remapper-control then
+# cannot activate the name and will report "Daemon missing" until restarted
+# by hand.
+
+set -euo pipefail
+IFS=$'\n\t'
+
+name_owned() {
+    local reply
+    reply="$(busctl --system call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus NameHasOwner s inputremapper.Control 2>/dev/null || true)"
+    [[ "${reply}" == "b true" ]]
+}
+
+wait_until_free() {
+    local _attempt
+    for _attempt in $(seq 1 50); do
+        if ! name_owned; then
+            return 0
+        fi
+        sleep 0.1
+    done
+    echo "input-remapper still owns its bus name after stopping." >&2
+    return 1
+}
+
+systemctl --user stop input-remapper.service || true
+wait_until_free
+systemctl --user reset-failed input-remapper.service || true
+
+started=0
+for _attempt in $(seq 1 5); do
+    systemctl --user start input-remapper.service || true
+    for _hello in $(seq 1 30); do
+        if /usr/bin/input-remapper-control --command hello >/dev/null 2>&1; then
+            started=1
+            break 2
+        fi
+        sleep 0.1
+    done
+
+    # Start raced the name release. Drop it and try again once the name is free.
+    systemctl --user stop input-remapper.service || true
+    systemctl --user reset-failed input-remapper.service || true
+    wait_until_free || true
+done
+
+if (( started != 1 )); then
+    echo "input-remapper did not come up." >&2
+    exit 1
+fi

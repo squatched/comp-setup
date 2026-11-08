@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+MOUNT_POINT="${HOME}/Network/McCombalot NAS"
+
+umount "${MOUNT_POINT}" >/dev/null 2>&1 || true

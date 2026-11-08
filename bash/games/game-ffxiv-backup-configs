@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+if ! mount-mccombalot-nas; then
+    echo "Backup target location unavailable." >&2
+    exit 1
+fi
+
+CONFIG_BACKUP_PATH="${HOME}/Network/McCombalot NAS/Backups - Caleb/FFXIV/JustBackup (ROG Laptop)/"
+CONFIG_PATH="${HOME}/.xlcore/wineprefix/drive_c/users/squatched/AppData/Local/JustBackup/"
+
+rsync --recursive --links --times --verbose --human-readable --delete "${CONFIG_PATH}/" "${CONFIG_BACKUP_PATH}/"
