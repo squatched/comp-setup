@@ -98,37 +98,25 @@ shopt -s checkwinsize
 [[ -x /usr/bin/lesspipe ]] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # source git prompt decoration and tab completion
-distributor_id=''
-hash brew 2>/dev/null && distributor_id="MacOS"
-if hash lsb_release 2>/dev/null; then
-    distributor_id=$(lsb_release -a 2>/dev/null | sed --expression '/^Distributor ID:/!d' --regexp-extended --expression 's/^[^:]+:\s*//')
-fi
-if [[ -z $distributor_id ]] && [[ -f /etc/os-release ]]; then
-    distributor_id=$(sed '/^NAME=/ !d; s/NAME="\([^"]\+\)"/\1/' /etc/os-release)
-fi
+# Probe common locations used by Arch (incl. EndeavourOS + derivatives), Debian,
+# Amazon Linux, etc. The __source_if_file helper safely skips missing files.
+# Different distros use different paths, so trying the known ones is robust and
+# future-proof. (The old distributor_id case was brittle and missed EndeavourOS.)
+__source_if_file /usr/share/git/completion/git-prompt.sh
+__source_if_file /usr/share/git/git-prompt.sh
+__source_if_file /usr/lib/git-core/git-sh-prompt
+__source_if_file /usr/share/git-core/contrib/completion/git-prompt.sh
 
-case $distributor_id in
-    Arch*|Manjaro*|BlackArch*)
-        # Arch based distros
-        __source_if_file /usr/share/git/completion/git-prompt.sh
-        __source_if_file /usr/share/git/completion/git-completion.bash
-        ;;
-    Ubuntu|Parrot|Neon)
-        # Debian distros
-        __source_if_file /usr/lib/git-core/git-sh-prompt
-        __source_if_file /usr/share/bash-completion/completions/git
-        ;;
-    MacOS)
-        if [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
-            source $(brew --prefix git)/etc/bash_completion.d/git-prompt.sh
-            source $(brew --prefix git)/etc/bash_completion.d/git-completion.bash
-        fi
-        ;;
-    "Amazon Linux")
-        # Git Completion is handled through /etc/bashrc but git-prompt is not...
-        # Go figure.
-        __source_if_file /usr/share/git-core/contrib/completion/git-prompt.sh
-esac
+__source_if_file /usr/share/git/completion/git-completion.bash
+__source_if_file /usr/share/bash-completion/completions/git
+
+# MacOS (via Homebrew) still needs dynamic prefix handling
+if hash brew 2>/dev/null; then
+    if [[ -e "$(brew --prefix git)/etc/bash_completion.d" ]]; then
+        source "$(brew --prefix git)/etc/bash_completion.d/git-prompt.sh"
+        source "$(brew --prefix git)/etc/bash_completion.d/git-completion.bash"
+    fi
+fi
 __display_path_diff "After git prompt & completion"
 
 # Source fzf auto completion
