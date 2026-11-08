@@ -1,0 +1,80 @@
+[
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 2,
+                "origin_hash": "2fb4547b2e836f8c6f4bbb7f48c1a737"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_7",
+        "name": "1",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 3,
+                "origin_hash": "2fb4547b2e836f8c6f4bbb7f48c1a737"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_8",
+        "name": "2",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 4,
+                "origin_hash": "2fb4547b2e836f8c6f4bbb7f48c1a737"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_9",
+        "name": "3",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 5,
+                "origin_hash": "2fb4547b2e836f8c6f4bbb7f48c1a737"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_EQUAL",
+        "name": "4",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 6,
+                "origin_hash": "2fb4547b2e836f8c6f4bbb7f48c1a737"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_MINUS",
+        "name": "5",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 7,
+                "origin_hash": "2fb4547b2e836f8c6f4bbb7f48c1a737"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_0",
+        "name": "6",
+        "mapping_type": "key_macro"
+    }
+]

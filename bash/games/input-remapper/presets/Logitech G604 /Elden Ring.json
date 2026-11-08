@@ -1,0 +1,80 @@
+[
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 287,
+                "origin_hash": "021f0e1c3fe72030e9e1e3377287f1e5"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "m",
+        "name": "G9",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 285,
+                "origin_hash": "021f0e1c3fe72030e9e1e3377287f1e5"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_RIGHT",
+        "name": "G7",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 284,
+                "origin_hash": "021f0e1c3fe72030e9e1e3377287f1e5"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "disable",
+        "name": "G6",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 283,
+                "origin_hash": "021f0e1c3fe72030e9e1e3377287f1e5"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_DOWN",
+        "name": "G5",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 282,
+                "origin_hash": "021f0e1c3fe72030e9e1e3377287f1e5"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_LEFT",
+        "name": "G4",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 286,
+                "origin_hash": "021f0e1c3fe72030e9e1e3377287f1e5"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_UP",
+        "name": "G8",
+        "mapping_type": "key_macro"
+    }
+]

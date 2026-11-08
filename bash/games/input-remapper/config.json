@@ -1,0 +1,7 @@
+{
+    "version": "2.2.1",
+    "autoload": {
+        "Razer Razer Tartarus V2": "FFXIV",
+        "Logitech G604 ": "Desktop"
+    }
+}

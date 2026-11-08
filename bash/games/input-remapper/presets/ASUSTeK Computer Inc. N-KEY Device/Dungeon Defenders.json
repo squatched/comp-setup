@@ -1,0 +1,172 @@
+[
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 7,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(6).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 8,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(7).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 9,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(8).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 10,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(9).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 11,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(0).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 3,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(2).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 4,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(3).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 5,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(4).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 6,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(5).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            },
+            {
+                "type": 1,
+                "code": 2,
+                "origin_hash": "8bdd87b93be683d0c574fd5c5a7aa207"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "key(1).wait(10).key(space)",
+        "mapping_type": "key_macro"
+    }
+]

@@ -1,0 +1,808 @@
+[
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 2,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "F1",
+        "name": "01",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 3,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "F5",
+        "name": "02",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 4,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "Alt_L + F5",
+        "name": "03",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 5,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_F7",
+        "name": "04",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 6,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "n",
+        "name": "05",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 15,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_9",
+        "name": "06",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 16,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_KP7",
+        "name": "07",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 17,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_KP8",
+        "name": "08",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 18,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_KP9",
+        "name": "09",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 19,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_LEFTSHIFT",
+        "name": "10",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_5",
+        "name": "11",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 30,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_KP4",
+        "name": "12",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 31,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_1",
+        "name": "13",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 32,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_KP6",
+        "name": "14",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 33,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_LEFTCTRL",
+        "name": "15",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 42,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_ESC",
+        "name": "16",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 44,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_SCROLLLOCK",
+        "name": "17",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 45,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "b",
+        "name": "18",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 46,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "",
+        "name": "19",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 2,
+                "code": 8,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": 1
+            },
+            {
+                "type": 2,
+                "code": 11,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": 1
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "period",
+        "name": "Wheel Up",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 274,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "c",
+        "name": "Wheel Click",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 2,
+                "code": 8,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": -1
+            },
+            {
+                "type": 2,
+                "code": 11,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": -1
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "comma",
+        "name": "Wheel Down",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 56,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_ENTER",
+        "name": "Thumb Button",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "disable",
+        "name": "20",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 2,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_F2",
+        "name": "HyperShift - 01",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 3,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_4",
+        "name": "HyperShift - 02",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 4,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_2",
+        "name": "HyperShift - 03",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 5,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_3",
+        "name": "HyperShift - 04",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 6,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "t",
+        "name": "HyperShift - 05",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 16,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_F3",
+        "name": "HyperShift - 07",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 17,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "i",
+        "name": "HyperShift - 08",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 18,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "",
+        "name": "HyperShift - 09",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 19,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_SPACE",
+        "name": "HyperShift - 10",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 30,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "m",
+        "name": "HyperShift - 12",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 31,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "o",
+        "name": "HyperShift - 13",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 32,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "",
+        "name": "HyperShift - 14",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 33,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "e",
+        "name": "HyperShift - 15",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 44,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "",
+        "name": "HyperShift - 17",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 45,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "f",
+        "name": "HyperShift - 18",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 46,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "Alt_L + c",
+        "name": "HyperShift - 19",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 2,
+                "code": 8,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": 1
+            },
+            {
+                "type": 2,
+                "code": 11,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": 1
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_PAGEUP",
+        "name": "HyperShift - Wheel Up",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 274,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "r",
+        "name": "HyperShift - Wheel Click",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 2,
+                "code": 8,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": -1
+            },
+            {
+                "type": 2,
+                "code": 11,
+                "origin_hash": "690ecbecca750bb50f1a5bd74f32831d",
+                "analog_threshold": -1
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_PAGEDOWN",
+        "name": "HyperShift - Wheel Down",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 56,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "",
+        "name": "HyperShift - Thumb Button",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 103,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "apostrophe",
+        "name": "Thumb Stick N",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 108,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "semicolon",
+        "name": "Thumb Stick S",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 105,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "bracketleft",
+        "name": "Thumb Stick W",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 106,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "bracketright",
+        "name": "Thumb Stick E",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 15,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "KEY_7",
+        "name": "HyperShift - 06",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 58,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "Home",
+        "name": "HyperShift - 11",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 1,
+                "code": 57,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            },
+            {
+                "type": 1,
+                "code": 42,
+                "origin_hash": "4b93b65019818de8bb129b8c07fba0f0"
+            }
+        ],
+        "target_uinput": "keyboard",
+        "output_symbol": "End",
+        "name": "HyperShift - 16",
+        "mapping_type": "key_macro"
+    }
+]
