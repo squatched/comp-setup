@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 # Set up Azeroth Survivors as a Steam non-Steam game on this machine.
-# When ~/Games/AzerothSurvivors/AzerothSurvivors.exe is missing, mount the NAS
-# and extract Backups - Caleb/AzerothSurvivorsWindowsNew.rar there. An existing
-# install is kept, because the client updates itself in place. Then write the
-# shortcut, library art, and Syncthing save folder. Steam's default
-# compatibility tool is left in place.
-# Character saves are not copied.
+# The shared install lives at ~/Games/AzerothSurvivors. An existing copy is
+# kept, because the client updates itself in place. When that program is
+# missing, --installer extracts a downloaded archive. The squatched account
+# can omit it and take Backups - Caleb/AzerothSurvivorsWindowsNew.rar from
+# the NAS instead. If that account needs the NAS and the NAS is not
+# available, the script stops.
+# Only squatched launches the shared directory and gets the Syncthing save
+# folder. Every other account launches through a link named for that
+# account, so Steam gives it a separate save. Steam's default compatibility
+# tool is left in place. Character saves are not copied.
 
 set -euo pipefail
 IFS=$'\n\t'
@@ -17,33 +21,83 @@ ART_DIR=$(dirname "${SCRIPT_PATH}")/art
 
 usage() {
     cat <<EOF
-Usage: install-azeroth-survivors [EXE]
+Usage: ${0##*/} [--installer ARCHIVE] [EXE]
+Set up ${GAME_NAME} as a non-Steam game for the Steam account signed in
+with AutoLogin.
 
-Set up ${GAME_NAME} for the Steam library on this machine.
+The shared install is ~/Games/AzerothSurvivors/AzerothSurvivors.exe. An
+existing copy is left in place, because the client updates itself. The
+script writes that account's shortcut and copies library art from
+${ART_DIR}. A per-game compatibility tool is removed so Steam uses the
+account default.
 
-With no EXE, use the existing shortcut when its program is still on disk,
-or ~/Games/AzerothSurvivors/AzerothSurvivors.exe. If that program is missing,
-the script mounts the NAS and extracts
-Backups - Caleb/AzerothSurvivorsWindowsNew.rar into ~/Games/AzerothSurvivors.
-An existing copy is left in place.
-
-The script then writes the non-Steam shortcut, copies library art from
-${ART_DIR}, and points the Syncthing folder "${SYNC_LABEL}" at the Steam
-character save (AppData/Roaming/wenilla-rogue). A per-game compatibility
-tool is removed so Steam uses the account default.
+squatched launches the shared install. Its Syncthing folder
+"${SYNC_LABEL}" follows that account's character save. Any other account
+launches ~/Games/AzerothSurvivors-<account>, a link to the same files, and
+keeps its own saves. The NAS and Syncthing are left alone for those
+accounts.
 
 If Steam is open, the script asks you to quit it before saving the library
-entry. Character saves are not copied. Syncthing distributes them.
+entry. Character saves are not copied.
+
+Options:
+  -h | --help           Show this help and exit.
+  --installer ARCHIVE   RAR to extract when AzerothSurvivors.exe is missing.
+                        A downloaded AzerothSurvivorsWindowsNew.rar. squatched
+                        can omit this and the script mounts the NAS and
+                        extracts Backups - Caleb/AzerothSurvivorsWindowsNew.rar.
+                        If that NAS is not available, the script stops. Any
+                        other account must pass --installer when the shared
+                        program is not already installed.
+  EXE                   Program to launch instead of the default install.
 EOF
 }
 
-case "${1:-}" in
-    -h|--help) usage; exit 0 ;;
-esac
-
+INSTALLER=""
+EXE=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --installer)
+            if [[ $# -lt 2 || -z "${2}" ]]; then
+                usage >&2
+                exit 1
+            fi
+            INSTALLER=$2
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -*)
+            printf 'Unknown option: %s\n' "$1" >&2
+            usage >&2
+            exit 1
+            ;;
+        *)
+            if [[ -n "${EXE}" ]]; then
+                usage >&2
+                exit 1
+            fi
+            EXE=$1
+            shift
+            ;;
+    esac
+done
 if [[ $# -gt 1 ]]; then
     usage >&2
     exit 1
+fi
+if [[ $# -eq 1 ]]; then
+    if [[ -n "${EXE}" ]]; then
+        usage >&2
+        exit 1
+    fi
+    EXE=$1
 fi
 
 if [[ ! -d "${ART_DIR}" ]]; then
@@ -52,7 +106,8 @@ if [[ ! -d "${ART_DIR}" ]]; then
 fi
 
 export AS_ART_DIR="${ART_DIR}"
-export AS_EXE="${1:-}"
+export AS_EXE="${EXE}"
+export AS_INSTALLER="${INSTALLER}"
 export AS_SYNC_LABEL="${SYNC_LABEL}"
 export AS_GAME_NAME="${GAME_NAME}"
 
@@ -78,6 +133,8 @@ SYNC_LABEL = os.environ["AS_SYNC_LABEL"]
 GAME_NAME = os.environ["AS_GAME_NAME"]
 ART_DIR = Path(os.environ["AS_ART_DIR"])
 EXPLICIT_EXE = os.environ.get("AS_EXE") or ""
+INSTALLER = os.environ.get("AS_INSTALLER") or ""
+SYNC_ACCOUNT = "squatched"
 STEAM_ID64_MASK = 0xFFFFFFFF
 ART_NAMES = {
     "capsule.jpg": "p.jpg",
@@ -87,7 +144,7 @@ ART_NAMES = {
     "icon.png": "_icon.png",
     "icon.ico": "_icon.ico",
 }
-INSTALL_DIR = Path.home() / "Games/AzerothSurvivors"
+INSTALL_DIR = Path(os.path.realpath(Path.home() / "Games/AzerothSurvivors"))
 DEFAULT_EXE = INSTALL_DIR / "AzerothSurvivors.exe"
 NAS_MOUNT = Path.home() / "Network/McCombalot NAS"
 NAS_RAR = NAS_MOUNT / "Backups - Caleb/AzerothSurvivorsWindowsNew.rar"
@@ -171,25 +228,44 @@ def steam_root():
     fail("Steam is not installed for this user.")
 
 
-def autologin_user(root):
+def steam_account_id(steam_id):
+    return str(int(steam_id) & STEAM_ID64_MASK)
+
+
+def login_users(root):
     login = root / "config" / "loginusers.vdf"
-    users = vdf.load(login.open())["users"]
-    for steam_id, info in users.items():
+    return vdf.load(login.open())["users"]
+
+
+def account_name_for(root, account_id):
+    for steam_id, info in login_users(root).items():
+        if steam_account_id(steam_id) == str(account_id):
+            return str(info.get("AccountName") or "")
+    return ""
+
+
+def autologin_user(root):
+    for steam_id, info in login_users(root).items():
         if str(info.get("AutoLogin")) == "1":
-            return str(int(steam_id) & STEAM_ID64_MASK)
-    return None
+            return steam_account_id(steam_id), str(info.get("AccountName") or "")
+    return None, ""
 
 
 def user_config(root):
     userdata = root / "userdata"
-    user = autologin_user(root)
+    user, name = autologin_user(root)
     if user:
         config = userdata / user / "config"
         if config.is_dir():
-            return config
+            if not name:
+                fail(f"Steam account {user} has no account name.")
+            return config, name
     accounts = [path for path in userdata.iterdir() if path.is_dir() and path.name.isdigit()] if userdata.is_dir() else []
     if len(accounts) == 1:
-        return accounts[0] / "config"
+        name = account_name_for(root, accounts[0].name)
+        if not name:
+            fail(f"Steam account {accounts[0].name} has no account name.")
+        return accounts[0] / "config", name
     fail("Could not tell which Steam user owns the library. Sign that user in with AutoLogin.")
 
 
@@ -207,57 +283,130 @@ def load_shortcuts(path):
     return vdf.binary_loads(path.read_bytes()).get("shortcuts") or {}
 
 
+def shortcut_name(item):
+    return item.get("AppName") or item.get("appname")
+
+
 def find_shortcut(shortcuts):
     for index, item in shortcuts.items():
-        if item.get("AppName") == GAME_NAME:
+        if shortcut_name(item) == GAME_NAME:
             return str(index), item
     return None, None
 
 
-def install_from_nas():
-    if DEFAULT_EXE.is_file():
-        print(f"Using the install already at {DEFAULT_EXE}")
-        print("The NAS archive is extracted only when that program is missing.")
-        return DEFAULT_EXE.resolve()
-    if not MOUNT_SCRIPT.is_file():
-        fail(f"NAS mount script is missing: {MOUNT_SCRIPT}")
+def absolute_path(path):
+    # abspath keeps a symlink in the path. resolve() would collapse one
+    # account's launch link onto the shared install and merge its saves.
+    return Path(os.path.abspath(Path(path).expanduser()))
+
+
+def announce_existing_install():
+    print(f"Using the install already at {DEFAULT_EXE}")
+    print("The archive is extracted only when that program is missing.")
+
+
+def require_unrar():
     if shutil.which("unrar") is None:
         fail("unrar is required to extract the Azeroth Survivors installer.")
-    print(f"No install at {INSTALL_DIR}.")
-    print(f"Mounting the NAS to extract {NAS_RAR.name} into {INSTALL_DIR.parent}.")
-    subprocess.run([str(MOUNT_SCRIPT)], check=True)
-    if not NAS_RAR.is_file():
-        fail(f"Installer not found on the NAS: {NAS_RAR}")
-    size_mb = NAS_RAR.stat().st_size // (1024 * 1024)
-    print(f"Extracting {NAS_RAR.name} ({size_mb} MB).")
+
+
+def nas_mounted():
+    proc = subprocess.run(["mount"], capture_output=True, text=True, check=False)
+    if proc.returncode != 0:
+        return False
+    candidates = {str(NAS_MOUNT)}
+    try:
+        candidates.add(str(NAS_MOUNT.resolve()))
+    except OSError:
+        pass
+    return any(candidate in proc.stdout for candidate in candidates)
+
+
+def extract_archive(archive):
+    archive = absolute_path(archive)
+    if not archive.is_file():
+        fail(f"Installer not found: {archive}")
+    require_unrar()
+    size_mb = archive.stat().st_size // (1024 * 1024)
+    print(f"Extracting {archive} ({size_mb} MB).")
     INSTALL_DIR.parent.mkdir(parents=True, exist_ok=True)
     result = subprocess.run(
-        ["unrar", "x", "-o+", "-y", "-idq", str(NAS_RAR), str(INSTALL_DIR.parent) + os.sep],
+        ["unrar", "x", "-o+", "-y", "-idq", str(archive), str(INSTALL_DIR.parent) + os.sep],
         check=False,
     )
     if result.returncode not in (0, 1) or not DEFAULT_EXE.is_file():
-        fail(f"Extracting {NAS_RAR} did not produce {DEFAULT_EXE}")
+        fail(f"Extracting {archive} did not produce {DEFAULT_EXE}")
     print(f"Installed {DEFAULT_EXE}")
     return DEFAULT_EXE.resolve()
 
 
-def resolve_exe(shortcut):
+def install_from_nas():
+    require_unrar()
+    if not MOUNT_SCRIPT.is_file():
+        fail(f"No NAS is available. The mount script is missing: {MOUNT_SCRIPT}")
+    print(f"No install at {INSTALL_DIR}.")
+    print(f"Mounting the NAS to extract {NAS_RAR.name} into {INSTALL_DIR.parent}.")
+    completed = subprocess.run([str(MOUNT_SCRIPT)], check=False)
+    if completed.returncode != 0 or not nas_mounted():
+        fail(
+            f"No NAS is available at {NAS_MOUNT}. "
+            "Pass --installer ARCHIVE to use a downloaded copy."
+        )
+    if not NAS_RAR.is_file():
+        fail(f"Installer not found on the NAS: {NAS_RAR}")
+    return extract_archive(NAS_RAR)
+
+
+def ensure_shared_install(account_name):
+    if DEFAULT_EXE.is_file():
+        announce_existing_install()
+        return DEFAULT_EXE.resolve()
+    if INSTALLER:
+        return extract_archive(INSTALLER)
+    if account_name != SYNC_ACCOUNT:
+        fail(
+            f"No install at {INSTALL_DIR}. "
+            f"{account_name} does not use the NAS. Pass --installer ARCHIVE."
+        )
+    return install_from_nas()
+
+
+def account_launch_exe(account_name):
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", account_name):
+        fail(f"Steam account name cannot be used in a path: {account_name}")
+    games = Path(os.path.realpath(Path.home() / "Games"))
+    link = games / f"AzerothSurvivors-{account_name}"
+    install = games / "AzerothSurvivors"
+    if link.is_symlink():
+        if link.resolve() != install.resolve():
+            fail(f"{link} points at {link.resolve()}, not {install}")
+    elif link.exists():
+        fail(f"{link} exists and is not a symlink to {install}")
+    else:
+        link.symlink_to(install, target_is_directory=True)
+        print(f"Linked {link} to {install}")
+    exe = absolute_path(link / "AzerothSurvivors.exe")
+    if not exe.is_file():
+        fail(f"Game executable not found: {exe}")
+    return exe
+
+
+def resolve_exe(shortcut, account_name):
     if EXPLICIT_EXE:
-        exe = Path(EXPLICIT_EXE).expanduser().resolve()
+        exe = absolute_path(EXPLICIT_EXE)
         if not exe.is_file():
             fail(f"Game executable not found: {exe}")
         return exe
+    if account_name != SYNC_ACCOUNT:
+        ensure_shared_install(account_name)
+        return account_launch_exe(account_name)
     if shortcut is not None:
-        existing = Path(unquote(shortcut.get("Exe")))
+        existing = absolute_path(unquote(shortcut.get("Exe") or shortcut.get("exe")))
         if existing.is_file():
             print(f"Using the install already at {existing}")
-            print("The NAS archive is extracted only when that program is missing.")
+            print("The archive is extracted only when that program is missing.")
             return existing.resolve()
-    if DEFAULT_EXE.is_file():
-        print(f"Using the install already at {DEFAULT_EXE}")
-        print("The NAS archive is extracted only when that program is missing.")
-        return DEFAULT_EXE.resolve()
-    return install_from_nas()
+    return ensure_shared_install(account_name)
 
 
 def launch_options(root, appid):
@@ -405,12 +554,16 @@ def ensure_shortcut(root, config, exe):
     path = config / "shortcuts.vdf"
     shortcuts = load_shortcuts(path)
     index, item = find_shortcut(shortcuts)
+    natural = shortcut_appid_for(exe, GAME_NAME)
+    canonical = shortcut_appid_for(DEFAULT_EXE.resolve(), GAME_NAME)
     if item is None:
-        appid = shortcut_appid_for(exe, GAME_NAME)
+        appid = natural
     else:
         appid = unsigned_appid(item.get("appid"))
-        if appid is None:
-            appid = shortcut_appid_for(exe, GAME_NAME)
+        # A shared appid would put this account's characters in squatched's
+        # synced prefix. A different launch path gets its own prefix.
+        if appid is None or (appid == canonical and natural != canonical):
+            appid = natural
     icon = install_art(config / "grid", appid)
     options = launch_options(root, appid)
     if item is not None and shortcut_matches(item, exe, options, icon):
@@ -423,6 +576,9 @@ def ensure_shortcut(root, config, exe):
         shortcuts[index] = blank_shortcut(appid, exe, options, icon)
         print(f'Added Steam shortcut "{GAME_NAME}" ({appid})')
     else:
+        item.pop("exe", None)
+        item.pop("appname", None)
+        item["AppName"] = GAME_NAME
         item["Exe"] = quote_path(exe)
         item["StartDir"] = quote_path(str(exe.parent) + "/")
         item["LaunchOptions"] = options
@@ -599,13 +755,16 @@ def hook_syncthing(save_dir):
 
 def main():
     root = steam_root()
-    config = user_config(root)
+    config, account_name = user_config(root)
     shortcuts = load_shortcuts(config / "shortcuts.vdf")
     _, existing = find_shortcut(shortcuts)
-    exe = resolve_exe(existing)
+    exe = resolve_exe(existing, account_name)
     appid = ensure_shortcut(root, config, exe)
     clear_compat_override(root, appid)
-    hook_syncthing(character_dir(root, appid))
+    if account_name == SYNC_ACCOUNT:
+        hook_syncthing(character_dir(root, appid))
+        return
+    print(f"{account_name} keeps its own saves. The NAS and Syncthing were left unchanged.")
 
 
 main()
