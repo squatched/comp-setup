@@ -1,0 +1,612 @@
+#!/usr/bin/env bash
+# Set up Azeroth Survivors as a Steam non-Steam game on this machine.
+# When ~/Games/AzerothSurvivors/AzerothSurvivors.exe is missing, mount the NAS
+# and extract Backups - Caleb/AzerothSurvivorsWindowsNew.rar there. An existing
+# install is kept, because the client updates itself in place. Then write the
+# shortcut, library art, and Syncthing save folder. Steam's default
+# compatibility tool is left in place.
+# Character saves are not copied.
+
+set -euo pipefail
+IFS=$'\n\t'
+
+SYNC_LABEL="[Game Saves] Azeroth Survivors"
+GAME_NAME="Azeroth Survivors"
+SCRIPT_PATH=$(readlink -f "${BASH_SOURCE[0]}")
+ART_DIR=$(dirname "${SCRIPT_PATH}")/art
+
+usage() {
+    cat <<EOF
+Usage: install-azeroth-survivors [EXE]
+
+Set up ${GAME_NAME} for the Steam library on this machine.
+
+With no EXE, use the existing shortcut when its program is still on disk,
+or ~/Games/AzerothSurvivors/AzerothSurvivors.exe. If that program is missing,
+the script mounts the NAS and extracts
+Backups - Caleb/AzerothSurvivorsWindowsNew.rar into ~/Games/AzerothSurvivors.
+An existing copy is left in place.
+
+The script then writes the non-Steam shortcut, copies library art from
+${ART_DIR}, and points the Syncthing folder "${SYNC_LABEL}" at the Steam
+character save (AppData/Roaming/wenilla-rogue). A per-game compatibility
+tool is removed so Steam uses the account default.
+
+If Steam is open, the script asks you to quit it before saving the library
+entry. Character saves are not copied. Syncthing distributes them.
+EOF
+}
+
+case "${1:-}" in
+    -h|--help) usage; exit 0 ;;
+esac
+
+if [[ $# -gt 1 ]]; then
+    usage >&2
+    exit 1
+fi
+
+if [[ ! -d "${ART_DIR}" ]]; then
+    printf 'Library art directory is missing: %s\n' "${ART_DIR}" >&2
+    exit 1
+fi
+
+export AS_ART_DIR="${ART_DIR}"
+export AS_EXE="${1:-}"
+export AS_SYNC_LABEL="${SYNC_LABEL}"
+export AS_GAME_NAME="${GAME_NAME}"
+
+python3 - <<'PY'
+import filecmp
+import json
+import os
+import re
+import secrets
+import shutil
+import string
+import subprocess
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+import vdf
+
+SYNC_LABEL = os.environ["AS_SYNC_LABEL"]
+GAME_NAME = os.environ["AS_GAME_NAME"]
+ART_DIR = Path(os.environ["AS_ART_DIR"])
+EXPLICIT_EXE = os.environ.get("AS_EXE") or ""
+STEAM_ID64_MASK = 0xFFFFFFFF
+ART_NAMES = {
+    "capsule.jpg": "p.jpg",
+    "header.jpg": ".jpg",
+    "hero.jpg": "_hero.jpg",
+    "logo.png": "_logo.png",
+    "icon.png": "_icon.png",
+    "icon.ico": "_icon.ico",
+}
+INSTALL_DIR = Path.home() / "Games/AzerothSurvivors"
+DEFAULT_EXE = INSTALL_DIR / "AzerothSurvivors.exe"
+NAS_MOUNT = Path.home() / "Network/McCombalot NAS"
+NAS_RAR = NAS_MOUNT / "Backups - Caleb/AzerothSurvivorsWindowsNew.rar"
+MOUNT_SCRIPT = ART_DIR.parent.parent / "mount-mccombalot-nas"
+
+
+def fail(message):
+    print(message, file=sys.stderr)
+    raise SystemExit(1)
+
+
+def unquote(value):
+    value = (value or "").strip()
+    if len(value) >= 2 and value[0] == '"' and value[-1] == '"':
+        return value[1:-1]
+    return value
+
+
+def quote_path(path):
+    return f'"{path}"'
+
+
+def signed_appid(appid):
+    appid = int(appid) & STEAM_ID64_MASK
+    if appid >= 2**31:
+        return appid - 2**32
+    return appid
+
+
+def unsigned_appid(raw):
+    if raw is None:
+        return None
+    appid = int(raw)
+    if appid < 0:
+        appid += 2**32
+    if appid <= 0:
+        return None
+    return appid
+
+
+def steam_running():
+    proc = Path("/proc")
+    for entry in proc.iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            command = (entry / "cmdline").read_bytes().replace(b"\0", b" ").decode(errors="replace")
+        except OSError:
+            continue
+        if "ubuntu12_32/steam" in command or command.strip().endswith("/steam"):
+            return True
+    return False
+
+
+def wait_for_steam(action):
+    if not steam_running():
+        return
+    message = f"Steam is running. Quit Steam so this script can {action}."
+    if not sys.stdin.isatty():
+        fail(message)
+    print(message)
+    print("Press Enter after Steam has quit.")
+    while steam_running():
+        try:
+            input()
+        except EOFError:
+            fail("Steam is still running.")
+        if steam_running():
+            print("Steam is still running. Quit it, then press Enter.")
+
+
+def steam_root():
+    candidates = [
+        Path.home() / ".local/share/Steam",
+        Path.home() / ".steam/root",
+        Path.home() / ".steam/steam",
+    ]
+    for path in candidates:
+        if (path / "config/loginusers.vdf").is_file():
+            return path.resolve()
+    fail("Steam is not installed for this user.")
+
+
+def autologin_user(root):
+    login = root / "config" / "loginusers.vdf"
+    users = vdf.load(login.open())["users"]
+    for steam_id, info in users.items():
+        if str(info.get("AutoLogin")) == "1":
+            return str(int(steam_id) & STEAM_ID64_MASK)
+    return None
+
+
+def user_config(root):
+    userdata = root / "userdata"
+    user = autologin_user(root)
+    if user:
+        config = userdata / user / "config"
+        if config.is_dir():
+            return config
+    accounts = [path for path in userdata.iterdir() if path.is_dir() and path.name.isdigit()] if userdata.is_dir() else []
+    if len(accounts) == 1:
+        return accounts[0] / "config"
+    fail("Could not tell which Steam user owns the library. Sign that user in with AutoLogin.")
+
+
+def shortcut_appid_for(exe, name):
+    import binascii
+
+    # Non-zero shortcut ids are kept. Steam replaces only appid 0.
+    digest = binascii.crc32(f'"{exe}"{name}'.encode()) & STEAM_ID64_MASK
+    return digest | 0x80000000
+
+
+def load_shortcuts(path):
+    if not path.is_file() or path.stat().st_size == 0:
+        return {}
+    return vdf.binary_loads(path.read_bytes()).get("shortcuts") or {}
+
+
+def find_shortcut(shortcuts):
+    for index, item in shortcuts.items():
+        if item.get("AppName") == GAME_NAME:
+            return str(index), item
+    return None, None
+
+
+def install_from_nas():
+    if DEFAULT_EXE.is_file():
+        print(f"Using the install already at {DEFAULT_EXE}")
+        print("The NAS archive is extracted only when that program is missing.")
+        return DEFAULT_EXE.resolve()
+    if not MOUNT_SCRIPT.is_file():
+        fail(f"NAS mount script is missing: {MOUNT_SCRIPT}")
+    if shutil.which("unrar") is None:
+        fail("unrar is required to extract the Azeroth Survivors installer.")
+    print(f"No install at {INSTALL_DIR}.")
+    print(f"Mounting the NAS to extract {NAS_RAR.name} into {INSTALL_DIR.parent}.")
+    subprocess.run([str(MOUNT_SCRIPT)], check=True)
+    if not NAS_RAR.is_file():
+        fail(f"Installer not found on the NAS: {NAS_RAR}")
+    size_mb = NAS_RAR.stat().st_size // (1024 * 1024)
+    print(f"Extracting {NAS_RAR.name} ({size_mb} MB).")
+    INSTALL_DIR.parent.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        ["unrar", "x", "-o+", "-y", "-idq", str(NAS_RAR), str(INSTALL_DIR.parent) + os.sep],
+        check=False,
+    )
+    if result.returncode not in (0, 1) or not DEFAULT_EXE.is_file():
+        fail(f"Extracting {NAS_RAR} did not produce {DEFAULT_EXE}")
+    print(f"Installed {DEFAULT_EXE}")
+    return DEFAULT_EXE.resolve()
+
+
+def resolve_exe(shortcut):
+    if EXPLICIT_EXE:
+        exe = Path(EXPLICIT_EXE).expanduser().resolve()
+        if not exe.is_file():
+            fail(f"Game executable not found: {exe}")
+        return exe
+    if shortcut is not None:
+        existing = Path(unquote(shortcut.get("Exe")))
+        if existing.is_file():
+            print(f"Using the install already at {existing}")
+            print("The NAS archive is extracted only when that program is missing.")
+            return existing.resolve()
+    if DEFAULT_EXE.is_file():
+        print(f"Using the install already at {DEFAULT_EXE}")
+        print("The NAS archive is extracted only when that program is missing.")
+        return DEFAULT_EXE.resolve()
+    return install_from_nas()
+
+
+def launch_options(root, appid):
+    home = root / "steamapps/compatdata" / str(appid) / "pfx/drive_c/users/steamuser/AppData/Roaming/benilla-config"
+    return f'BENILLA_HOME="Z:{home}" %command%'
+
+
+def character_dir(root, appid):
+    return (
+        root
+        / "steamapps/compatdata"
+        / str(appid)
+        / "pfx/drive_c/users/steamuser/AppData/Roaming/wenilla-rogue"
+    ).resolve()
+
+
+def blank_shortcut(appid, exe, options, icon):
+    return {
+        "appid": signed_appid(appid),
+        "AppName": GAME_NAME,
+        "Exe": quote_path(exe),
+        "StartDir": quote_path(str(exe.parent) + "/"),
+        # Exe and StartDir keep their quotes. The icon path must not, or Steam
+        # looks up a file that does not exist and the library list stays blank.
+        "icon": str(icon),
+        "ShortcutPath": "",
+        "LaunchOptions": options,
+        "IsHidden": 0,
+        "AllowDesktopConfig": 1,
+        "AllowOverlay": 1,
+        "OpenVR": 0,
+        "Devkit": 0,
+        "DevkitGameID": "",
+        "DevkitOverrideAppID": 0,
+        "LastPlayTime": 0,
+        "FlatpakAppID": "",
+        "sortas": "",
+        "tags": {},
+    }
+
+
+def shortcut_matches(item, exe, options, icon):
+    return (
+        unquote(item.get("Exe")) == str(exe)
+        and unquote(item.get("StartDir")).rstrip("/") == str(exe.parent)
+        and (item.get("LaunchOptions") or "") == options
+        and (item.get("icon") or "") == str(icon)
+    )
+
+
+def write_shortcuts(path, shortcuts):
+    payload = vdf.binary_dumps({"shortcuts": shortcuts})
+    loaded = vdf.binary_loads(payload).get("shortcuts") or {}
+    if set(map(str, loaded)) != set(map(str, shortcuts)):
+        fail("Refusing to write shortcuts.vdf; the shortcut list did not round-trip.")
+    for index, item in shortcuts.items():
+        again = loaded.get(index) or loaded.get(str(index))
+        if again is None or again.get("AppName") != item.get("AppName"):
+            fail("Refusing to write shortcuts.vdf; a shortcut name did not round-trip.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(".vdf.tmp")
+    temporary.write_bytes(payload)
+    if path.exists():
+        os.chmod(temporary, path.stat().st_mode)
+    os.replace(temporary, path)
+
+
+def install_art(grid, appid):
+    grid.mkdir(parents=True, exist_ok=True)
+    icon = None
+    for source_name, suffix in ART_NAMES.items():
+        source = ART_DIR / source_name
+        if not source.is_file():
+            fail(f"Library art is missing: {source}")
+        target = grid / f"{appid}{suffix}"
+        if not target.is_file() or not filecmp.cmp(source, target, shallow=False):
+            shutil.copyfile(source, target)
+            print(f"Installed {target.name}")
+        # The library list asks Steam for this shortcut's icon file.
+        if source_name == "icon.ico":
+            icon = target.resolve()
+    return icon
+
+
+def mapping_block(text):
+    marker = '"CompatToolMapping"'
+    start = text.find(marker)
+    if start < 0:
+        fail("Steam config has no CompatToolMapping section.")
+    brace = text.find("{", start)
+    if brace < 0:
+        fail("Steam config has a broken CompatToolMapping section.")
+    depth = 0
+    for index in range(brace, len(text)):
+        char = text[index]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return brace, index
+    fail("Steam config has a broken CompatToolMapping section.")
+
+
+def compat_override(text, appid):
+    if '"CompatToolMapping"' not in text:
+        return None
+    brace, end = mapping_block(text)
+    block = text[brace : end + 1]
+    entry = re.search(rf'\n[ \t]*"{appid}"\s*\n[ \t]*\{{[^}}]*\}}', block)
+    if entry is None:
+        return None
+    return brace, end, block, entry
+
+
+def clear_compat_override(root, appid):
+    path = root / "config" / "config.vdf"
+    if not path.is_file():
+        print(f"{GAME_NAME} uses Steam's default compatibility tool")
+        return
+    text = path.read_text(encoding="utf-8")
+    found = compat_override(text, appid)
+    if found is None:
+        print(f"{GAME_NAME} uses Steam's default compatibility tool")
+        return
+    wait_for_steam("clear the compatibility tool override")
+    text = path.read_text(encoding="utf-8")
+    found = compat_override(text, appid)
+    if found is None:
+        print(f"{GAME_NAME} uses Steam's default compatibility tool")
+        return
+    brace, end, block, entry = found
+    name = re.search(r'"name"\s*"([^"]*)"', entry.group(0))
+    block = block[: entry.start()] + block[entry.end() :]
+    updated = text[:brace] + block + text[end + 1 :]
+    temporary = path.with_suffix(".vdf.tmp")
+    temporary.write_text(updated, encoding="utf-8")
+    os.chmod(temporary, path.stat().st_mode)
+    os.replace(temporary, path)
+    removed = name.group(1) if name else "the per-game tool"
+    print(f"Removed {removed} for {GAME_NAME}. Steam's default compatibility tool will be used.")
+
+
+def ensure_shortcut(root, config, exe):
+    path = config / "shortcuts.vdf"
+    shortcuts = load_shortcuts(path)
+    index, item = find_shortcut(shortcuts)
+    if item is None:
+        appid = shortcut_appid_for(exe, GAME_NAME)
+    else:
+        appid = unsigned_appid(item.get("appid"))
+        if appid is None:
+            appid = shortcut_appid_for(exe, GAME_NAME)
+    icon = install_art(config / "grid", appid)
+    options = launch_options(root, appid)
+    if item is not None and shortcut_matches(item, exe, options, icon):
+        print(f'Steam shortcut "{GAME_NAME}" already launches {exe}')
+        return appid
+    wait_for_steam("save the library shortcut")
+    if item is None:
+        numbers = [int(key) for key in shortcuts if str(key).isdigit()]
+        index = str(max(numbers, default=-1) + 1)
+        shortcuts[index] = blank_shortcut(appid, exe, options, icon)
+        print(f'Added Steam shortcut "{GAME_NAME}" ({appid})')
+    else:
+        item["Exe"] = quote_path(exe)
+        item["StartDir"] = quote_path(str(exe.parent) + "/")
+        item["LaunchOptions"] = options
+        item["icon"] = str(icon)
+        item["appid"] = signed_appid(appid)
+        shortcuts[index] = item
+        print(f'Updated Steam shortcut "{GAME_NAME}" ({appid})')
+    write_shortcuts(path, shortcuts)
+    return appid
+
+
+def syncthing_api():
+    config = Path.home() / ".local/state/syncthing/config.xml"
+    gui = ET.parse(config).getroot().find("gui")
+    if gui is None or not (gui.findtext("apikey") or "").strip():
+        fail("Syncthing config has no API key.")
+    return gui.findtext("address").strip(), gui.findtext("apikey").strip()
+
+
+def api(address, api_key, method, path, body=None):
+    data = None if body is None else json.dumps(body).encode()
+    req = urllib.request.Request(
+        f"http://{address}{path}",
+        data=data,
+        method=method,
+        headers={"X-API-Key": api_key, "Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as response:
+            raw = response.read()
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode(errors="replace")[:500]
+        fail(f"Syncthing {method} {path} failed ({exc.code}): {detail}")
+    except urllib.error.URLError as exc:
+        fail(f"Syncthing is not reachable at {address}: {exc.reason}")
+    if not raw:
+        return None
+    return json.loads(raw)
+
+
+def folder_id(existing_ids):
+    alphabet = string.ascii_lowercase + string.digits
+
+    def part():
+        return "".join(secrets.choice(alphabet) for _ in range(5))
+
+    while True:
+        candidate = f"{part()}-{part()}"
+        if candidate not in existing_ids and candidate != "default":
+            return candidate
+
+
+def blank_device(device):
+    return {
+        "deviceID": device["deviceID"],
+        "introducedBy": device.get("introducedBy") or "",
+        "encryptionPassword": "",
+    }
+
+
+def share_devices(address, api_key, template):
+    if template is not None:
+        return [blank_device(device) for device in template.get("devices", [])]
+    devices = api(address, api_key, "GET", "/rest/config/devices")
+    return [blank_device(device) for device in devices]
+
+
+def template_folder(folders):
+    labeled = [
+        folder
+        for folder in folders
+        if str(folder.get("label", "")).startswith("[Game Saves]") and folder.get("label") != SYNC_LABEL
+    ]
+    for folder in labeled:
+        if folder.get("label") == "[Game Saves] Dark Souls III":
+            return folder
+    return labeled[0] if labeled else None
+
+
+def new_folder(address, api_key, folder_id_value, template, save_dir):
+    if template is not None:
+        folder = json.loads(json.dumps(template))
+    else:
+        folder = {
+            "filesystemType": "basic",
+            "type": "sendreceive",
+            "rescanIntervalS": 3600,
+            "fsWatcherEnabled": True,
+            "fsWatcherDelayS": 10,
+            "ignorePerms": False,
+            "autoNormalize": True,
+            "minDiskFree": {"value": 1, "unit": "%"},
+            "versioning": {
+                "type": "simple",
+                "params": {"cleanoutDays": "0", "keep": "30"},
+                "cleanupIntervalS": 3600,
+                "fsPath": "",
+                "fsType": "basic",
+            },
+            "maxConflicts": 10,
+            "markerName": ".stfolder",
+            "caseSensitiveFS": False,
+            "blockIndexing": True,
+        }
+    folder["id"] = folder_id_value
+    folder["label"] = SYNC_LABEL
+    folder["path"] = str(save_dir)
+    folder["type"] = "sendreceive"
+    folder["paused"] = False
+    folder["devices"] = share_devices(address, api_key, template)
+    folder.pop("invalid", None)
+    return folder
+
+
+def pending_id(address, api_key):
+    pending = api(address, api_key, "GET", "/rest/cluster/pending/folders") or {}
+    found = []
+    for folder_id_value, info in pending.items():
+        labels = []
+        if isinstance(info, dict):
+            if info.get("label"):
+                labels.append(info["label"])
+            offered = info.get("offeredBy") or {}
+            if isinstance(offered, dict):
+                for meta in offered.values():
+                    if isinstance(meta, dict) and meta.get("label"):
+                        labels.append(meta["label"])
+        if SYNC_LABEL in labels:
+            found.append(folder_id_value)
+    if len(found) > 1:
+        fail(f'More than one pending Syncthing folder is named "{SYNC_LABEL}".')
+    return found[0] if found else None
+
+
+def prepare_save_dir(save_dir):
+    save_dir.mkdir(parents=True, exist_ok=True)
+    (save_dir / ".stfolder").mkdir(exist_ok=True)
+
+
+def hook_syncthing(save_dir):
+    address, api_key = syncthing_api()
+    folders = api(address, api_key, "GET", "/rest/config/folders")
+    local = next((folder for folder in folders if folder.get("label") == SYNC_LABEL), None)
+    prepare_save_dir(save_dir)
+    if local is not None:
+        current = Path(local["path"]).resolve()
+        if current != save_dir:
+            local["path"] = str(save_dir)
+            local["label"] = SYNC_LABEL
+            local["paused"] = False
+            api(address, api_key, "PUT", f"/rest/config/folders/{local['id']}", local)
+            print(f'Mapped Syncthing folder "{SYNC_LABEL}" to {save_dir}')
+        else:
+            print(f'Syncthing folder "{SYNC_LABEL}" already points at {save_dir}')
+        api(address, api_key, "POST", "/rest/db/scan?folder=" + urllib.parse.quote(local["id"]))
+        return
+    template = template_folder(folders)
+    offered = pending_id(address, api_key)
+    folder = new_folder(
+        address,
+        api_key,
+        offered or folder_id({item["id"] for item in folders}),
+        template,
+        save_dir,
+    )
+    api(address, api_key, "POST", "/rest/config/folders", folder)
+    api(address, api_key, "POST", "/rest/db/scan?folder=" + urllib.parse.quote(folder["id"]))
+    if offered:
+        print(f'Accepted Syncthing folder "{SYNC_LABEL}" at {save_dir}')
+    else:
+        print(f'Added Syncthing folder "{SYNC_LABEL}" at {save_dir}')
+        print("Other devices will offer this folder. Accept it there, or run this script on that machine.")
+
+
+def main():
+    root = steam_root()
+    config = user_config(root)
+    shortcuts = load_shortcuts(config / "shortcuts.vdf")
+    _, existing = find_shortcut(shortcuts)
+    exe = resolve_exe(existing)
+    appid = ensure_shortcut(root, config, exe)
+    clear_compat_override(root, appid)
+    hook_syncthing(character_dir(root, appid))
+
+
+main()
+PY

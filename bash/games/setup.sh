@@ -99,9 +99,9 @@ if [[ ! -d "${MOUNT_POINT}" ]]; then
 fi
 
 pending=()
-for src in "${SOURCE_DIR}"/*; do
+for src in "${SOURCE_DIR}"/* "${SOURCE_DIR}"/*/*; do
     name="${src##*/}"
-    if [[ "${name}" == "setup.sh" || "${name}" == "input-remapper" ]]; then
+    if [[ "${name}" == "setup.sh" || "${src}" == "${SOURCE_DIR}/input-remapper" || "${src}" == "${SOURCE_DIR}/input-remapper/"* ]]; then
         continue
     fi
     if [[ ! -f "${src}" || ! -x "${src}" ]]; then
